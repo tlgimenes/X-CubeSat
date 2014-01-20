@@ -31,9 +31,16 @@ int open_port(void)
     return (fd);
 }
 
-/*
- * To type data to the port
- */
-n = write(fd, "ATZ\r", 4);
-if (n < 0)
-    fputs("write() of 4 bytes failed!\n", stderr);
+int main(int argc, char * argv[]){
+    /*
+     * To type data to the port
+     */
+    int fd, n;
+
+    fd = open_port();
+    n = write(fd, "ATZ\r", 4);
+    if (n < 0)
+        fputs("write() of 4 bytes failed!\n", stderr);
+
+    return 0;
+}
