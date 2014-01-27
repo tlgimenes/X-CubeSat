@@ -31,6 +31,7 @@ int open_port(void)
     return (fd);
 }
 
+
 int main(int argc, char * argv[]){
     /*
      * To type data to the port

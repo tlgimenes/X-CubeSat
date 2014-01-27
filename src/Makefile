@@ -1,5 +1,13 @@
+SHELL=/bin/bash
 CC=g++
-SRC=ideas.cpp
+C_FLAGS=-c -g -O0 -Wall
 
-all:
-	$(CC) $(SRC) -o prog
+SRC=log.cpp port.cpp
+OBJ=$(SRC:.cpp=.o)
+
+INCLUDE_PATH=../include
+
+all: $(OBJ)
+
+%.o: %.cpp
+	$(CC) $(C_FLAGS) -I$(INCLUDE_PATH) $< -o ../obj/$@;
