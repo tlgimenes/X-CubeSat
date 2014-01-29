@@ -3,42 +3,25 @@
 
 #include "log.hpp"
 #include "port.hpp"
+#include "mainWindow.hpp"
 #include "menu.hpp"
 
 // Connects all the call back signals of the mainWindow
-void ConnectSignalsMain(Glib::RefPtr<Gtk::Builder> refBuilder);
+void ConnectSignalsMain(MainWindow * mainWindow);
 // Connects all the call back signals of the top menu
-void ConnectSignalsMainMenu(Glib::RefPtr<Gtk::Builder> refBuilder);
+void ConnectSignalsMainMenu(MainWindow * mainWindow);
 
 int main (int argc, char *argv[])
 {
     Gtk::Main kit(argc, argv);
 
-    Gtk::Window* mainWindow = 0;
+    MainWindow * mainWindow = new MainWindow();
 
-    // Load the GtkBuilder file and instantiate its widgets:
-    Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create();
-    try {
-        refBuilder->add_from_file("windows/mainWindow.glade");
-        
-        //Get the GtkBuilder-instantiated window:
-        refBuilder->get_widget("mainWindow", mainWindow);
+    // Connects the call back signals
+    ConnectSignalsMain(mainWindow);
 
-        if(!mainWindow)
-            Log::LogWarn(LEVEL_LOG_ERROR, "The program could not open its main window", __FILE__, __LINE__);
- 
-        // Connects the call back signals
-        ConnectSignalsMain(refBuilder);
-
-        // Main loop for the program
-        kit.run(*mainWindow);
-    }
-    catch(const Glib::FileError& ex) {
-        Log::LogWarn(LEVEL_LOG_ERROR, ex.what().c_str(), __FILE__, __LINE__);
-        return 1;
-    }
-
-    delete mainWindow;
+    // Main loop for the program
+    kit.run(*(mainWindow->get_mainWindow()));
 
     return 0;
 }
@@ -46,22 +29,24 @@ int main (int argc, char *argv[])
 /*
  * Connects all the signals 
  */
-void ConnectSignalsMain(Glib::RefPtr<Gtk::Builder> refBuilder)
+void ConnectSignalsMain(MainWindow * mainWindow)
 {
-    ConnectSignalsMainMenu(refBuilder);
+    ConnectSignalsMainMenu(mainWindow);
 }
 
-void ConnectSignalsMainMenu(Glib::RefPtr<Gtk::Builder> refBuilder)
+void ConnectSignalsMainMenu(MainWindow * mainWindow)
 {
+    Glib::RefPtr<Gtk::Builder> refBuilder = mainWindow->get_mainBuilder();
     Gtk::ImageMenuItem * imitem = 0;
+    Menu * menu = new Menu(mainWindow);
 
     refBuilder->get_widget("saveFileAs", imitem);
     if(imitem != 0)
-        imitem->signal_activate().connect(sigc::ptr_fun(saveAs_activate_cb));
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::saveAs_activate_cb));
 
     refBuilder->get_widget("openFile", imitem);
     if(imitem != 0)
-        imitem->signal_activate().connect(sigc::ptr_fun(open_activate_cb));
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::open_activate_cb));
 
     refBuilder->get_widget("quit", imitem);
     if(imitem != 0)
@@ -69,7 +54,7 @@ void ConnectSignalsMainMenu(Glib::RefPtr<Gtk::Builder> refBuilder)
 
     refBuilder->get_widget("about", imitem);
     if(imitem != 0)
-        imitem->signal_activate().connect(sigc::ptr_fun(about_activate_cb));
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::about_activate_cb));
 
 }
 

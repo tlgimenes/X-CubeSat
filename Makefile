@@ -2,9 +2,9 @@ SHELL=/bin/bash
 CC=g++
 
 MAIN=main.cpp
-OBJ=obj/*.o
+OBJ=src/*.o
 
-C_FLAGS=-g -O0 -Wall
+C_FLAGS=-g -O0 -Wall -std=c++11
 INCLUDE_PATH=include
 LIBS=`pkg-config gtkmm-3.0 --cflags --libs`
 

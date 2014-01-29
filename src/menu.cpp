@@ -1,70 +1,135 @@
 #include <gtkmm.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "log.hpp"
 #include "menu.hpp"
 
-void open_activate_cb()
+Menu::Menu(MainWindow * mainWindow)
 {
-    Gtk::FileChooserDialog * fc = 0;
-
-    try{
-        Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create_from_file(OPEN_GLADE_FILE);
-
-        refBuilder->get_widget(OPEN_WIDGET, fc);
-
-        if(!fc)
-            Log::LogWarn(LEVEL_LOG_INFO, "Unable to load open window", __FILE__, __LINE__);
-
-        fc->run();
-    } 
-    catch(const Glib::FileError& ex) {
-        Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
-    }
-
-    delete fc;
-}
-
-void saveAs_activate_cb()
-{
-    Gtk::FileChooserDialog * fc = 0;
-
-    try{
-        Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create_from_file(SAVEAS_GLADE_FILE);
-
-        refBuilder->get_widget(SAVEAS_WIDGET, fc);
-
-        if(!fc)
-            Log::LogWarn(LEVEL_LOG_INFO, "Unable to load open window", __FILE__, __LINE__);
-
-        fc->run();
-    } 
-    catch(const Glib::FileError& ex) {
-        Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
-    }
-
-    delete fc;
-}
-
-void about_activate_cb()
-{
-    Gtk::AboutDialog * aboutWindow = 0;
-
     try {
-    //Load the GtkBuilder file and instantiate its widgets:
-    Glib::RefPtr<Gtk::Builder> refBuilder = Gtk::Builder::create_from_file(ABOUT_GLADE_FILE);
+        this->mainWindow = mainWindow;
 
-    refBuilder->get_widget(ABOUT_WIDGET, aboutWindow);
+        Glib::RefPtr<Gtk::Builder> openBuilder = Gtk::Builder::create_from_file(OPEN_GLADE_FILE);
+        Glib::RefPtr<Gtk::Builder> saveAsBuilder = Gtk::Builder::create_from_file(SAVEAS_GLADE_FILE);
+        Glib::RefPtr<Gtk::Builder> aboutBuilder = Gtk::Builder::create_from_file(ABOUT_GLADE_FILE);
 
-    if(!aboutWindow)
+        /*
+         * Open File
+         */
+        openBuilder->get_widget(OPEN_WIDGET, this->openFile);
+        openBuilder->get_widget(OPEN_BUTTON, this->openButton);
+        openBuilder->get_widget(CANCEL_BUTTON, this->cancelButtonOpen);
+        openButton->signal_clicked().connect(sigc::mem_fun(this, &Menu::open_openButton_clicked_cb));
+        cancelButtonOpen->signal_clicked().connect(sigc::mem_fun(this, &Menu::open_cancelButton_clicked_cb));
+
+        /*
+         * SaveAs File
+         */
+        saveAsBuilder->get_widget(SAVEAS_WIDGET, this->saveAsFile);
+        saveAsBuilder->get_widget(SAVEAS_BUTTON, this->saveAsButton);
+        saveAsBuilder->get_widget(CANCEL_BUTTON, this->cancelButtonSaveAs);
+        saveAsBuilder->get_widget(ENTRY_FILENAME, this->entryFileName);
+        saveAsButton->signal_clicked().connect(sigc::mem_fun(this, &Menu::saveAs_saveAsButton_clicked_cb));
+        cancelButtonSaveAs->signal_clicked().connect(sigc::mem_fun(this, &Menu::saveAs_cancelButton_clicked_cb));
+
+        /*
+         * About
+         */
+        aboutBuilder->get_widget(ABOUT_WIDGET, this->aboutDialog);
+    }
+    catch(const Glib::FileError& ex) {
+        Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
+    }
+}
+
+void Menu::open_openButton_clicked_cb()
+{
+    std::ifstream file(this->openFile->get_filename().c_str());
+    std::ostringstream out;
+
+    if(file.is_open()) {
+        out << file.rdbuf();
+
+        this->mainWindow->get_textView()->get_buffer()->set_text(out.str());
+ 
+        this->openFile->hide();
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "File could not be oppened", __FILE__, __LINE__);
+    }
+
+    file.close();
+}
+
+void Menu::open_cancelButton_clicked_cb()
+{
+    if(this->openFile == 0)
+        Log::LogWarn(LEVEL_LOG_WARNING, "Cancel Button panic !", __FILE__, __LINE__);
+
+    this->openFile->hide();
+}
+
+void Menu::open_activate_cb()
+{
+    if(!this->openFile)
+        Log::LogWarn(LEVEL_LOG_INFO, "Unable to load open window", __FILE__, __LINE__);
+
+    this->openFile->set_current_folder(GetCurrentDir());
+    this->openFile->run();
+}
+
+void Menu::saveAs_saveAsButton_clicked_cb()
+{
+    Glib::ustring ext(".xcs");
+
+    if(!this->saveAsFile)
+        Log::LogWarn(LEVEL_LOG_WARNING, "SaveAs Button panic !", __FILE__, __LINE__);
+    
+
+    Glib::ustring fileName = this->entryFileName->get_text();
+    fileName.append(ext);
+
+    Glib::ustring pathName = this->saveAsFile->get_current_folder();
+    pathName.append("/");
+    pathName.append(fileName);
+
+    std::ofstream file(pathName.c_str(), std::ios::out);
+
+    if(file.is_open()) {
+        Glib::ustring text = mainWindow->textEditor->get_buffer()->get_text();
+
+        file << text;
+    }
+
+    file.close();
+
+    this->saveAsFile->hide();
+}
+
+void Menu::saveAs_cancelButton_clicked_cb()
+{
+    if(!this->saveAsFile)
+        Log::LogWarn(LEVEL_LOG_WARNING, "Cancel Button panic !", __FILE__, __LINE__);
+
+    this->saveAsFile->hide();
+}
+
+void Menu::saveAs_activate_cb()
+{
+    if(!this->saveAsFile)
+        Log::LogWarn(LEVEL_LOG_INFO, "Unable to load open window", __FILE__, __LINE__);
+
+    this->saveAsFile->set_current_folder(GetCurrentDir());
+    this->saveAsFile->run();
+}
+
+void Menu::about_activate_cb()
+{
+   if(!this->aboutDialog)
         Log::LogWarn(LEVEL_LOG_INFO, "Unable to load about window", __FILE__, __LINE__);
 
-    aboutWindow->run();
-    }
-    catch(const Glib::FileError& ex) {
-        Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
-    }
-
-    delete aboutWindow;
+    this->aboutDialog->run();
 }
 
