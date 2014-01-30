@@ -7,6 +7,14 @@
 
 #define MAIN_WINDOW_WIDGET "mainWindow"
 
+#define FIFO_FILE "/tmp/GpredictFIFO"
+#define SATS_FILE "/tmp/GpredictSATS"
+
+#define MAX_SAT_NAME 400
+#define MAX_M_SIZE   430
+
+#define UPDATE_RATE  1000
+
 /*
  * Menu
  */
@@ -14,6 +22,22 @@
 #define OPEN_FILE_WIDGET "openFile"
 #define QUIT_WIDGET "quit"
 #define ABOUT_FILE_WIDGET "about"
+
+/*
+ * Sats List
+ */
+#define SATS_TREEVIEW_WIDGET "satsTreeview"
+typedef enum sats_treeview_t {
+    SATS
+} sats_treeview;
+
+/*
+ * Curr sat
+ */
+#define CURR_SAT_LABEL_WIDGET "sat"
+#define STATUS_LABEL_WIDGET "status"
+#define AOS_LABEL_WIDGET "AOS"
+#define LOS_LABEL_WIDGET "LOS"
 
 /*
  * Text Editor
@@ -31,9 +55,20 @@ typedef enum alias_treeview_t {
 
 class MainWindow
 {
+    private:
+        void init_sats();
+        void init_alias();
+        void init_text_editor();
+        void init_curr_sat();
+
     public:
         Glib::RefPtr<Gtk::Builder> mainBuilder;
         Gtk::Window * mainWindow;
+
+        Gtk::TreeView * satsTreeview;
+
+        Gtk::Label *satName, *status, *aos, *los;
+        int fifo_fd;
 
         Gtk::TreeView * aliasTreeview;
         std::vector<Gtk::CellRendererText*> aliasColumnCells;
@@ -48,6 +83,7 @@ class MainWindow
 
         void cellrenderColumnAlias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
         void cellrenderColumnCommand_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
+        bool updateCurrSatellite();
 };
 
 #endif
