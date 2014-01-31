@@ -399,10 +399,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="AOSLabel">
+                              <object class="GtkLabel" id="elevationLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">AOS</property>
+                                <property name="xpad">15</property>
+                                <property name="label" translatable="yes">Elevation</property>
                               </object>
                               <packing>
                                 <property name="left_attach">3</property>
@@ -412,10 +413,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="LOSLabel">
+                              <object class="GtkLabel" id="azimuthLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">LOS</property>
+                                <property name="xpad">15</property>
+                                <property name="label" translatable="yes">Azimuth</property>
                               </object>
                               <packing>
                                 <property name="left_attach">4</property>
@@ -425,9 +427,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="AOS">
+                              <object class="GtkLabel" id="elevation">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="xpad">15</property>
                                 <property name="label" translatable="yes">--</property>
                               </object>
                               <packing>
@@ -438,9 +441,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="LOS">
+                              <object class="GtkLabel" id="azimuth">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="xpad">15</property>
                                 <property name="label" translatable="yes">label</property>
                               </object>
                               <packing>

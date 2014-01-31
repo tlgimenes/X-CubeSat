@@ -26,8 +26,8 @@ void MainWindow::init_curr_sat()
 { 
     this->mainBuilder->get_widget(CURR_SAT_LABEL_WIDGET, this->satName);
     this->mainBuilder->get_widget(STATUS_LABEL_WIDGET, this->status);
-    this->mainBuilder->get_widget(AOS_LABEL_WIDGET, this->aos);
-    this->mainBuilder->get_widget(LOS_LABEL_WIDGET, this->los);
+    this->mainBuilder->get_widget(ELEVATION_LABEL_WIDGET, this->satEl);
+    this->mainBuilder->get_widget(AZIMUTH_LABEL_WIDGET, this->satAz);
 
     this->fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
     if(fifo_fd == -1)
@@ -132,39 +132,50 @@ void MainWindow::cellrenderColumnCommand_edited_cb(const Glib::ustring& path, co
     
 }
 
-bool MainWindow::updateCurrSatellite()
-{
+char * read_fifo_format(int fifo_fd)
+{ 
     char rawIn[MAX_M_SIZE] = "0";
-    char satName[MAX_SAT_NAME] = "N";
-    int rawIn_size = 0, it = 1, it2 = 0;
-    float aos, los;
-    std::stringstream itos;
+    char * satInfo = NULL;
+    int rawIn_size = 0, it = 1, it2 = 1;
 
-    /*// Reads the fifo file
-    read(this->fifo_fd, rawIn, 1);
+    // Reads the fifo file
+    if(read(fifo_fd, rawIn, 1) == -1) return NULL;
     for(; rawIn[0]-'0' < 10 && rawIn[0]-'0' >= 0; it*=10) {
         rawIn_size = rawIn_size * it + (rawIn[0]-'0');
-        read(this->fifo_fd, rawIn, 1);
+        if(read(fifo_fd, rawIn, 1) == -1) return NULL;
         it2++;
     }
-    std::cout << "size: " << rawIn_size << std::endl;
-    rawIn_size-=it2-1;
+    rawIn_size = rawIn_size - it2;
 
-    read(this->fifo_fd, rawIn, rawIn_size);
+    satInfo = (char *)malloc(sizeof(char)*rawIn_size);
 
- //   read(this->fifo_fd, rawIn, 37);
+    if(read(fifo_fd, satInfo, rawIn_size) == -1) return NULL;
 
-    std::cout << "rawIn: " << rawIn << " " << sscanf(rawIn, "%s %f %f\n", satName, &aos, &los) << std::endl;
-    */
-    read(this->fifo_fd, satName, MAX_SAT_NAME);
+    satInfo[rawIn_size] = '\0';
 
+    return satInfo;
+}
+
+
+
+bool MainWindow::updateCurrSatellite()
+{
+    char *satName, *satEl, *satAz;
+
+    satName = read_fifo_format(this->fifo_fd);
+    if(satName == NULL) satName = "Not Found";
     Glib::ustring satNameStr = satName;
     this->satName->set_text(satNameStr);
     
-    itos << aos;
-    this->aos->set_text(itos.str());
-    itos << los;
-    this->los->set_text(itos.str());
+    satEl = read_fifo_format(this->fifo_fd);
+    if(satEl == NULL) satEl = "Not Set";
+    Glib::ustring satElStr = satEl;
+    this->satEl->set_text(satEl);
+
+    satAz = read_fifo_format(this->fifo_fd);
+    if(satAz == NULL) satAz = "Not Set";
+    Glib::ustring satAzStr = satAz;
+    this->satAz->set_text(satAz);
 
     return true;
 }

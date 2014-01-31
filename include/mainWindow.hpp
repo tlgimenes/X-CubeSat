@@ -36,8 +36,8 @@ typedef enum sats_treeview_t {
  */
 #define CURR_SAT_LABEL_WIDGET "sat"
 #define STATUS_LABEL_WIDGET "status"
-#define AOS_LABEL_WIDGET "AOS"
-#define LOS_LABEL_WIDGET "LOS"
+#define ELEVATION_LABEL_WIDGET "elevation"
+#define AZIMUTH_LABEL_WIDGET "azimuth"
 
 /*
  * Text Editor
@@ -67,7 +67,7 @@ class MainWindow
 
         Gtk::TreeView * satsTreeview;
 
-        Gtk::Label *satName, *status, *aos, *los;
+        Gtk::Label *satName, *status, *satEl, *satAz;
         int fifo_fd;
 
         Gtk::TreeView * aliasTreeview;
