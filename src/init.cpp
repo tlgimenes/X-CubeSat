@@ -11,57 +11,75 @@
 #include "init.hpp"
 #include "log.hpp"
 
+#define discard_spaces(sstm) \
+    while(sstm->peek() == ' ') { \
+        sstm->seekg((int)sstm->tellg() + 1); \
+    }
+
 Manager *Init::LoadPreviusSection(std::string *previusSection, Manager* man)
 {
     std::stringstream satName;
-    std::stringstream scriptName;
-    std::stringstream aliasName;
     std::string       *satNameStr;
     std::string       *scriptNameStr;
+    std::string       *aliasNameStr;
     std::string       *aliasStr;
     std::string       *scriptStr;
     std::stringstream scriptsNumStr;
     int               scriptsNum;
+    char aux[999];
 
     if(!DataBase::existsSection(*previusSection)) {
         return NULL;
     }
 
-    Manager *manager = new Manager();
-
     std::stringstream* psf = DataBase::GetSection(*previusSection);
     while(!psf->eof()) {
-        satName << boost::format(" %s ") % psf;
-        satNameStr = new std::string(satName.str());
+        psf->getline(aux, 999);
+        satNameStr = new std::string(aux);
+        discard_spaces(psf);
+        psf->get(aux, 999, ' ');
+        sscanf(aux, " %d ", &scriptsNum);
+        discard_spaces(psf);
 
-        scriptsNumStr << boost::format(" %d ") % psf;
-        scriptsNum = std::stoi(scriptsNumStr.str());
-
-        if(!manager->existsSat(satNameStr)){ // if there is no sat go, to the next one
+        if(!man->existsSat(satNameStr)){ // if there is no sat, go to the next one
             psf->ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
-            for(int i=0; i < scriptsNum; i++) {
-                scriptName << boost::format(" %s ") % psf;
-                aliasName  << boost::format(" %s ") % psf;
-                if(DataBase::existsScript(scriptName.str()) && DataBase::existsAlias(aliasName.str())) {
-                    // Insert the sat
+            for(int i=1; i < scriptsNum; i++) {
+                psf->get(aux, 999, ' ');
+                scriptNameStr = new std::string(aux);
+                discard_spaces(psf);
+                psf->getline(aux, 999, ' ');
+                aliasNameStr = new std::string(aux);
 
-                    // Get the Script name
-                    scriptNameStr = new std::string(scriptName.str());
-
+                if(DataBase::existsScript(*scriptNameStr) && DataBase::existsAlias(*aliasNameStr)) {
                     // Get the content of the scripts
-                    scriptStr = new std::string(DataBase::GetScripts(scriptName.str())->str());
-                    aliasStr = new std::string(DataBase::GetAlias(aliasName.str())->str());
+                    scriptStr = new std::string(DataBase::GetScripts(scriptNameStr->c_str())->str());
+                    aliasStr = new std::string(DataBase::GetAlias(aliasNameStr->c_str())->str());
 
                     // Creates a new script associated with the satellite
-                    manager->AddScript(satNameStr, scriptNameStr, scriptStr, aliasStr, new Interpreter(new std::string(DEFAULT_OUTPUT)));
+                    man->AddScript(satNameStr, scriptNameStr, scriptStr, aliasStr, new Interpreter(new std::string(DEFAULT_OUTPUT)));
                 }
             }
-        } 
+            psf->get(aux, 999, ' ');
+            scriptNameStr = new std::string(aux);
+            discard_spaces(psf);
+            psf->getline(aux, 999);
+            aliasNameStr = new std::string(aux);
+
+            if(DataBase::existsScript(*scriptNameStr) && DataBase::existsAlias(*aliasNameStr)) {
+                // Get the content of the scripts
+                scriptStr = new std::string(DataBase::GetScripts(scriptNameStr->c_str())->str());
+                aliasStr = new std::string(DataBase::GetAlias(aliasNameStr->c_str())->str());
+
+                // Creates a new script associated with the satellite
+                man->AddScript(satNameStr, scriptNameStr, scriptStr, aliasStr, new Interpreter(new std::string(DEFAULT_OUTPUT)));
+            }
+        }
+        psf->peek();
     }
 
-    return manager;
+    return man;
 }
 
 Manager *Init::LoadCurrentSats(std::string * gpredictSats)
@@ -70,15 +88,16 @@ Manager *Init::LoadCurrentSats(std::string * gpredictSats)
         Log::LogWarn(LEVEL_LOG_ERROR, "Could not open Sats file from Gpredict !", __FILE__, __LINE__);
     }
     std::stringstream *sats = DataBase::GetSats(*gpredictSats);
-    std::stringstream satName;
     std::string *satNameStr;
+    char aux[999];
     
     Manager * man = new Manager();
 
     while(!sats->eof()) {
-        satName << boost::format(" %s\n ") % sats->str();
-        satNameStr = new std::string(satName.str());
+        sats->getline(aux, 999);
+        satNameStr = new std::string(aux);
         man->AddSat(satNameStr);
+        sats->peek();
     }
 
     return man;

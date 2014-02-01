@@ -37,10 +37,14 @@ void Manager::AddScript(std::string *satName, std::string *scriptName, std::stri
     }
 }
 
+#include <iostream>
+
 bool Manager::existsSat(std::string *satName)
 {
-    if(this->satManagers.find(*satName) == this->satManagers.end())
+    if(this->satManagers.find(satName->c_str()) == this->satManagers.end()){
+        std::cout << this->satManagers.size()<<std::endl;
         return false;
+    }
     else
         return true;
 }

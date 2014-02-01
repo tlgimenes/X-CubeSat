@@ -13,7 +13,7 @@
 #include "data_base.hpp"
 
 #define DEFAULT_OUTPUT              "/tmp/XCubeSat_Controller_Terminal"
-#define DEFAULT_SESSION_FILE        "XCubeSat_Controller.session"
+#define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controler.session"
 #define DEFAULT_GPREDICT_SATS_FILE  "/tmp/GpredictSATS"
 
 class Init

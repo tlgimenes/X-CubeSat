@@ -5,21 +5,16 @@
 
 #include <fstream>
 #include <sstream>
+
 #include "data_base.hpp"
 
 std::stringstream *DataBase::GetSection(std::string key)
 {
     std::ifstream ifs(key.c_str());
 
-    std::stringstream *content = new std::stringstream();
+    std::string * content = new std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
-    (*content) << ifs;
-
-    return content;
-
-/*    std::string * content = new std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-
-    return content;*/
+    return new std::stringstream(*content);
 }
 
 std::stringstream *DataBase::GetScripts(std::string key)
@@ -39,9 +34,9 @@ std::stringstream *DataBase::GetSats(std::string key)
 
 bool DataBase::existsSection(std::string key)
 {
-    std::ifstream ifile(key);
+    std::ifstream ifit(key.c_str(), std::ifstream::in);
 
-    if(ifile)
+    if(ifit.good()) 
         return true;
     else
         return false;
