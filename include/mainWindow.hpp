@@ -56,10 +56,10 @@ typedef enum alias_treeview_t {
 class MainWindow
 {
     private:
-        void init_sats();
-        void init_alias();
+        void init_sats_frame();
+        void init_alias_frame();
         void init_text_editor();
-        void init_curr_sat();
+        void init_curr_sat_frame();
 
     public:
         Glib::RefPtr<Gtk::Builder> mainBuilder;

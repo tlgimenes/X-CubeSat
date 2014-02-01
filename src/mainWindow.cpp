@@ -8,7 +8,7 @@
 #include "mainWindow.hpp"
 #include "log.hpp"
 
-void MainWindow::init_sats()
+void MainWindow::init_sats_frame()
 { 
     this->mainBuilder->get_widget(SATS_TREEVIEW_WIDGET, this->satsTreeview);
     Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
@@ -22,7 +22,7 @@ void MainWindow::init_sats()
     }
 }
 
-void MainWindow::init_curr_sat()
+void MainWindow::init_curr_sat_frame()
 { 
     this->mainBuilder->get_widget(CURR_SAT_LABEL_WIDGET, this->satName);
     this->mainBuilder->get_widget(STATUS_LABEL_WIDGET, this->status);
@@ -40,7 +40,7 @@ void MainWindow::init_curr_sat()
     Glib::signal_timeout().connect(my_slot, UPDATE_RATE);
 }
 
-void MainWindow::init_alias()
+void MainWindow::init_alias_frame()
 {
     this->mainBuilder->get_widget(ALIAS_TREEVIEW_WIDGET, this->aliasTreeview);
 
@@ -66,13 +66,13 @@ MainWindow::MainWindow()
         this->mainBuilder->get_widget(MAIN_WINDOW_WIDGET, this->mainWindow);
 
         /* Sats */
-        init_sats();
+        init_sats_frame();
 
         /* Current Sat */
-        init_curr_sat();
+        init_curr_sat_frame();
 
         /* Alias */
-        init_alias();
+        init_alias_frame();
 
         /* Text */
         init_text_editor();
@@ -163,17 +163,17 @@ bool MainWindow::updateCurrSatellite()
     char *satName, *satEl, *satAz;
 
     satName = read_fifo_format(this->fifo_fd);
-    if(satName == NULL) satName = "Not Found";
+    if(satName == NULL) satName = (char*)"Not Found";
     Glib::ustring satNameStr = satName;
     this->satName->set_text(satNameStr);
     
     satEl = read_fifo_format(this->fifo_fd);
-    if(satEl == NULL) satEl = "Not Set";
+    if(satEl == NULL) satEl = (char*)"Not Set";
     Glib::ustring satElStr = satEl;
     this->satEl->set_text(satEl);
 
     satAz = read_fifo_format(this->fifo_fd);
-    if(satAz == NULL) satAz = "Not Set";
+    if(satAz == NULL) satAz = (char*)"Not Set";
     Glib::ustring satAzStr = satAz;
     this->satAz->set_text(satAz);
 

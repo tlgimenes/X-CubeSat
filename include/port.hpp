@@ -23,6 +23,7 @@ class Port
         int fd;
         const char * portName;  //Name of the port to connec to
         const char * defaultPort;
+        bool isOppenned;
 
     protected:
         void Open();
@@ -32,6 +33,7 @@ class Port
         Port(const char *);
         void Write(char *, unsigned int);
         void Read(char* buff, size_t count);
+        bool IsOppenned();
 };
 
 #endif

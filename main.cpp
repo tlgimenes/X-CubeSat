@@ -5,15 +5,22 @@
 #include "port.hpp"
 #include "mainWindow.hpp"
 #include "menu.hpp"
+#include "manager.hpp"
+#include "init.hpp"
 
 // Connects all the call back signals of the mainWindow
 void ConnectSignalsMain(MainWindow * mainWindow);
 // Connects all the call back signals of the top menu
 void ConnectSignalsMainMenu(MainWindow * mainWindow);
 
+/*
+ * MAIN FUNCTION
+ */
 int main (int argc, char *argv[])
 {
     Gtk::Main kit(argc, argv);
+
+    Manager *man = Init::XCubeSat_Controler_Start();
 
     MainWindow * mainWindow = new MainWindow();
 
@@ -55,6 +62,4 @@ void ConnectSignalsMainMenu(MainWindow * mainWindow)
     refBuilder->get_widget("about", imitem);
     if(imitem != 0)
         imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::about_activate_cb));
-
 }
-

@@ -43,9 +43,13 @@ void Port::Open()
     }
 
     // If could not open the port
-    if(this->fd == -1) Log::LogWarn(LEVEL_LOG_ERROR, "The Serial/USB port could not be opened!", __FILE__, __LINE__);
+    if(this->fd == -1) {
+        this->isOppenned = false;
+        Log::LogWarn(LEVEL_LOG_ERROR, "The Serial/USB port could not be opened!", __FILE__, __LINE__);
+    }
     else {
         fcntl(this->fd, F_SETFL, FNDELAY); //NON BLOCKING READING 
+        this->isOppenned = true;
     }
 
     return;
@@ -111,4 +115,9 @@ void Port::Read(char *buff, size_t count)
         Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
 
     return;
+}
+
+bool Port::IsOppenned()
+{
+    return this->isOppenned;
 }
