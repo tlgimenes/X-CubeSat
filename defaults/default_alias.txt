@@ -1,2 +1,4 @@
-OK new_command
-new_alias new_command
+OK 
+insert_ok
+new_alias 
+new_command

@@ -11,7 +11,7 @@ Interpreter::Interpreter(InOutInterface *inOutInterface)
     this->inOutInterface = inOutInterface;
 }
 
-Interpreter::Interpreter(std::string *portName)
+Interpreter::Interpreter(Glib::ustring *portName)
 {
     this->inOutInterface = new InOutInterface(portName);
 }

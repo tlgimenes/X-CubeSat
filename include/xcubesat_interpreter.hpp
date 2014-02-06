@@ -16,9 +16,9 @@ class XCubeSatInterpreter : virtual public Interpreter
 {
     public:
         XCubeSatInterpreter(InOutInterface *);
-        XCubeSatInterpreter(std::string *portName);
+        XCubeSatInterpreter(Glib::ustring *portName);
 
-        InOutLog *Interpret(std::string *text, std::unordered_map<std::string, std::string> *alias);
+        InOutLog *Interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias);
 };
 
 #endif

@@ -1,26 +1,26 @@
 BRITE-AUSTRIA
-1 defaults/default_script defaults/default_alias
+2 defaults/default_script.txt defaults/default_alias.txt defaults/default_script2.txt defaults/default_alias2.txt
 ISS
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 AUBIESAT-1 (AO-71)
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 BEESAT
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 AAU CUBESAT
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 ABS-7 (KOREASAT 3)
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 STPSAT-3
-1 defaults/default_script defaults/default_alias
+2 defaults/default_script.txt defaults/default_alias.txt defaults/default_script2.txt defaults/default_alias2.txt
 AIST-2
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 BEESAT-3
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 BEESAT-2
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 AAUSAT-II
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 AAUSAT3
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt
 AMAZONAS
-1 defaults/default_script defaults/default_alias
+1 defaults/default_script.txt defaults/default_alias.txt

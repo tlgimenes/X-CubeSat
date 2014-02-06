@@ -6,19 +6,20 @@
 #ifndef SATELLITE_HPP
 #define SATELLITE_HPP
 
+#include <gtkmm.h>
 #include <string>
 
 class Satellite
 {
     private:
-        std::string *nickname;
+        Glib::ustring *nickname;
         int         *id;
 
     public:
-        Satellite(std::string *nickname, int id);
-        Satellite(std::string *nickname);
+        Satellite(Glib::ustring *nickname, int id);
+        Satellite(Glib::ustring *nickname);
 
-        std::string *GetNickname();
+        Glib::ustring *GetNickname();
 };
 
 #endif

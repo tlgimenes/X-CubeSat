@@ -21,9 +21,10 @@ class Port
 {
     private:
         int fd;
-        const char * portName;  //Name of the port to connec to
-        const char * defaultPort;
+        const char *portName;  //Name of the port to connec to
+        const char *defaultPort;
         bool isOppenned;
+        bool isConfigured;
 
     protected:
         void Open();
@@ -34,6 +35,9 @@ class Port
         void Write(char *, unsigned int);
         void Read(char* buff, size_t count);
         bool IsOppenned();
+        bool IsConfigured();
+        bool Open(const char *portName, int speed);
+        bool SetSpeed(int speed);
 };
 
 #endif

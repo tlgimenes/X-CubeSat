@@ -13,22 +13,33 @@
 #include <unordered_map>
 
 #include "sat_manager.hpp"
+#include "sats.hpp"
 
 class Manager
 {
     private:
         std::unordered_map<std::string, SatManager*> satManagers;
-        std::string *tracking;
+        Glib::ustring *tracking;
         float elevation;
+        
+        ModelSatsColumns *modelSatsColumns;
+        Glib::RefPtr<Gtk::TreeStore> satsTreeStore;
 
     public:
         Manager();
 
-        void AddSat(std::string *satName);
+        void AddSat(Glib::ustring *satName);
 
-        void AddScript(std::string *satName, std::string *scriptName, std::string *script, std::string *aliasList, Interpreter *inter);
+        void AddScript(Glib::ustring *satName, Glib::ustring *scriptName, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
 
-        bool existsSat(std::string *satName);
+        bool existsSat(Glib::ustring *satName);
+
+        Glib::RefPtr<Gtk::TextBuffer> *GetTextBuffer(Glib::ustring satName, Glib::ustring script);
+        Glib::RefPtr<Gtk::ListStore> *GetModelAliasList(Glib::ustring satName, Glib::ustring script);
+        Glib::RefPtr<Gtk::TreeStore> *GetModelSatsStore();
+
+        std::stringstream *GetFirstAlias(Glib::ustring satName);
+        std::stringstream *GetAlias(Glib::ustring satName, Glib::ustring scriptName);
 };
 
 #endif

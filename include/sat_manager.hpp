@@ -14,6 +14,7 @@
 #include "satellite.hpp"
 #include "script.hpp"
 #include "interpreter.hpp"
+#include "sats.hpp"
 
 class SatManager
 {
@@ -23,14 +24,24 @@ class SatManager
         std::unordered_map<std::string, Script*> scripts;
         std::queue<Script*> scriptsQueue;
 
+        ModelSatsColumns *modelSatsColumns;
+        Gtk::TreeModel::RowReference *row;
+
     public:
-        SatManager(Satellite *sat);
+       // SatManager(Satellite *sat);
+        SatManager(Satellite *sat, Gtk::TreeModel::RowReference *row, ModelSatsColumns *model);
 
-        void AddScript(std::string *name, std::string *script, std::string *aliasList, Interpreter *inter);
-        void RunScript(std::string scriptName);
+        void AddScript(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
+        void RunScript(Glib::ustring scriptName);
 
-        void EnqueueScript(std::string scriptName);
+        void EnqueueScript(Glib::ustring scriptName);
         void RunNextScript();
+
+        Gtk::TreeModel::RowReference *GetRowReference();
+        Glib::RefPtr<Gtk::TextBuffer> *GetTextBufffer(Glib::ustring script);
+        Glib::RefPtr<Gtk::ListStore> *GetModelAliasList(Glib::ustring script);
+        std::stringstream *GetFirstAlias();
+        std::stringstream *GetAlias(Glib::ustring script);
 };
 
 #endif

@@ -13,13 +13,11 @@ void MainWindow::init_sats_frame()
     this->mainBuilder->get_widget(SATS_TREEVIEW_WIDGET, this->satsTreeview);
     Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
 
-    std::ifstream sats_list(SATS_FILE);
-    std::string sat_nickname;
+    this->satsTreeview->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindow::satsTreeView_activated_cb));
+    // For Gtk+3.8 Only
+    //this->satsTreeview->set_activate_on_single_click(true); 
 
-    while(!std::getline (sats_list, sat_nickname).eof()) {
-        Gtk::TreeModel::Row newRow = *(model->append());
-        newRow.set_value(SATS, sat_nickname);
-    }
+    this->satsTreeview->set_model(*this->man->GetModelSatsStore());
 }
 
 void MainWindow::init_curr_sat_frame()
@@ -54,28 +52,68 @@ void MainWindow::init_alias_frame()
 
 }
 
+void MainWindow::init_config_frame()
+{
+    this->mainBuilder->get_widget(CONFIG_SAT_NAME_WIDGET, this->configSatNameLabel);
+
+    this->mainBuilder->get_widget(CONFIG_SCRIPT_NAME_WIDGET, this->configScriptNameLabel);
+}
+
 void MainWindow::init_text_editor()
 {
     this->mainBuilder->get_widget(TEXT_VIEW_WIDGET, this->textEditor);
 }
 
-MainWindow::MainWindow()
+void MainWindow::init_port_config_frame()
+{
+    Gtk::Entry *portName;
+    Gtk::Image *portNameStatus;
+    Gtk::ComboBox *portSpeedComboBox;
+    Gtk::Image *portSpeedStatus;
+
+    this->mainBuilder->get_widget(PORT_NAME_ENTRY_WIDGET, portName);
+    this->mainBuilder->get_widget(PORT_NAME_STATUS_WIDGET, portNameStatus);
+    this->mainBuilder->get_widget(PORT_SPEED_COMBOBOX_WIDGET, portSpeedComboBox);
+    this->mainBuilder->get_widget(UPS_SPEED_STATUS_WIDGET, portSpeedStatus);
+
+    this->inter->InitConfigFrameGtk(portName, portNameStatus, portSpeedComboBox, portSpeedStatus);
+}
+
+void MainWindow::init_commands_frame()
+{
+    this->mainBuilder->get_widget(COMMANDS_TREEVIEW_WIDGET, this->commandsTreeView);
+
+    this->commandsTreeView->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindow::commandTreeView_activated_cb));
+}
+
+MainWindow::MainWindow(Manager *man, InOutInterface *inter)
 {
     try {
+        this->inter = inter;
+        this->man = man;
         this->mainBuilder = Gtk::Builder::create_from_file(MAIN_WINDOW_GLADE);
         this->mainBuilder->get_widget(MAIN_WINDOW_WIDGET, this->mainWindow);
+
+        /* Config */
+        init_config_frame();
 
         /* Sats */
         init_sats_frame();
 
+        /* Alias */
+        init_alias_frame();
+        
+        /* Text */
+        init_text_editor();
+
         /* Current Sat */
         init_curr_sat_frame();
 
-        /* Alias */
-        init_alias_frame();
+        /* Port Config */
+        init_port_config_frame();
 
-        /* Text */
-        init_text_editor();
+        /* Commands */
+        init_commands_frame();
     }
     catch(const Glib::FileError& ex) {
         Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
@@ -95,6 +133,28 @@ Gtk::Window * MainWindow::get_mainWindow()
 Glib::RefPtr<Gtk::Builder> MainWindow::get_mainBuilder()
 {
     return this->mainBuilder;
+}
+
+void MainWindow::satsTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
+{
+    Glib::ustring scriptName;
+    Glib::ustring satName;
+    Gtk::TreeStore::Row currRow = *((this->satsTreeview->get_model()->get_iter(path)));
+
+    Gtk::TreeStore::iterator par = currRow.parent();
+    if(par) {
+        (*(par)).get_value(SATS, satName);
+        currRow.get_value(SCRIPTS, scriptName);
+
+        this->aliasModel = this->man->GetModelAliasList(satName, scriptName);
+        this->aliasTreeview->set_model(*this->aliasModel);
+
+        this->textBuffer = this->man->GetTextBuffer(satName, scriptName);
+        this->textEditor->set_buffer(*this->textBuffer);
+
+        this->configSatNameLabel->set_text(satName);
+        this->configScriptNameLabel->set_text(scriptName);
+    }
 }
 
 void MainWindow::cellrenderColumnAlias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text) 
@@ -132,6 +192,27 @@ void MainWindow::cellrenderColumnCommand_edited_cb(const Glib::ustring& path, co
     
 }
 
+void MainWindow::commandTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
+{
+    Glib::ustring satName = this->configSatNameLabel->get_text();
+    Glib::ustring scriptName = this->configScriptNameLabel->get_text();
+
+    if(this->man->existsSat(&satName)) {
+        Glib::RefPtr<Gtk::TextBuffer> *buff = this->man->GetTextBuffer(satName, scriptName);
+        
+        Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->commandsTreeView->get_model());
+    
+        ModelCommandsColumns mcc;
+
+        Glib::ustring command = model->get_iter(path)->get_value(mcc.col_command_name);
+    
+        (*buff)->insert_at_cursor(command);
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_INFO, "Open a script associated with a satellite first", __FILE__, __LINE__);
+    }
+}
+
 char * read_fifo_format(int fifo_fd)
 { 
     char rawIn[MAX_M_SIZE] = "0";
@@ -155,8 +236,6 @@ char * read_fifo_format(int fifo_fd)
 
     return satInfo;
 }
-
-
 
 bool MainWindow::updateCurrSatellite()
 {

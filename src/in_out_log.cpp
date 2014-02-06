@@ -8,7 +8,7 @@
 #include "in_out_log.hpp"
 #include "log.hpp"
 
-InOutLog::InOutLog(log_nature nature, std::string *id, std::string *data, bool success)
+InOutLog::InOutLog(log_nature nature, Glib::ustring *id, Glib::ustring *data, bool success)
 {
     this->nature = nature;
     this->id = id;
@@ -16,7 +16,7 @@ InOutLog::InOutLog(log_nature nature, std::string *id, std::string *data, bool s
     this->success = success;
 }
 
-InOutLog::InOutLog(log_nature nature, std::string *id, std::string *data)
+InOutLog::InOutLog(log_nature nature, Glib::ustring *id, Glib::ustring *data)
 {
     this->nature = nature;
     this->id = id;
@@ -24,7 +24,7 @@ InOutLog::InOutLog(log_nature nature, std::string *id, std::string *data)
     this->success = true;
 }
 
-InOutLog::InOutLog(log_nature nature, std::string *id)
+InOutLog::InOutLog(log_nature nature, Glib::ustring *id)
 {
     this->nature = nature;
     this->id = id;
@@ -32,13 +32,13 @@ InOutLog::InOutLog(log_nature nature, std::string *id)
     this->success = true;
 }
 
-InOutLog::InOutLog(log_nature nature, std::string *data, bool success)
+InOutLog::InOutLog(log_nature nature, Glib::ustring *data, bool success)
 {
     time_t raw_time;
 
     // Sets the id as UTC time
     time(&raw_time);
-    this->id = new std::string(asctime(gmtime(&raw_time)));
+    this->id = new Glib::ustring(asctime(gmtime(&raw_time)));
 
     this->nature = nature;
     this->data = data;
@@ -50,12 +50,12 @@ log_nature InOutLog::GetNature()
     return this->nature;
 }
 
-std::string * InOutLog::GetId()
+Glib::ustring * InOutLog::GetId()
 {
     return this->id;
 }
 
-std::string * InOutLog::GetData()
+Glib::ustring * InOutLog::GetData()
 {
     return this->data;
 }

@@ -20,9 +20,14 @@ int main (int argc, char *argv[])
 {
     Gtk::Main kit(argc, argv);
 
-    Manager *man = Init::XCubeSat_Controler_Start();
+    Manager *man;
+    InOutInterface *inter;
+    
+    Log::Init();
+    
+    Init::XCubeSat_Controler_Start(&man, &inter);
 
-    MainWindow * mainWindow = new MainWindow();
+    MainWindow * mainWindow = new MainWindow(man, inter);
 
     // Connects the call back signals
     ConnectSignalsMain(mainWindow);
