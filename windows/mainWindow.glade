@@ -8,10 +8,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Send</col>
+        <col id="0" translatable="yes">SEND</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Receive</col>
+        <col id="0" translatable="yes">RECEIVE</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">FILE()</col>
       </row>
     </data>
   </object>

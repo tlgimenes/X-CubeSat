@@ -1,0 +1,5 @@
+#Ignore .o files in the source folder
+src/*.o
+
+#Ignore the compiled version
+XCubeSat_Controler
