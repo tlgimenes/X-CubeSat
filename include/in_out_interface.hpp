@@ -10,7 +10,7 @@
 #include <gtkmm.h>
 #include "port.hpp"
 #include "in_out_log.hpp"
-#include "config_port_model.hpp"
+#include "models.hpp"
 
 class InOutInterface
 {
@@ -22,7 +22,7 @@ class InOutInterface
         Gtk::Image *portNameStatus;
         Gtk::ComboBox *portSpeedComboBox;
         Gtk::Image *portSpeedStatus;
-        PortSpeedComboBoxModel model;
+        ModelPortSpeedComboBox model;
 
     public:
         InOutInterface();

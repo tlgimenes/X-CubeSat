@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 #include "sat_manager.hpp"
-#include "sats.hpp"
+#include "models.hpp"
 
 class Manager
 {

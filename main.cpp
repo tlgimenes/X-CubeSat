@@ -3,15 +3,15 @@
 
 #include "log.hpp"
 #include "port.hpp"
-#include "mainWindow.hpp"
+#include "main_window_renderer.hpp"
 #include "menu.hpp"
 #include "manager.hpp"
 #include "init.hpp"
 
 // Connects all the call back signals of the mainWindow
-void ConnectSignalsMain(MainWindow * mainWindow);
+void ConnectSignalsMain(MainWindowRenderer * mainWindow);
 // Connects all the call back signals of the top menu
-void ConnectSignalsMainMenu(MainWindow * mainWindow);
+void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow);
 
 /*
  * MAIN FUNCTION
@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
     
     Init::XCubeSat_Controler_Start(&man, &inter);
 
-    MainWindow * mainWindow = new MainWindow(man, inter);
+    MainWindowRenderer * mainWindow = new MainWindowRenderer(man, inter);
 
     // Connects the call back signals
     ConnectSignalsMain(mainWindow);
@@ -41,12 +41,12 @@ int main (int argc, char *argv[])
 /*
  * Connects all the signals 
  */
-void ConnectSignalsMain(MainWindow * mainWindow)
+void ConnectSignalsMain(MainWindowRenderer * mainWindow)
 {
     ConnectSignalsMainMenu(mainWindow);
 }
 
-void ConnectSignalsMainMenu(MainWindow * mainWindow)
+void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow)
 {
     Glib::RefPtr<Gtk::Builder> refBuilder = mainWindow->get_mainBuilder();
     Gtk::ImageMenuItem * imitem = 0;

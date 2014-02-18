@@ -6,7 +6,7 @@
 #include "log.hpp"
 #include "menu.hpp"
 
-Menu::Menu(MainWindow * mainWindow)
+Menu::Menu(MainWindowRenderer * mainWindow)
 {
     try {
         this->mainWindow = mainWindow;

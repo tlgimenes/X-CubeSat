@@ -14,7 +14,7 @@
 #include "satellite.hpp"
 #include "script.hpp"
 #include "interpreter.hpp"
-#include "sats.hpp"
+#include "models.hpp"
 
 class SatManager
 {
