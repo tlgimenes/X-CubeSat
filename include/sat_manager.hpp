@@ -14,6 +14,9 @@
 #include "satellite.hpp"
 #include "script.hpp"
 #include "interpreter.hpp"
+#include "models.hpp"
+
+#define MAX_SAT_NAME_SIZE 400
 
 class SatManager
 {
@@ -21,16 +24,41 @@ class SatManager
         Satellite * sat;
 
         std::unordered_map<std::string, Script*> scripts;
-        std::queue<Script*> scriptsQueue;
+
+        std::vector<Script*>         scriptsQueue;
+        Glib::RefPtr<Gtk::ListStore> scriptsPriorityQueue;
+        ModelScriptsPriorityQueue    modelScriptsPriorityQueue;
+
+        Gtk::TreeModel::RowReference *row;
+        ModelSatsColumns             *modelSatsColumns;
 
     public:
-        SatManager(Satellite *sat);
+       // SatManager(Satellite *sat);
+        SatManager(Satellite *sat, Gtk::TreeModel::RowReference *row, ModelSatsColumns *model);
 
-        void AddScript(std::string *name, std::string *script, std::string *aliasList, Interpreter *inter);
-        void RunScript(std::string scriptName);
+        Glib::RefPtr<Gtk::TextBuffer> *get_text_buffer(Glib::ustring script);
+        Glib::RefPtr<Gtk::ListStore>  *get_model_alias_list(Glib::ustring script);
+        Gtk::TreeModel::RowReference  *get_row_reference();
+        std::stringstream             *get_first_alias();
+        std::stringstream             *get_alias(Glib::ustring script);
+        Glib::RefPtr<Gtk::ListStore>  *get_scripts_priority_queue();
 
-        void EnqueueScript(std::string scriptName);
-        void RunNextScript();
+        void add_script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
+
+        void replace_alias_column_alias(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+        void replace_alias_column_command(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+
+        void enqueue_script(Glib::ustring scriptName);
+        void run_script(Glib::ustring scriptName);
+        void run_next_script();
+        void rename_script(Glib::ustring *oldName, Glib::ustring *newName);
+
+        void increase_priority(int index);
+        void decrease_priority(int index);
+
+        bool exists_script(Glib::ustring name);
+
+        std::stringstream *get_save_str(Glib::ustring sessionFile);
 };
 
 #endif

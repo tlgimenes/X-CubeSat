@@ -9,9 +9,9 @@
 
 XCubeSatInterpreter::XCubeSatInterpreter(InOutInterface *inOutInterface) : Interpreter(inOutInterface){}
 
-XCubeSatInterpreter::XCubeSatInterpreter(std::string *portName) : Interpreter(portName){}
+XCubeSatInterpreter::XCubeSatInterpreter(Glib::ustring *portName) : Interpreter(portName){}
 
-InOutLog *XCubeSatInterpreter::Interpret(std::string *text, std::unordered_map<std::string, std::string> *alias)
+InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias)
 {
     std::cout << "interpreting" << std::endl;
 

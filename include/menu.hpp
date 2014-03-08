@@ -15,7 +15,7 @@
     #define GetCurrentDir get_current_dir_name
  #endif
 
-#include "mainWindow.hpp"
+#include "main_window_renderer.hpp"
 
 #define OPEN_GLADE_FILE "windows/openWindow.glade"
 #define SAVEAS_GLADE_FILE "windows/saveAsWindow.glade"
@@ -35,21 +35,22 @@
 class Menu
 {
     private:
-        MainWindow * mainWindow;
+        MainWindowRenderer *mainWindow;
+        Manager *man;
 
         // Open File
-        Gtk::FileChooserDialog * openFile;
-        Gtk::Button * openButton;
-        Gtk::Button * cancelButtonOpen;
+        Gtk::FileChooserDialog *openFile;
+        Gtk::Button            *openButton;
+        Gtk::Button            *cancelButtonOpen;
 
         // SaveAs File
-        Gtk::FileChooserDialog * saveAsFile;
-        Gtk::Entry * entryFileName;
-        Gtk::Button * saveAsButton;
-        Gtk::Button * cancelButtonSaveAs;
+        Gtk::FileChooserDialog *saveAsFile;
+        Gtk::Entry             *entryFileName;
+        Gtk::Button            *saveAsButton;
+        Gtk::Button            *cancelButtonSaveAs;
 
         // About
-        Gtk::AboutDialog * aboutDialog;
+        Gtk::AboutDialog *aboutDialog;
 
     protected:
         void open_openButton_clicked_cb();
@@ -58,8 +59,9 @@ class Menu
         void saveAs_cancelButton_clicked_cb();
 
     public:
-        Menu(MainWindow * mainWindow);
+        Menu(MainWindowRenderer * mainWindow, Manager *man);
         void open_activate_cb();
+        void save_activate_cb();
         void saveAs_activate_cb();
         void about_activate_cb();
 };

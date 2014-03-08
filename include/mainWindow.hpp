@@ -3,6 +3,10 @@
 
 #include <gtkmm.h>
 
+#include "manager.hpp"
+#include "config_port_model.hpp"
+#include "commands_model.hpp"
+
 #define MAIN_WINDOW_GLADE "windows/mainWindow.glade"
 
 #define MAIN_WINDOW_WIDGET "mainWindow"
@@ -28,7 +32,8 @@
  */
 #define SATS_TREEVIEW_WIDGET "satsTreeview"
 typedef enum sats_treeview_t {
-    SATS
+    SATS,
+    SCRIPTS
 } sats_treeview;
 
 /*
@@ -53,14 +58,49 @@ typedef enum alias_treeview_t {
     COMMAND
 } alias_treeview;
 
+/*
+ * Config
+ */
+#define CONFIG_SAT_NAME_WIDGET "satNameLabel"
+#define CONFIG_SCRIPT_NAME_WIDGET "scriptNameLabel"
+
+/*
+ * Port Config
+ */
+#define PORT_NAME_ENTRY_WIDGET "portName"
+#define PORT_SPEED_COMBOBOX_WIDGET "serialPortComboBox"
+#define PORT_NAME_STATUS_WIDGET "serialPortNameStatus"
+#define UPS_SPEED_STATUS_WIDGET "upsStatus"
+
+/*
+ * Commands
+ */
+#define COMMANDS_TREEVIEW_WIDGET "commandsTreeview"
+typedef enum command_treeview_t {
+    COMMANDS
+} command_treeview;
+
 class MainWindow
 {
     private:
+        Manager *man;
+        InOutInterface *inter;
         void init_sats_frame();
         void init_alias_frame();
         void init_text_editor();
         void init_curr_sat_frame();
+        void init_config_frame();
+        void init_port_config_frame();
+        void init_commands_frame();
 
+        Glib::RefPtr<Gtk::TextBuffer> *textBuffer;
+        Glib::RefPtr<Gtk::ListStore> *aliasModel;
+
+        Gtk::TreeView *commandsTreeView;
+
+        Gtk::Label *configSatNameLabel;
+        Gtk::Label *configScriptNameLabel;
+        
     public:
         Glib::RefPtr<Gtk::Builder> mainBuilder;
         Gtk::Window * mainWindow;
@@ -76,14 +116,18 @@ class MainWindow
 
         Gtk::TextView * textEditor;
 
-        MainWindow();
+        MainWindow(Manager *man, InOutInterface *inter);
         Gtk::TextView * get_textView();
         Gtk::Window * get_mainWindow();
         Glib::RefPtr<Gtk::Builder> get_mainBuilder();
 
+        void satsTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
         void cellrenderColumnAlias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
         void cellrenderColumnCommand_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
         bool updateCurrSatellite();
+        void portNameEntry_activated_cb();
+        void portSpeedComboBox_changed_cb();
+        void commandTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
 };
 
 #endif

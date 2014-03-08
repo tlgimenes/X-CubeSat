@@ -11,6 +11,20 @@
 
 #include "log.hpp"
 
+Glib::RefPtr<Gtk::Builder> *Log::dialogBuilder = NULL;
+Gtk::MessageDialog *Log::warnDialog  = NULL;
+Gtk::MessageDialog *Log::errorDialog = NULL;
+Gtk::MessageDialog *Log::infoDialog  = NULL;
+
+void Log::init()
+{
+    Log::dialogBuilder = new Glib::RefPtr<Gtk::Builder>();
+    *Log::dialogBuilder = (Gtk::Builder::create_from_file(DIALOG_WINDOW_GLADE));
+    (*Log::dialogBuilder)->get_widget(WARN_DIALOG_WIDGET, Log::warnDialog);
+    (*Log::dialogBuilder)->get_widget(ERROR_DIALOG_WIDGET, Log::errorDialog);
+    (*Log::dialogBuilder)->get_widget(INFO_DIALOG_WIDGET, Log::infoDialog);
+}
+
 std::fstream * Log::logFile = new std::fstream(LOG_FILE, std::fstream::in | std::fstream::out | std::fstream::ate);
 
 #define writeMessageLogFile(logStr, logMessage, file, line) \
@@ -27,17 +41,36 @@ std::fstream * Log::logFile = new std::fstream(LOG_FILE, std::fstream::in | std:
 
 void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int line)
 {
+    Glib::ustring errorStr(logMessage);
+
     switch(level){
         case LEVEL_LOG_ERROR:
-            writeMessageLogFile("ERROR: " << strerror(errno) << "! ", logMessage,file, line);
-            writeMessageTerminal("ERROR: " << strerror(errno) << "! ", logMessage,file, line);
+            errorStr.append(" in file ");
+            errorStr.append(file); errorStr.append(" in line ");
+            errorStr.append(std::to_string(line));
+            Log::errorDialog->set_secondary_text(errorStr);
+            Log::errorDialog->set_message(strerror(errno));
+            Log::errorDialog->run();
+            Log::errorDialog->hide();
+            writeMessageLogFile("ERROR " << strerror(errno) << "! ", logMessage, file, line);
+            writeMessageTerminal("ERROR " << strerror(errno) << "! ", logMessage, file, line);
             exit(1);
             break;
         case LEVEL_LOG_WARNING:
+            errorStr.append(" in file ");
+            errorStr.append(file); errorStr.append(" in line ");
+            errorStr.append(std::to_string(line)); 
+            Log::warnDialog->set_message(strerror(errno));
+            Log::warnDialog->set_secondary_text(errorStr);
+            Log::warnDialog->run();
+            Log::warnDialog->hide();
             writeMessageLogFile("WARNING " << strerror(errno) << "! ", logMessage, file, line);
             writeMessageTerminal("WARNING " << strerror(errno) << "! ", logMessage, file, line);
             break;
         case LEVEL_LOG_INFO:
+            Log::infoDialog->set_secondary_text(errorStr);
+            Log::infoDialog->run();
+            Log::infoDialog->hide();
             writeMessageLogFile("INFO ", logMessage, file, line);
             writeMessageTerminal("INFO ", logMessage, file, line);
             break;

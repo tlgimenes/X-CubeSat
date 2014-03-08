@@ -7,19 +7,37 @@
 #ifndef IN_OUT_INTERFACE_HPP
 #define IN_OUT_INTERFACE_HPP
 
+#include <gtkmm.h>
 #include "port.hpp"
 #include "in_out_log.hpp"
+#include "models.hpp"
 
 class InOutInterface
 {
     private:
-        Port * port;
-
+        Port *port;
+        Glib::ustring deviceName;
+        
     public:
         InOutInterface();
-        InOutInterface(std::string *portName);
-        InOutLog * Write(std::string *data);
-        InOutLog * Read(size_t count);
+        InOutInterface(Glib::ustring *portName);
+
+        bool open(Glib::ustring deviceName, int speed);
+        InOutLog * write(Glib::ustring *data);
+        InOutLog * read(size_t count);
+
+        bool set_device_speed(int);
+
+        bool is_oppenned();
+        bool is_configured();
+
+        Glib::ustring get_device_name();
+
+ 
+ //       void SetDeviceName();
+ //       void SetDeviceSpeed();
+
+ //       void InitConfigFrameGtk(Gtk::Entry *portName, Gtk::Image *portNameStatus, Gtk::ComboBox *portSpeedComboBox, Gtk::Image *portSpeedStatus);
 };
 
 #endif

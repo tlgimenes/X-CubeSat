@@ -5,12 +5,12 @@
 
 #include "satellite.hpp"
 
-Satellite::Satellite(std::string *nickname)
+Satellite::Satellite(Glib::ustring *nickname)
 {
     this->nickname = nickname;
 }
 
-std::string *Satellite::GetNickname()
+Glib::ustring *Satellite::get_nickname()
 {
     return this->nickname;
 }

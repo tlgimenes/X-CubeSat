@@ -6,14 +6,15 @@
 #include "log.hpp"
 #include "menu.hpp"
 
-Menu::Menu(MainWindow * mainWindow)
+Menu::Menu(MainWindowRenderer * mainWindow, Manager *man)
 {
     try {
         this->mainWindow = mainWindow;
+        this->man = man;
 
-        Glib::RefPtr<Gtk::Builder> openBuilder = Gtk::Builder::create_from_file(OPEN_GLADE_FILE);
+        Glib::RefPtr<Gtk::Builder> openBuilder   = Gtk::Builder::create_from_file(OPEN_GLADE_FILE);
         Glib::RefPtr<Gtk::Builder> saveAsBuilder = Gtk::Builder::create_from_file(SAVEAS_GLADE_FILE);
-        Glib::RefPtr<Gtk::Builder> aboutBuilder = Gtk::Builder::create_from_file(ABOUT_GLADE_FILE);
+        Glib::RefPtr<Gtk::Builder> aboutBuilder  = Gtk::Builder::create_from_file(ABOUT_GLADE_FILE);
 
         /*
          * Open File
@@ -52,7 +53,7 @@ void Menu::open_openButton_clicked_cb()
     if(file.is_open()) {
         out << file.rdbuf();
 
-        this->mainWindow->get_textView()->get_buffer()->set_text(out.str());
+        this->mainWindow->get_text_editor()->get_buffer()->set_text(out.str());
  
         this->openFile->hide();
     }
@@ -98,7 +99,7 @@ void Menu::saveAs_saveAsButton_clicked_cb()
     std::ofstream file(pathName.c_str(), std::ios::out);
 
     if(file.is_open()) {
-        Glib::ustring text = mainWindow->textEditor->get_buffer()->get_text();
+        Glib::ustring text = mainWindow->get_text_editor()->get_buffer()->get_text();
 
         file << text;
     }
@@ -114,6 +115,15 @@ void Menu::saveAs_cancelButton_clicked_cb()
         Log::LogWarn(LEVEL_LOG_WARNING, "Cancel Button panic !", __FILE__, __LINE__);
 
     this->saveAsFile->hide();
+}
+
+/*
+ * TODO: FINISH HERE !!!
+ */
+void Menu::save_activate_cb()
+{
+    Glib::ustring session = DEFAULT_SESSION_FILE;
+    this->man->save(session);
 }
 
 void Menu::saveAs_activate_cb()

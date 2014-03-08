@@ -9,8 +9,7 @@
 
 #include <fstream>
 #include <string>
-
-#define LOG_FILE "XCubeSat_Controler.txt"
+#include <gtkmm.h>
 
 typedef enum logLevel_t
 {
@@ -23,9 +22,14 @@ class Log
 {
     private:
         static std::fstream *logFile;
+        static Glib::RefPtr<Gtk::Builder> *dialogBuilder;
+        static Gtk::MessageDialog *warnDialog;
+        static Gtk::MessageDialog *errorDialog;
+        static Gtk::MessageDialog *infoDialog;
 
     public:
+        static void init();
         static void LogWarn(logLevel, const char*, const char*, int);
-};
+}; 
 
 #endif

@@ -6,7 +6,7 @@
 #ifndef IN_OUT_LOG_HPP
 #define IN_OUT_LOG_HPP
 
-#include <string>
+#include <gtkmm.h>
 
 typedef enum log_nature_t {
     SEND,
@@ -17,18 +17,18 @@ class InOutLog
 {
     private:
         log_nature  nature;
-        std::string *id;
+        Glib::ustring *id;
         bool success;
 
-        std::string *data;
+        Glib::ustring *data;
     public:
-        InOutLog(log_nature nature, std::string *id, std::string *data, bool success);
-        InOutLog(log_nature nature, std::string *id, std::string *data);
-        InOutLog(log_nature nature, std::string *id);
-        InOutLog(log_nature nature, std::string *data, bool success);
+        InOutLog(log_nature nature, Glib::ustring *id, Glib::ustring *data, bool success);
+        InOutLog(log_nature nature, Glib::ustring *id, Glib::ustring *data);
+        InOutLog(log_nature nature, Glib::ustring *id);
+        InOutLog(log_nature nature, Glib::ustring *data, bool success);
         log_nature  GetNature();
-        std::string *GetId();
-        std::string *GetData();
+        Glib::ustring *GetId();
+        Glib::ustring *GetData();
         bool isSuccessful();
 };
 
