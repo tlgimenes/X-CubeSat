@@ -27,17 +27,17 @@ class Port
         bool isConfigured;
 
     protected:
-        void Open();
-        void Configure();
+        void open_port();
+        void configure();
 
     public:
         Port(const char *);
-        void Write(char *, unsigned int);
-        void Read(char* buff, size_t count);
-        bool IsOppenned();
-        bool IsConfigured();
-        bool Open(const char *portName, int speed);
-        bool SetSpeed(int speed);
+        void write_to_port(char *, unsigned int);
+        void read_port(char* buff, size_t count);
+        bool is_oppenned();
+        bool is_configured();
+        bool open_port(const char *portName, int speed);
+        bool set_speed(int speed);
 };
 
 #endif

@@ -22,24 +22,33 @@ class Manager
         Glib::ustring *tracking;
         float elevation;
         
-        ModelSatsColumns *modelSatsColumns;
         Glib::RefPtr<Gtk::TreeStore> satsTreeStore;
+        ModelSatsColumns *modelSatsColumns;
 
     public:
         Manager();
 
-        void AddSat(Glib::ustring *satName);
+        void add_sat(Glib::ustring *satName);
 
-        void AddScript(Glib::ustring *satName, Glib::ustring *scriptName, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
+        void add_script(Glib::ustring *satName, Glib::ustring *scriptName, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
 
-        bool existsSat(Glib::ustring *satName);
+        bool exists_sat(Glib::ustring *satName);
+        bool exists_script(Glib::ustring *satName, Glib::ustring *scriptName);
 
-        Glib::RefPtr<Gtk::TextBuffer> *GetTextBuffer(Glib::ustring satName, Glib::ustring script);
-        Glib::RefPtr<Gtk::ListStore> *GetModelAliasList(Glib::ustring satName, Glib::ustring script);
-        Glib::RefPtr<Gtk::TreeStore> *GetModelSatsStore();
+        Glib::RefPtr<Gtk::TextBuffer> *get_text_buffer(Glib::ustring satName, Glib::ustring script);
+        Glib::RefPtr<Gtk::ListStore>  *get_model_alias_list(Glib::ustring satName, Glib::ustring script);
+        Glib::RefPtr<Gtk::TreeStore>  *get_model_sats_store();
 
-        std::stringstream *GetFirstAlias(Glib::ustring satName);
-        std::stringstream *GetAlias(Glib::ustring satName, Glib::ustring scriptName);
+        std::stringstream *get_first_alias(Glib::ustring satName);
+        std::stringstream *get_alias(Glib::ustring satName, Glib::ustring scriptName);
+
+        Glib::RefPtr<Gtk::ListStore> *get_scripts_priority_queue(Glib::ustring *satName);
+
+        void increase_priority(int index, Glib::ustring satName);
+        void decrease_priority(int index, Glib::ustring satName);
+
+        void save(Glib::ustring sessionFile);
+        void rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName);
 };
 
 #endif

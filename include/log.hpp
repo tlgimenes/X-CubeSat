@@ -35,7 +35,7 @@ class Log
         static Gtk::MessageDialog *infoDialog;
 
     public:
-        static void Init();
+        static void init();
         static void LogWarn(logLevel, const char*, const char*, int);
 }; 
 

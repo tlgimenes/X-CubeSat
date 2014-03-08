@@ -5,140 +5,105 @@
 
 #include "manager.hpp"
 #include "models.hpp"
-
-#define MAIN_WINDOW_GLADE "windows/mainWindow.glade"
-
-#define MAIN_WINDOW_WIDGET "mainWindow"
-
-#define FIFO_FILE "/tmp/GpredictFIFO"
-#define SATS_FILE "/tmp/GpredictSATS"
-
-#define MAX_SAT_NAME 400
-#define MAX_M_SIZE   430
-
-#define UPDATE_RATE  1000
-
-/*
- * Menu
- */
-#define SAVEAS_FILE_WIDGET "saveFileAs"
-#define OPEN_FILE_WIDGET "openFile"
-#define QUIT_WIDGET "quit"
-#define ABOUT_FILE_WIDGET "about"
-
-/*
- * Sats List
- */
-#define SATS_TREEVIEW_WIDGET "satsTreeview"
-typedef enum sats_treeview_t {
-    SATS,
-    SCRIPTS
-} sats_treeview;
-
-/*
- * Curr sat
- */
-#define CURR_SAT_LABEL_WIDGET "sat"
-#define STATUS_LABEL_WIDGET "status"
-#define ELEVATION_LABEL_WIDGET "elevation"
-#define AZIMUTH_LABEL_WIDGET "azimuth"
-
-/*
- * Text Editor
- */
-#define TEXT_VIEW_WIDGET "commandsFileText"
-
-/*
- * Alias
- */
-#define ALIAS_TREEVIEW_WIDGET "aliasTreeview"
-typedef enum alias_treeview_t {
-    ALIAS,
-    COMMAND
-} alias_treeview;
-
-/*
- * Config
- */
-#define CONFIG_SAT_NAME_WIDGET "satNameLabel"
-#define CONFIG_SCRIPT_NAME_WIDGET "scriptNameLabel"
-
-/*
- * Port Config
- */
-#define PORT_NAME_ENTRY_WIDGET "portName"
-#define PORT_SPEED_COMBOBOX_WIDGET "serialPortComboBox"
-#define PORT_NAME_STATUS_WIDGET "serialPortNameStatus"
-#define UPS_SPEED_STATUS_WIDGET "upsStatus"
-
-/*
- * Commands
- */
-#define COMMANDS_TREEVIEW_WIDGET "commandsTreeview"
-typedef enum command_treeview_t {
-    COMMANDS
-} command_treeview;
+#include "defs.hpp"
 
 class MainWindowRenderer
 {
     friend class MainWindowCallback;
-    private:
-        Manager *man;
-        InOutInterface *inter;
-        void init_sats_frame();
-        void init_alias_frame();
-        void init_text_editor();
-        void init_curr_sat_frame();
-        void init_config_frame();
-        void init_port_config_frame();
-        void init_commands_frame();
 
-       /* MODELS */
+    private:
+        Glib::RefPtr<Gtk::Builder> mainBuilder;
+        Gtk::Window * mainWindow;
+        /*----------------------------------------------*/
+        /* MODELS */
         ModelAliasColumns modelAliasColumns;
         ModelCommandsColumns modelCommandsColumns;
         ModelPortSpeedComboBox modelPortSpeedComboBox;
         ModelSatsColumns modelSatsColumns;
+        /*----------------------------------------------*/
 
-        std::vector<Gtk::CellRenderer*> aliasAliasColumnRenderer;
-        std::vector<Gtk::CellRenderer*> commandsAliasColumnRenderer;
+        /*----------------------------------------------*/
+        /* In/Out interface attributes */
+        Gtk::Entry *deviceName;
+        Gtk::Image *deviceNameStatus;
+        Gtk::ComboBox *deviceSpeedComboBox;
+        Gtk::Image *deviceSpeedStatus;
+        /*----------------------------------------------*/
 
-            Glib::RefPtr<Gtk::TextBuffer> *textBuffer;
-        Glib::RefPtr<Gtk::ListStore> *aliasModel;
+        /*----------------------------------------------*/
+        /* Alias treeview attributes */
+        std::vector<Gtk::CellRenderer*>     aliasAliasColumnRenderer;
+        std::vector<Gtk::CellRenderer*>     commandsAliasColumnRenderer;
+        std::vector<Gtk::CellRenderer*>     commandColumnCells;
+        std::vector<Gtk::CellRendererText*> aliasColumnCells;
+        Glib::RefPtr<Gtk::ListStore>        *aliasModel;
+        Gtk::TreeView                       *aliasTreeview;
+        /*----------------------------------------------*/
 
+        /*----------------------------------------------*/
+        /* Text editor attributes */
+        Glib::RefPtr<Gtk::TextBuffer> *textBuffer;
+        Gtk::TextView * textEditor;
+        /*----------------------------------------------*/
+
+        /*----------------------------------------------*/
+        /* Commands treeview attributes */
         Gtk::TreeView *commandsTreeView;
+        /*----------------------------------------------*/
 
+        /*----------------------------------------------*/
+        /* Configuration frame attributes */
         Gtk::Label *configSatNameLabel;
         Gtk::Label *configScriptNameLabel;
+        /*----------------------------------------------*/
 
-        
-    public:
-        Glib::RefPtr<Gtk::Builder> mainBuilder;
-        Gtk::Window * mainWindow;
-
-        Gtk::TreeView * satsTreeview;
-
+        /*----------------------------------------------*/
+        /* CurrSat frame attributes */
         Gtk::Label *satName, *status, *satEl, *satAz;
-        int fifo_fd;
+        /*----------------------------------------------*/
 
-        Gtk::TreeView * aliasTreeview;
-        std::vector<Gtk::CellRendererText*> aliasColumnCells;
-        std::vector<Gtk::CellRenderer*> commandColumnCells;
+        /*----------------------------------------------*/
+        /* sats treeview attributes */
+        Gtk::TreeView *satsTreeview;
+        /*----------------------------------------------*/
 
-        Gtk::TextView * textEditor;
+        /*----------------------------------------------*/
+        /* scripts frame attributes */
+        Gtk::Button *newScriptButton, *upButton, *downButton;
+        Gtk::TreeView *scriptsExeQueueTreeview;
+        /*----------------------------------------------*/
 
-        MainWindowRenderer(Manager *man, InOutInterface *inter);
-        Gtk::TextView * get_textView();
-        Gtk::Window * get_mainWindow();
-        Glib::RefPtr<Gtk::Builder> get_mainBuilder();
+    protected:
+        /*----------------------------------------------*/
+        /* Init functions */
+        void init_sats_frame(Manager *man);
+        void init_alias_frame();
+        void init_text_editor();
+        void init_curr_sat_frame();
+        void init_config_frame();
+        void init_port_config_frame(InOutInterface *inter);
+        void init_commands_frame();
+        void init_scripts_frame();
+        /*----------------------------------------------*/
+  
+        /*----------------------------------------------*/
+        /* GET and SET functions - They are important to 
+         * use because they are attribute safe (they raise
+         * an error log instance in case of failure */
+        Glib::RefPtr<Gtk::ListStore> get_model_treeview_alias();
+        Glib::RefPtr<Gtk::TreeStore> get_model_treeview_sats();
+        Glib::RefPtr<Gtk::ListStore> get_model_treeview_commands();
+        Gtk::ListStore::Row          get_row_treeview_alias(Gtk::TreePath path);
+        Gtk::TreeStore::Row          get_row_treeview_sats(Gtk::TreePath path);
+        Gtk::ListStore::Row          get_row_treeview_commands(Gtk::TreePath path);
+        Gtk::TreeModel::Row          get_row_combobox_device_active();
+        Glib::ustring                get_device_name();
+        Glib::ustring                get_config_sat_name();
+        Glib::ustring                get_config_script_name();
+        /*----------------------------------------------*/
 
-        void satsTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
-        void cellrenderColumnAlias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
-        void cellrenderColumnCommand_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text);
-        bool updateCurrSatellite();
-        void portNameEntry_activated_cb();
-        void portSpeedComboBox_changed_cb();
-        void commandTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
-
+        /*----------------------------------------------*/
+        /* Render functions */
         void render_curr_sat_el_refresh(Glib::ustring);
         void render_curr_sat_az_refresh(Glib::ustring);
         void render_curr_sat_name_refresh(Glib::ustring);
@@ -149,14 +114,17 @@ class MainWindowRenderer
         void render_new_text_editor(Glib::RefPtr<Gtk::TextBuffer> *textBuffer);
         void render_text_editor_insert_command(Glib::ustring);
         void render_new_alias(Glib::RefPtr<Gtk::ListStore> *aliasModel);
-        Glib::RefPtr<Gtk::ListStore> get_model_treeview_alias();
-        Gtk::ListStore::Row get_row_treeview_alias(Gtk::TreePath path);
-        Glib::RefPtr<Gtk::TreeStore> get_model_treeview_sats();
-        Gtk::TreeStore::Row get_row_treeview_sats(Gtk::TreePath path);
-        Glib::RefPtr<Gtk::ListStore> get_model_treeview_commands();
-        Gtk::ListStore::Row get_row_treeview_commands(Gtk::TreePath path);
-        Glib::ustring get_config_sat_name();
-        Glib::ustring get_config_script_name();
+        void render_sats_list_refresh(Manager *man);
+        void render_scripts_priority_queue(Glib::RefPtr<Gtk::ListStore> *Pqueue);
+        /*----------------------------------------------*/
+    public:
+        MainWindowRenderer(Manager *man, InOutInterface *inter);
+                      
+        /*----------------------------------------------*/
+        Glib::RefPtr<Gtk::Builder> get_main_builder();
+        Gtk::TextView              *get_text_editor();
+        Gtk::Window                *get_main_window();
+        /*----------------------------------------------*/
 };
 
 #endif

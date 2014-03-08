@@ -19,7 +19,7 @@ class Satellite
         Satellite(Glib::ustring *nickname, int id);
         Satellite(Glib::ustring *nickname);
 
-        Glib::ustring *GetNickname();
+        Glib::ustring *get_nickname();
 };
 
 #endif

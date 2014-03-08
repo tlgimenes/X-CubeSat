@@ -8,16 +8,18 @@
 #include "main_window_renderer.hpp"
 #include "log.hpp"
 
-void MainWindowRenderer::init_sats_frame()
+void MainWindowRenderer::init_sats_frame(Manager *man)
 { 
     this->mainBuilder->get_widget(SATS_TREEVIEW_WIDGET, this->satsTreeview);
     Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
 
-    /*this->satsTreeview->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowRenderer::satsTreeView_activated_cb));*/
     // For Gtk+3.8 Only
     //this->satsTreeview->set_activate_on_single_click(true); 
 
-    this->satsTreeview->set_model(*this->man->GetModelSatsStore());
+    this->satsTreeview->set_model(*man->get_model_sats_store());
+
+    ((Gtk::CellRendererText*)(this->satsTreeview->get_column(this->modelSatsColumns.col_script_name_int)->get_cells()[0]))->property_editable().set_value(true);
+
 }
 
 void MainWindowRenderer::init_curr_sat_frame()
@@ -26,29 +28,16 @@ void MainWindowRenderer::init_curr_sat_frame()
     this->mainBuilder->get_widget(STATUS_LABEL_WIDGET, this->status);
     this->mainBuilder->get_widget(ELEVATION_LABEL_WIDGET, this->satEl);
     this->mainBuilder->get_widget(AZIMUTH_LABEL_WIDGET, this->satAz);
-
-    this->fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
-    if(fifo_fd == -1)
-        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict data, the program will be closed !", __FILE__, __LINE__);
-
-    /*
-    // Time out to able to update sats name
-    sigc::slot<bool> my_slot = sigc::mem_fun(this,&MainWindowRenderer::updateCurrSatellite);//, m_timer_number);
-
-      // This is where we connect the slot to the Glib::signal_timeout()
-    Glib::signal_timeout().connect(my_slot, UPDATE_RATE);*/
 }
 
 void MainWindowRenderer::init_alias_frame()
 {
     this->mainBuilder->get_widget(ALIAS_TREEVIEW_WIDGET, this->aliasTreeview);
 
-    this->aliasAliasColumnRenderer = this->aliasTreeview->get_column(ALIAS)->get_cells();
-    /*((Gtk::CellRendererText*)(renderer[0]))->signal_edited().connect(sigc::mem_fun(this, &MainWindowRenderer::cellrenderColumnAlias_edited_cb));*/
+    this->aliasAliasColumnRenderer = this->aliasTreeview->get_column(this->modelAliasColumns.col_alias_int)->get_cells();
     ((Gtk::CellRendererText*)(this->aliasAliasColumnRenderer[0]))->property_editable().set_value(true);
 
-    this->commandsAliasColumnRenderer = this->aliasTreeview->get_column(COMMAND)->get_cells();
- /*   ((Gtk::CellRendererText*)(renderer[0]))->signal_edited().connect(sigc::mem_fun(this, &MainWindowRenderer::cellrenderColumnCommand_edited_cb));*/
+    this->commandsAliasColumnRenderer = this->aliasTreeview->get_column(this->modelAliasColumns.col_command_int)->get_cells();
     ((Gtk::CellRendererText*)(this->commandsAliasColumnRenderer[0]))->property_editable().set_value(true);
 
 }
@@ -65,33 +54,38 @@ void MainWindowRenderer::init_text_editor()
     this->mainBuilder->get_widget(TEXT_VIEW_WIDGET, this->textEditor);
 }
 
-void MainWindowRenderer::init_port_config_frame()
+void MainWindowRenderer::init_port_config_frame(InOutInterface *inter)
 {
-    Gtk::Entry *portName;
-    Gtk::Image *portNameStatus;
-    Gtk::ComboBox *portSpeedComboBox;
-    Gtk::Image *portSpeedStatus;
+    this->mainBuilder->get_widget(PORT_NAME_ENTRY_WIDGET, this->deviceName);
+    this->mainBuilder->get_widget(PORT_NAME_STATUS_WIDGET, this->deviceNameStatus);
+    this->mainBuilder->get_widget(PORT_SPEED_COMBOBOX_WIDGET, this->deviceSpeedComboBox);
+    this->mainBuilder->get_widget(UPS_SPEED_STATUS_WIDGET, this->deviceSpeedStatus);
 
-    this->mainBuilder->get_widget(PORT_NAME_ENTRY_WIDGET, portName);
-    this->mainBuilder->get_widget(PORT_NAME_STATUS_WIDGET, portNameStatus);
-    this->mainBuilder->get_widget(PORT_SPEED_COMBOBOX_WIDGET, portSpeedComboBox);
-    this->mainBuilder->get_widget(UPS_SPEED_STATUS_WIDGET, portSpeedStatus);
-
-    this->inter->InitConfigFrameGtk(portName, portNameStatus, portSpeedComboBox, portSpeedStatus);
+    if(inter->is_oppenned()) {
+        this->deviceName->set_text(inter->get_device_name());
+        this->deviceNameStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
+    }
+    if(inter->is_configured()) {
+        this->deviceSpeedStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
+    }
 }
 
 void MainWindowRenderer::init_commands_frame()
 {
     this->mainBuilder->get_widget(COMMANDS_TREEVIEW_WIDGET, this->commandsTreeView);
+}
 
- /*   this->commandsTreeView->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowRenderer::commandTreeView_activated_cb));*/
+void MainWindowRenderer::init_scripts_frame()
+{
+    this->mainBuilder->get_widget(SCRIPTS_EXE_QUEUE_TREEVIEW, this->scriptsExeQueueTreeview);
+    this->mainBuilder->get_widget(INCREASE_PRIORITY_BUTTON, this->upButton);
+    this->mainBuilder->get_widget(DECREASE_PRIORITY_BUTTON, this->downButton);
+    this->mainBuilder->get_widget(ADD_NEW_SCRIPT_BUTTON, this->newScriptButton);
 }
 
 MainWindowRenderer::MainWindowRenderer(Manager *man, InOutInterface *inter)
 {
     try {
-        this->inter = inter;
-        this->man = man;
         this->mainBuilder = Gtk::Builder::create_from_file(MAIN_WINDOW_GLADE);
         this->mainBuilder->get_widget(MAIN_WINDOW_WIDGET, this->mainWindow);
 
@@ -99,7 +93,7 @@ MainWindowRenderer::MainWindowRenderer(Manager *man, InOutInterface *inter)
         init_config_frame();
 
         /* Sats */
-        init_sats_frame();
+        init_sats_frame(man);
 
         /* Alias */
         init_alias_frame();
@@ -111,108 +105,18 @@ MainWindowRenderer::MainWindowRenderer(Manager *man, InOutInterface *inter)
         init_curr_sat_frame();
 
         /* Port Config */
-        init_port_config_frame();
+        init_port_config_frame(inter);
 
         /* Commands */
         init_commands_frame();
+
+        /* Scripts frame */
+        init_scripts_frame();
     }
     catch(const Glib::FileError& ex) {
         Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
     }
 };
-
-Gtk::TextView * MainWindowRenderer::get_textView()
-{
-    return this->textEditor;
-}
-
-Gtk::Window * MainWindowRenderer::get_mainWindow()
-{
-    return this->mainWindow;
-}
-
-Glib::RefPtr<Gtk::Builder> MainWindowRenderer::get_mainBuilder()
-{
-    return this->mainBuilder;
-}
-
-void MainWindowRenderer::satsTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
-{
-    Glib::ustring scriptName;
-    Glib::ustring satName;
-    Gtk::TreeStore::Row currRow = *((this->satsTreeview->get_model()->get_iter(path)));
-
-    Gtk::TreeStore::iterator par = currRow.parent();
-    if(par) {
-        (*(par)).get_value(SATS, satName);
-        currRow.get_value(SCRIPTS, scriptName);
-
-        this->aliasModel = this->man->GetModelAliasList(satName, scriptName);
-        this->aliasTreeview->set_model(*this->aliasModel);
-
-        this->textBuffer = this->man->GetTextBuffer(satName, scriptName);
-        this->textEditor->set_buffer(*this->textBuffer);
-
-        this->configSatNameLabel->set_text(satName);
-        this->configScriptNameLabel->set_text(scriptName);
-    }
-}
-
-void MainWindowRenderer::cellrenderColumnAlias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text) 
-{
-    Gtk::TreePath treePath(path);
-    Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->aliasTreeview->get_model());
-    
-    // Sets new string to the cell box
-    model->get_iter(treePath)->set_value(ALIAS, new_text);
-    
-}
-
-void MainWindowRenderer::cellrenderColumnCommand_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text)
-{
-    Glib::ustring new_alias("new_alias");
-    Glib::ustring new_command("new_command");
-    Gtk::TreePath treePath(path);
-    Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->aliasTreeview->get_model());
-    Gtk::ListStore::iterator curr = model->get_iter(treePath);
-    Gtk::TreeModel::Row currRow = *(curr);
-    Glib::ustring old_text;
-
-    currRow.get_value(COMMAND, old_text);
-
-    // If we are adding a new command
-    // than add new row
-    if(!old_text.compare(new_command)) {
-        Gtk::TreeModel::Row newRow = *(model->append());
-        newRow.set_value(ALIAS, new_alias);
-        newRow.set_value(COMMAND, new_command);
-    }
-
-    // Sets new string to the cell box
-    curr->set_value(COMMAND, new_text);
-    
-}
-
-void MainWindowRenderer::commandTreeView_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
-{
-    Glib::ustring satName = this->configSatNameLabel->get_text();
-    Glib::ustring scriptName = this->configScriptNameLabel->get_text();
-
-    if(this->man->existsSat(&satName)) {
-        Glib::RefPtr<Gtk::TextBuffer> *buff = this->man->GetTextBuffer(satName, scriptName);
-        
-        Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->commandsTreeView->get_model());
-    
-        ModelCommandsColumns mcc;
-
-        Glib::ustring command = model->get_iter(path)->get_value(mcc.col_command_name);
-    
-        (*buff)->insert_at_cursor(command);
-    }
-    else {
-        Log::LogWarn(LEVEL_LOG_INFO, "Open a script associated with a satellite first", __FILE__, __LINE__);
-    }
-}
 
 /*
  *
@@ -227,19 +131,6 @@ void MainWindowRenderer::commandTreeView_activated_cb(const Gtk::TreeModel::Path
  *
  */
 
-/*
-#define RENDER_CURR_REFRESH(NAME, PARAM) \
-void MainWindowRenderer::render_curr_NAME_refresh(Glib::ustring data) \
-{ \
-    if(data.size() > 0) { \
-        this->PARAM->set_text(data); \
-    } \
-}
-
-RENDER_CURR_REFRESH(sat_el, satEl);
-RENDER_CURR_REFRESH(sat_az, satAz);
-RENDER_CURR_REFRESH(sat_name, satName);
-*/
 void MainWindowRenderer::render_curr_sat_el_refresh(Glib::ustring data)
 {
     if(data.size() > 0) {
@@ -348,22 +239,16 @@ void MainWindowRenderer::render_text_editor_insert_command(Glib::ustring command
     Log::LogWarn(LEVEL_LOG_INFO, "Error inserting command to script", __FILE__, __LINE__);
 }
 
-/*
-#define GET_MODEL_TREEVIEW(NAME, PARAM, CLASS) \
-Glib::RefPtr<CLASS> MainWindowRenderer::get_model_treeview_NAME() \
-{ \
-    Glib::RefPtr<CLASS> model = Glib::RefPtr<CLASS>::cast_dynamic(this->PARAM->get_model()); \
-\
-    if(model) \
-        return model; \
-\
-    Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the model", __FILE__, __LINE__); \
+void MainWindowRenderer::render_sats_list_refresh(Manager *man)
+{
+    this->satsTreeview->set_model(*man->get_model_sats_store());
 }
 
-GET_MODEL_TREEVIEW(alias, aliasTreeview, Gtk::ListStore);
-GET_MODEL_TREEVIEW(commands, commandsTreeView, Gtk::ListStore);
-GET_MODEL_TREEVIEW(sats, satsTreeview, Gtk::TreeStore);
-*/
+void MainWindowRenderer::render_scripts_priority_queue(Glib::RefPtr<Gtk::ListStore>* Pqueue)
+{
+    if(Pqueue != NULL)
+        this->scriptsExeQueueTreeview->set_model(*Pqueue);
+}
 
 Glib::RefPtr<Gtk::ListStore> MainWindowRenderer::get_model_treeview_alias()
 {
@@ -374,6 +259,7 @@ Glib::RefPtr<Gtk::ListStore> MainWindowRenderer::get_model_treeview_alias()
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the alias model", __FILE__, __LINE__);
 
+    // Stop annoying compler warns
     return model;
 }
 
@@ -386,6 +272,7 @@ Glib::RefPtr<Gtk::ListStore> MainWindowRenderer::get_model_treeview_commands()
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the commands model", __FILE__, __LINE__);
 
+    // Stop annoying compler warns
     return model;
 }
 
@@ -398,26 +285,9 @@ Glib::RefPtr<Gtk::TreeStore> MainWindowRenderer::get_model_treeview_sats()
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the satellites model", __FILE__, __LINE__);
 
+    // Stop annoying compler warns
     return model;
 }
-
-/*
-#define GET_ROW_TREEVIEW(NAME, CLASS) \
-CLASS::ROW MainWindowRenderer::get_row_treeview_NAME(Gtk::TreePath path) \
-{ \
-    if(path) { \
-        CLASS::iterator it = this->get_model_treeview_NAME()->get_iter(path); \
-        if(it) \
-            return *it; \
-    } \
-\
-    Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get row in treeview", __FILE__, __LINE__);\
-}
-
-GET_ROW_TREEVIEW(alias,Gtk::ListStore);
-GET_ROW_TREEVIEW(commands, Gtk::ListStore);
-GET_ROW_TREEVIEW(sats, Gtk::TreeStore);
-*/
 
 Gtk::ListStore::Row MainWindowRenderer::get_row_treeview_alias(Gtk::TreePath path)
 {
@@ -428,6 +298,10 @@ Gtk::ListStore::Row MainWindowRenderer::get_row_treeview_alias(Gtk::TreePath pat
     }
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get row of alias treeview", __FILE__, __LINE__);
+
+    // Stop annoying compiler warns
+    Gtk::ListStore::Row row;
+    return row;
 }
 
 
@@ -440,6 +314,10 @@ Gtk::TreeStore::Row MainWindowRenderer::get_row_treeview_sats(Gtk::TreePath path
     }
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get row of alias treeview", __FILE__, __LINE__);
+
+    // Stop annoying compiler warns
+    Gtk::ListStore::Row row;
+    return row;
 }
 
 Gtk::TreeStore::Row MainWindowRenderer::get_row_treeview_commands(Gtk::TreePath path)
@@ -451,6 +329,32 @@ Gtk::TreeStore::Row MainWindowRenderer::get_row_treeview_commands(Gtk::TreePath 
     }
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get row of commands treeview", __FILE__, __LINE__);
+
+    // Stop annoying compiler warns
+    Gtk::ListStore::Row row;
+    return row;
+}
+
+
+Glib::ustring MainWindowRenderer::get_device_name()
+{
+    Glib::ustring* deviceName = new Glib::ustring(this->deviceName->get_text());
+
+    if(deviceName->size() <= 0)
+        Log::LogWarn(LEVEL_LOG_WARNING, "The port name must be valid", __FILE__, __LINE__);
+
+    return *deviceName;
+}
+ 
+Gtk::TreeModel::Row MainWindowRenderer::get_row_combobox_device_active()
+{
+    Gtk::TreeModel::Row row = (*this->deviceSpeedComboBox->get_active());
+
+    if(!row) {
+        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load speed for the port", __FILE__, __LINE__);
+    }
+
+    return row;
 }
 
 Glib::ustring MainWindowRenderer::get_config_sat_name() {
@@ -459,6 +363,10 @@ Glib::ustring MainWindowRenderer::get_config_sat_name() {
     }
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load the current sat name", __FILE__, __LINE__);    
+
+    // Stop annoying compiler warns
+    Glib::ustring garbage("ERROR");
+    return garbage;
 }
 
 Glib::ustring MainWindowRenderer::get_config_script_name() {
@@ -467,4 +375,39 @@ Glib::ustring MainWindowRenderer::get_config_script_name() {
     }
 
     Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load the current script name", __FILE__, __LINE__);
+
+    // Stop annoying compiler warns
+    Glib::ustring garbage("ERROR");
+    return garbage;
 }
+
+Gtk::TextView * MainWindowRenderer::get_text_editor()
+{
+    if(this->textEditor)
+        return this->textEditor;
+    
+    Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the text editor", __FILE__, __LINE__);
+
+    return NULL;
+}
+
+Gtk::Window * MainWindowRenderer::get_main_window()
+{
+    if(this->mainWindow)
+        return this->mainWindow;
+
+    Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get the main window", __FILE__, __LINE__);
+
+    return NULL;
+}
+
+Glib::RefPtr<Gtk::Builder> MainWindowRenderer::get_main_builder()
+{
+    if(this->mainBuilder)
+        return this->mainBuilder;
+
+    Log::LogWarn(LEVEL_LOG_ERROR, "Unable to get window builder", __FILE__, __LINE__);
+
+    return this->mainBuilder;
+}
+

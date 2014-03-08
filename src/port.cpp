@@ -25,17 +25,17 @@ Port::Port(const char * portName)
     this->isOppenned = false;
     this->isConfigured = false;
 
-    // Opens the specified port by portName
+    // open_ports the specified port by portName
     // or a defaultPort otherwise
-    this->Open();
+    this->open_port();
 
-    // Configure the port
-    this->Configure();
+    // configure the port
+    this->configure();
 }
 
-void Port::Open()
+void Port::open_port()
 {
-    // Opens the port; default if not specified
+    // open_ports the port; default if not specified
     if(this->portName == NO_PORT_DEFINED) {
         Log::LogWarn(LEVEL_LOG_WARNING, "Specified port not found, opening default port", NULL, -1);
         this->fd = open(this->defaultPort, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -57,8 +57,8 @@ void Port::Open()
     return;
 }
 
-// Configure port with default configurations
-void Port::Configure() {
+// configure port with default configurations
+void Port::configure() {
     struct termios options;
 
     if(this->isOppenned){
@@ -90,7 +90,7 @@ void Port::Configure() {
         Log::LogWarn(LEVEL_LOG_INFO, "Tried to configure port not oppenned", __FILE__, __LINE__);
 }
 
-void Port::Write(char *data, unsigned int bytesSize)
+void Port::write_to_port(char *data, unsigned int bytesSize)
 {
     unsigned int written, dataLen;
 
@@ -118,14 +118,14 @@ void Port::Write(char *data, unsigned int bytesSize)
     }
 }
 
-void Port::Read(char *buff, size_t count)
+void Port::read_port(char *buff, size_t count)
 {
-    int nRead;
+    int nread_port;
 
     if(this->isOppenned) {
-    nRead = read(this->fd, (void*)buff, count);
+    nread_port = read(this->fd, (void*)buff, count);
 
-    if(nRead < 0)
+    if(nread_port < 0)
         Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
     }
     else {
@@ -135,29 +135,29 @@ void Port::Read(char *buff, size_t count)
     return;
 }
 
-bool Port::IsOppenned()
+bool Port::is_oppenned()
 {
     return this->isOppenned;
 }
 
-bool Port::IsConfigured()
+bool Port::is_configured()
 {
     return this->isConfigured;
 }
 
-bool Port::Open(const char*portName, int speed)
+bool Port::open_port(const char*portName, int speed)
 {
     this->fd = -1;
     this->portName = portName;
     this->isConfigured = false;
     this->isOppenned = false;
 
-    // Opens the specified port by portName
+    // open_ports the specified port by portName
     // or a defaultPort otherwise
-    this->Open();
+    this->open_port();
 
-    // Configure the port
-    this->SetSpeed(speed);
+    // configure the port
+    this->set_speed(speed);
 
     return (this->isOppenned);
 }
@@ -167,8 +167,8 @@ bool Port::Open(const char*portName, int speed)
         newSpeed = speed_t; \
         break;
 
-// Configure port with the speed speed
-bool Port::SetSpeed(int speed) {
+// configure port with the speed speed
+bool Port::set_speed(int speed) {
     struct termios options;
     speed_t newSpeed;
     int success = 0;

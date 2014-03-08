@@ -11,11 +11,7 @@
 
 #include "manager.hpp"
 #include "data_base.hpp"
-
-#define DEBUG 1
-#define DEFAULT_OUTPUT              "/dev/tty1"
-#define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controler.session"
-#define DEFAULT_GPREDICT_SATS_FILE  "/tmp/GpredictSATS"
+#include "defs.hpp"
 
 class Init
 {
@@ -24,10 +20,10 @@ class Init
 
     protected:
         Init();
-        Manager *LoadCurrentSats(Glib::ustring *gpredictSatsFile);
-        Manager *LoadPreviusSection(Glib::ustring *previusSection, Manager *man);
+        Manager *load_current_sats(Glib::ustring *gpredictSatsFile);
+        Manager *load_previus_section(Glib::ustring *previusSection, Manager *man);
     public:
-        static void XCubeSat_Controler_Start(Manager **man, InOutInterface **inter);
+        static void XCubeSat_Controller_start(Manager **man, InOutInterface **inter);
 };
 
 #endif

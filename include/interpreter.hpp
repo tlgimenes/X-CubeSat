@@ -21,7 +21,7 @@ class Interpreter
         Interpreter(InOutInterface *);
         Interpreter(Glib::ustring *portName);
 
-        virtual InOutLog *Interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias){return NULL;}
+        virtual InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias){return NULL;}
 
 };
 

@@ -3,15 +3,15 @@
 
 #include "log.hpp"
 #include "port.hpp"
-#include "main_window_renderer.hpp"
+#include "main_window_callback.hpp"
 #include "menu.hpp"
 #include "manager.hpp"
 #include "init.hpp"
 
 // Connects all the call back signals of the mainWindow
-void ConnectSignalsMain(MainWindowRenderer * mainWindow);
+//void ConnectSignalsMain(MainWindowRenderer * mainWindow);
 // Connects all the call back signals of the top menu
-void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow);
+//void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow);
 
 /*
  * MAIN FUNCTION
@@ -23,48 +23,15 @@ int main (int argc, char *argv[])
     Manager *man;
     InOutInterface *inter;
     
-    Log::Init();
+    Log::init();
     
-    Init::XCubeSat_Controler_Start(&man, &inter);
+    Init::XCubeSat_Controller_start(&man, &inter);
 
-    MainWindowRenderer * mainWindow = new MainWindowRenderer(man, inter);
-
-    // Connects the call back signals
-    ConnectSignalsMain(mainWindow);
+    MainWindowCallback * mainWindow = new MainWindowCallback(man, inter);
 
     // Main loop for the program
-    kit.run(*(mainWindow->get_mainWindow()));
+    kit.run(*(mainWindow->get_main_window()));
 
     return 0;
 }
 
-/*
- * Connects all the signals 
- */
-void ConnectSignalsMain(MainWindowRenderer * mainWindow)
-{
-    ConnectSignalsMainMenu(mainWindow);
-}
-
-void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow)
-{
-    Glib::RefPtr<Gtk::Builder> refBuilder = mainWindow->get_mainBuilder();
-    Gtk::ImageMenuItem * imitem = 0;
-    Menu * menu = new Menu(mainWindow);
-
-    refBuilder->get_widget("saveFileAs", imitem);
-    if(imitem != 0)
-        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::saveAs_activate_cb));
-
-    refBuilder->get_widget("openFile", imitem);
-    if(imitem != 0)
-        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::open_activate_cb));
-
-    refBuilder->get_widget("quit", imitem);
-    if(imitem != 0)
-        imitem->signal_activate().connect(sigc::ptr_fun(gtk_main_quit));
-
-    refBuilder->get_widget("about", imitem);
-    if(imitem != 0)
-        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::about_activate_cb));
-}

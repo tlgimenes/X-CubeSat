@@ -18,22 +18,26 @@ class InOutInterface
         Port *port;
         Glib::ustring deviceName;
         
-        Gtk::Entry *portName;
-        Gtk::Image *portNameStatus;
-        Gtk::ComboBox *portSpeedComboBox;
-        Gtk::Image *portSpeedStatus;
-        ModelPortSpeedComboBox model;
-
     public:
         InOutInterface();
         InOutInterface(Glib::ustring *portName);
-        InOutLog * Write(Glib::ustring *data);
-        InOutLog * Read(size_t count);
- 
-        void SetDeviceName();
-        void SetDeviceSpeed();
 
-        void InitConfigFrameGtk(Gtk::Entry *portName, Gtk::Image *portNameStatus, Gtk::ComboBox *portSpeedComboBox, Gtk::Image *portSpeedStatus);
+        bool open(Glib::ustring deviceName, int speed);
+        InOutLog * write(Glib::ustring *data);
+        InOutLog * read(size_t count);
+
+        bool set_device_speed(int);
+
+        bool is_oppenned();
+        bool is_configured();
+
+        Glib::ustring get_device_name();
+
+ 
+ //       void SetDeviceName();
+ //       void SetDeviceSpeed();
+
+ //       void InitConfigFrameGtk(Gtk::Entry *portName, Gtk::Image *portNameStatus, Gtk::ComboBox *portSpeedComboBox, Gtk::Image *portSpeedStatus);
 };
 
 #endif

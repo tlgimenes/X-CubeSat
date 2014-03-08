@@ -8,7 +8,7 @@
 
 #include "data_base.hpp"
 
-std::stringstream *DataBase::GetSection(Glib::ustring key)
+std::stringstream *DataBase::get_section(Glib::ustring key)
 {
     std::ifstream ifs(key.c_str());
 
@@ -17,22 +17,22 @@ std::stringstream *DataBase::GetSection(Glib::ustring key)
     return new std::stringstream(*content);
 }
 
-std::stringstream *DataBase::GetScripts(Glib::ustring key)
+std::stringstream *DataBase::get_scripts(Glib::ustring key)
 {
-    return DataBase::GetSection(key);
+    return DataBase::get_section(key);
 }
 
-std::stringstream *DataBase::GetAlias(Glib::ustring key)
+std::stringstream *DataBase::get_alias(Glib::ustring key)
 {
-    return DataBase::GetSection(key);
+    return DataBase::get_section(key);
 }
 
-std::stringstream *DataBase::GetSats(Glib::ustring key)
+std::stringstream *DataBase::get_sats(Glib::ustring key)
 {
-    return DataBase::GetSection(key);
+    return DataBase::get_section(key);
 }
 
-bool DataBase::existsSection(Glib::ustring key)
+bool DataBase::exists_section(Glib::ustring key)
 {
     std::ifstream ifit(key.c_str(), std::ifstream::in);
 
@@ -42,17 +42,17 @@ bool DataBase::existsSection(Glib::ustring key)
         return false;
 }
 
-bool DataBase::existsScript(Glib::ustring key)
+bool DataBase::exists_script(Glib::ustring key)
 {
-    return DataBase::existsSection(key);
+    return DataBase::exists_section(key);
 }
 
-bool DataBase::existsAlias(Glib::ustring key)
+bool DataBase::exists_alias(Glib::ustring key)
 {
-    return DataBase::existsSection(key);
+    return DataBase::exists_section(key);
 }
 
-bool DataBase::existsSats(Glib::ustring key)
+bool DataBase::exists_sats(Glib::ustring key)
 {
-    return DataBase::existsSection(key);
+    return DataBase::exists_section(key);
 }

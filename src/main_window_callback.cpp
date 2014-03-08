@@ -2,6 +2,7 @@
  * CLASS MAIN_WINDOW_CALLBACK : 
  */
 
+#include <gdk/gdkkeysyms.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -25,21 +26,61 @@ MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
     this->connect_callbacks();
 }
 
+Gtk::Window *MainWindowCallback::get_main_window()
+{
+    if(this->main_window_renderer->mainWindow)
+        return this->main_window_renderer->get_main_window();
+
+    return NULL;
+}
+
 void MainWindowCallback::connect_callbacks()
 {
+    /* Connect hot keys callbacks */
+    this->main_window_renderer->mainWindow->signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindowCallback::on_key_press_event));
+
     /* Connect sats treeview callbacks */
     this->main_window_renderer->satsTreeview->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowCallback::sats_treeview_activated_cb));
+    ((Gtk::CellRendererText*)(this->main_window_renderer->satsTreeview->get_column(this->modelSatsColumns.col_script_name_int)->get_cells()[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_scripts_name_edited_cb));
+ 
+    /* Connect alias treeview callbacks */
+    ((Gtk::CellRendererText*)(this->main_window_renderer->aliasAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_alias_edited_cb));
+    ((Gtk::CellRendererText*)(this->main_window_renderer->commandsAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_command_edited_cb));
 
     /* Connect timeout callbacks */
     sigc::slot<bool> my_slot = sigc::mem_fun(this,&MainWindowCallback::update_curr_satellite);
     Glib::signal_timeout().connect(my_slot, UPDATE_RATE);
 
-    /* Connect alias commands callbacks */
+    /* Connect commands callbacks */
     this->main_window_renderer->commandsTreeView->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowCallback::command_treeview_activated_cb));
 
-    /* Connect alias treeview callbacks */
-    ((Gtk::CellRendererText*)(this->main_window_renderer->aliasAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_alias_edited_cb));
-    ((Gtk::CellRendererText*)(this->main_window_renderer->commandsAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_command_edited_cb));
+    /* Connect In/Out interface callbacks */
+    this->main_window_renderer->deviceName->signal_activate().connect(sigc::mem_fun(*this, &MainWindowCallback::device_name_entry_activated_cb));
+    this->main_window_renderer->deviceSpeedComboBox->signal_changed().connect(sigc::mem_fun(*this, &MainWindowCallback::device_speed_combobox_changed_cb));
+
+    /* Connect the main menu */
+    Gtk::ImageMenuItem * imitem = 0;
+    Menu * menu = new Menu(this->main_window_renderer, this->man);
+    this->main_window_renderer->mainBuilder->get_widget("saveFile", imitem);
+    if(imitem != 0)
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::save_activate_cb));
+    this->main_window_renderer->mainBuilder->get_widget("saveFileAs", imitem);
+    if(imitem != 0)
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::saveAs_activate_cb));
+    this->main_window_renderer->mainBuilder->get_widget("openFile", imitem);
+    if(imitem != 0)
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::open_activate_cb));
+    this->main_window_renderer->mainBuilder->get_widget("quit", imitem);
+    if(imitem != 0)
+        imitem->signal_activate().connect(sigc::mem_fun(*this, &MainWindowCallback::quit_cb));
+    this->main_window_renderer->mainBuilder->get_widget("about", imitem);
+    if(imitem != 0)
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::about_activate_cb));
+
+    /* Connect the scripts frame */
+    this->main_window_renderer->newScriptButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::new_script_button_clicked_cb));
+    this->main_window_renderer->upButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::up_button_clicked_cb));
+    this->main_window_renderer->downButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::down_button_clicked_cb));
 }
 
 void MainWindowCallback::sats_treeview_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
@@ -53,12 +94,18 @@ void MainWindowCallback::sats_treeview_activated_cb(const Gtk::TreeModel::Path& 
         satName = (*par).get_value(modelSatsColumns.col_sat_name);
         scriptName = currRow.get_value(modelSatsColumns.col_script_name);
 
-        this->main_window_renderer->render_new_alias(this->man->GetModelAliasList(satName, scriptName));
+        if(this->man->exists_script(&satName, &scriptName)) {
+            this->main_window_renderer->render_new_alias(this->man->get_model_alias_list(satName, scriptName));
 
-        this->main_window_renderer->render_new_text_editor(this->man->GetTextBuffer(satName, scriptName));
+            this->main_window_renderer->render_new_text_editor(this->man->get_text_buffer(satName, scriptName));
 
-        this->main_window_renderer->render_new_sat_name(satName);
-        this->main_window_renderer->render_new_scritp_name(scriptName);
+            this->main_window_renderer->render_new_sat_name(satName);
+            this->main_window_renderer->render_new_scritp_name(scriptName);
+
+            this->main_window_renderer->render_scripts_priority_queue(this->man->get_scripts_priority_queue(&satName));
+        }
+        else
+            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to find this script in database, have you already saved it ?", __FILE__, __LINE__);
     }
 }
 
@@ -106,14 +153,164 @@ void MainWindowCallback::command_treeview_activated_cb(const Gtk::TreeModel::Pat
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
     Glib::ustring scriptName = this->main_window_renderer->get_config_script_name();
 
-    if(this->man->existsSat(&satName)) {
+    if(this->man->exists_sat(&satName)) {
         Glib::ustring command = this->main_window_renderer->get_row_treeview_commands(path)->get_value(this->modelCommandsColumns.col_command_name);
     
         this->main_window_renderer->render_text_editor_insert_command(command);
     }
     else {
-        Log::LogWarn(LEVEL_LOG_INFO, "Open a script associated with a satellite first", __FILE__, __LINE__);
+        Log::LogWarn(LEVEL_LOG_INFO, "open a script associated with a satellite first", __FILE__, __LINE__);
     }
+}
+
+void MainWindowCallback::device_name_entry_activated_cb()
+{
+    try {
+        Glib::ustring iconName;
+
+        Glib::ustring deviceName = this->main_window_renderer->get_device_name();
+        int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
+        
+        if(this->inter->open(deviceName, speed)) {
+            iconName = "gtk-yes";
+        }
+        else {
+            iconName = "gtk-no";
+        }
+        this->main_window_renderer->deviceNameStatus->clear();
+        this->main_window_renderer->deviceNameStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+
+        if(this->inter->is_configured())
+            iconName = "gtk-yes";
+        else
+            iconName = "gtk-no";
+        this->main_window_renderer->deviceSpeedStatus->clear();
+        this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+    }
+    catch(std::invalid_argument &exp) {
+        Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
+    }
+}
+
+void MainWindowCallback::device_speed_combobox_changed_cb()
+{
+    try {
+        Glib::ustring iconName;
+        int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
+
+        if(this->inter->set_device_speed(speed)) {
+            iconName = "gtk-yes";
+        }
+        else {
+            iconName = "gtk-no";
+        }
+        this->main_window_renderer->deviceSpeedStatus->clear();
+        this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+    } 
+    catch (std::invalid_argument& arg) {
+        Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
+    }
+}
+
+void MainWindowCallback::new_script_button_clicked_cb()
+{
+    Glib::ustring *scriptName = new Glib::ustring("defaults/NameMePlease.txt");
+    Glib::ustring *scriptData = new Glib::ustring("type-me\n");
+    Glib::ustring *alias      = new Glib::ustring("OK\ninsert_ok\nnew_alias\nnew_command\n");
+    Glib::ustring *satName    = new Glib::ustring(this->main_window_renderer->configSatNameLabel->get_text());
+    Interpreter   *interpreter= new Interpreter(this->inter); 
+
+    this->man->add_script(satName, scriptName, scriptData, alias, interpreter);
+
+    this->main_window_renderer->render_sats_list_refresh(this->man);
+    this->main_window_renderer->render_scripts_priority_queue(this->man->get_scripts_priority_queue(satName));
+}
+
+void MainWindowCallback::up_button_clicked_cb()
+{
+    Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
+    int index;
+
+    if(this->man->exists_sat(&satName)) {
+        Gtk::ListStore::iterator selectedRow = this->main_window_renderer->scriptsExeQueueTreeview->get_selection()->get_selected();
+
+        Gtk::TreePath path(selectedRow);
+        if(path.size() > 0) 
+            index = std::stoi(path.to_string());
+        else
+            index = -1;
+
+        if(index > 0) {
+            Gtk::ListStore::iterator upperRow = selectedRow--;
+
+            Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->main_window_renderer->scriptsExeQueueTreeview->get_model());
+
+            model->iter_swap(upperRow, selectedRow);
+
+            this->man->increase_priority(index, satName);
+        }
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Choose a satellite before doing this action", __FILE__, __LINE__);
+    }
+}
+
+void MainWindowCallback::down_button_clicked_cb()
+{
+    Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
+    int index;
+
+    if(this->man->exists_sat(&satName)) {
+        Gtk::ListStore::iterator selectedRow = this->main_window_renderer->scriptsExeQueueTreeview->get_selection()->get_selected();
+
+        Gtk::TreePath path(selectedRow);
+        if(path.size() > 0)
+            index = std::stoi(path.to_string());
+        else
+            index = -1;
+
+        if(index > -1) {
+            Gtk::ListStore::iterator lowerRow = selectedRow++;
+
+            Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->main_window_renderer->scriptsExeQueueTreeview->get_model());
+
+            model->iter_swap(lowerRow, selectedRow);
+
+            this->man->decrease_priority(index, satName);
+        }
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Choose a satellite before doing this action", __FILE__, __LINE__);
+    }  
+}
+
+/*
+ * TODO:
+ * Improove newScriptName verification for the user does
+ * not give an invalid name to a script
+ */
+void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::ustring &path, const Glib::ustring &new_text)
+{
+    Glib::ustring *newScriptName = new Glib::ustring();
+    Glib::ustring *oldScriptName = new Glib::ustring();
+    Glib::ustring *satName = new Glib::ustring();
+
+    Gtk::TreePath treepath(path);
+    Gtk::TreeStore::Row currRow = (this->main_window_renderer->get_row_treeview_sats(treepath));
+
+    Gtk::TreeStore::iterator par = currRow.parent();
+    if(par) {
+        *satName = (*par).get_value(modelSatsColumns.col_sat_name);
+        *oldScriptName = currRow.get_value(modelSatsColumns.col_script_name);
+        *newScriptName = new_text;
+
+        this->man->rename_script(satName, oldScriptName, newScriptName);
+
+        currRow.set_value(modelSatsColumns.col_script_name, new_text);
+    }
+    else 
+        Log::LogWarn(LEVEL_LOG_ERROR, "Error in the sats treeview path", __FILE__, __LINE__);
+
 }
 
 char * read_fifo_format(int fifo_fd)
@@ -171,4 +368,34 @@ void openFifoFile(int *fifo_fd)
     *fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
     if(*fifo_fd == -1)
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict data, the program will be closed !", __FILE__, __LINE__);
+}
+
+#define SAVE_SESSION() \
+    this->man->save(session); \
+    Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
+
+bool MainWindowCallback::on_key_press_event(GdkEventKey *event)
+{
+    Glib::ustring session = DEFAULT_SESSION_FILE; 
+
+    switch(event->keyval) {
+        case GDK_KEY_S:
+        case GDK_KEY_s:
+            SAVE_SESSION();
+            break;
+        case GDK_KEY_Escape:
+            this->quit_cb();
+            break;
+    }
+
+    return false;
+}
+
+void MainWindowCallback::quit_cb()
+{
+    Glib::ustring session = DEFAULT_SESSION_FILE; 
+    this->man->save(session); 
+    Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
+ 
+    gtk_main_quit();
 }

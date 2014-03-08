@@ -12,15 +12,15 @@
 class DataBase
 {
     public:
-        static std::stringstream *GetSection(Glib::ustring key);
-        static std::stringstream *GetScripts(Glib::ustring key);
-        static std::stringstream *GetAlias  (Glib::ustring key);
-        static std::stringstream *GetSats   (Glib::ustring key);
+        static std::stringstream *get_section(Glib::ustring key);
+        static std::stringstream *get_scripts(Glib::ustring key);
+        static std::stringstream *get_alias  (Glib::ustring key);
+        static std::stringstream *get_sats   (Glib::ustring key);
 
-        static bool existsSection(Glib::ustring key);
-        static bool existsScript (Glib::ustring key);
-        static bool existsAlias  (Glib::ustring key);
-        static bool existsSats   (Glib::ustring key);
+        static bool exists_section(Glib::ustring key);
+        static bool exists_script (Glib::ustring key);
+        static bool exists_alias  (Glib::ustring key);
+        static bool exists_sats   (Glib::ustring key);
 };
 
 #endif

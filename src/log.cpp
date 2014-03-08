@@ -16,7 +16,7 @@ Gtk::MessageDialog *Log::warnDialog  = NULL;
 Gtk::MessageDialog *Log::errorDialog = NULL;
 Gtk::MessageDialog *Log::infoDialog  = NULL;
 
-void Log::Init()
+void Log::init()
 {
     Log::dialogBuilder = new Glib::RefPtr<Gtk::Builder>();
     *Log::dialogBuilder = (Gtk::Builder::create_from_file(DIALOG_WINDOW_GLADE));

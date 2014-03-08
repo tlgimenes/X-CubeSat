@@ -21,29 +21,31 @@
 class Script
 {
     private:
-        Glib::ustring *name;
-        Glib::ustring *script;
         std::unordered_map<std::string, std::string> *alias;
         std::vector<InOutLog*> logList;
+        Glib::ustring          *name;
+        Glib::ustring          *script;
 
         Interpreter *interpreter;
 
         /* TreeView of the Alias Frame */
-        ModelAliasColumns modelAliasColumns;
         Glib::RefPtr<Gtk::ListStore> modelAliasList;
+        ModelAliasColumns            modelAliasColumns;
 
         /* TextView of the Command File frame */
         Glib::RefPtr<Gtk::TextBuffer> textBuffer;
 
     public:
         Script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
-        Glib::RefPtr<Gtk::ListStore> *GetModelAliasList();
-        Glib::RefPtr<Gtk::TextBuffer> *GetTextBuffer();
-        std::stringstream *GetAlias();
-        Glib::ustring *GetName();
+        Glib::RefPtr<Gtk::ListStore>    *get_model_alias_list();
+        Glib::RefPtr<Gtk::TextBuffer>   *get_text_buffer();
+        std::stringstream               *get_alias();
+        Glib::ustring                   *get_name();
 
-        void Append(Glib::ustring txt);
-        void Run();
+        void append(Glib::ustring txt);
+        void rename(Glib::ustring *newName);
+        void save();
+        void run();
 };
 
 #endif
