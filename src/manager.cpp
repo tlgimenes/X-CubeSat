@@ -70,6 +70,18 @@ bool Manager::exists_script(Glib::ustring *satName, Glib::ustring *scriptName)
     return false;
 }
 
+void Manager::replace_alias_column_alias(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
+{
+    if(exists_sat(&satName))
+        this->satManagers[satName.c_str()]->replace_alias_column_alias(scriptName, path, newAlias);
+}
+
+void Manager::replace_alias_column_command(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
+{
+    if(exists_sat(&satName))
+        this->satManagers[satName.c_str()]->replace_alias_column_command(scriptName, path, newAlias);
+}
+
 std::stringstream *Manager::get_first_alias(Glib::ustring satName)
 {
     return this->satManagers[satName.c_str()]->get_first_alias();

@@ -92,6 +92,10 @@ class ModelPortSpeedComboBox : public Gtk::TreeModel::ColumnRecord
 /* --------------------------------------------------------------*/
 
 /* --------------------------------------------------------------*/
+typedef enum scripts_name_treeview_t {
+    SCRIPTS_NAME
+} scripts_name_treeview;
+
 /* Model for the priority queue of scripts */
 class ModelScriptsPriorityQueue : public Gtk::TreeModel::ColumnRecord
 {
@@ -100,6 +104,8 @@ class ModelScriptsPriorityQueue : public Gtk::TreeModel::ColumnRecord
         { add(col_script_name); }
 
         Gtk::TreeModelColumn<Glib::ustring> col_script_name;
+
+        scripts_name_treeview col_script_name_int = SCRIPTS_NAME;
 };
 /* --------------------------------------------------------------*/
 

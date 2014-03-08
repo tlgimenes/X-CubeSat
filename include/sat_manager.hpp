@@ -44,6 +44,10 @@ class SatManager
         Glib::RefPtr<Gtk::ListStore>  *get_scripts_priority_queue();
 
         void add_script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
+
+        void replace_alias_column_alias(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+        void replace_alias_column_command(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+
         void enqueue_script(Glib::ustring scriptName);
         void run_script(Glib::ustring scriptName);
         void run_next_script();

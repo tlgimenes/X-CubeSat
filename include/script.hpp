@@ -44,6 +44,8 @@ class Script
 
         void append(Glib::ustring txt);
         void rename(Glib::ustring *newName);
+        void replace_alias_column_alias(const Glib::ustring& path, const Glib::ustring& newAlias);
+        void replace_alias_column_command(const Glib::ustring& path, const Glib::ustring& new_text);
         void save();
         void run();
 };

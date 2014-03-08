@@ -32,6 +32,9 @@ class Manager
 
         void add_script(Glib::ustring *satName, Glib::ustring *scriptName, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter);
 
+        void replace_alias_column_alias(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+        void replace_alias_column_command(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias);
+
         bool exists_sat(Glib::ustring *satName);
         bool exists_script(Glib::ustring *satName, Glib::ustring *scriptName);
 

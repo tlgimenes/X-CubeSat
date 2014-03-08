@@ -79,6 +79,21 @@
 #define DECREASE_PRIORITY_BUTTON "decreasePriorityButton"
 #define ADD_NEW_SCRIPT_BUTTON "addNewScriptButton"
 
+/* ---------------------------------------------------- */
+#define DEFAULT_SCRIPT_NAME "defaults/new_script.txt"
+#define DEFAULT_CODE_NAME "type-me\n"
+#define DEFAULT_ALIAS "OK\ninsert_ok\nnew_alias\nnew_command\n"
 
+/* ---------------------------------------------------- */
+#define QUIT_MESSAGE_DIALOG "quitDialog"
+
+
+/* ---------------------------------------------------- */
+#define LOG_FILE "XCubeSat_Controler.txt"
+
+#define DIALOG_WINDOW_GLADE "windows/dialogWindow.glade"
+#define WARN_DIALOG_WIDGET  "warnDialog"
+#define ERROR_DIALOG_WIDGET "errorDialog"
+#define INFO_DIALOG_WIDGET  "infoDialog"
 
 #endif

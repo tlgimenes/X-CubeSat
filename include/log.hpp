@@ -11,13 +11,6 @@
 #include <string>
 #include <gtkmm.h>
 
-#define LOG_FILE "XCubeSat_Controler.txt"
-
-#define DIALOG_WINDOW_GLADE "windows/dialogWindow.glade"
-#define WARN_DIALOG_WIDGET  "warnDialog"
-#define ERROR_DIALOG_WIDGET "errorDialog"
-#define INFO_DIALOG_WIDGET  "infoDialog"
-
 typedef enum logLevel_t
 {
     LEVEL_LOG_ERROR,

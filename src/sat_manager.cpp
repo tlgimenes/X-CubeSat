@@ -96,15 +96,29 @@ bool SatManager::exists_script(Glib::ustring name)
 void SatManager::rename_script(Glib::ustring *oldName, Glib::ustring *newName)
 {
     Script *script;
+    unsigned int it;
+
     if(exists_script(*oldName)) {
         // removes from the hash table
         script = this->scripts[oldName->c_str()];
         this->scripts.erase(oldName->c_str());
-
+        
+        // refresh the name in the priority
+        // queue treeview model
+        for(it=0; it < this->scriptsQueue.size(); it++) 
+            if(this->scriptsQueue[it] == script) 
+                break;
+        if(it < this->scriptsQueue.size()) {
+            Gtk::TreePath path(std::to_string(it));
+            Gtk::ListStore::Row row = *(this->scriptsPriorityQueue->get_iter(path));
+            row[this->modelScriptsPriorityQueue.col_script_name] = newName->c_str();
+        }
+                
         // reinsert the new renamed script
-        script->rename(newName);
         std::pair<std::string, Script*> pair(newName->c_str(), script);
         this->scripts.insert(pair);
+
+        script->rename(newName);
     }
     else
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to rename script because it was not found", __FILE__, __LINE__);
@@ -226,9 +240,10 @@ std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile)
         set_stream_ptr(&fs, *this->sat->get_nickname());
 
         *sst << "\n" << this->scripts.size() << " ";
-        for(auto it = this->scripts.begin(); it != this->scripts.end(); it++) {
-            it->second->save();
-            name = *it->second->get_name();
+        for(unsigned int i=0; i < this->scriptsQueue.size(); i++) {
+
+            this->scriptsQueue[i]->save();
+            name = *this->scriptsQueue[i]->get_name();
             *sst << name << " ";
             name.append(".alias");
             *sst << name << " ";
@@ -237,4 +252,16 @@ std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile)
     fs.close();
 
     return sst;
+}
+
+void SatManager::replace_alias_column_alias(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
+{
+    if(exists_script(scriptName))
+        this->scripts[scriptName.c_str()]->replace_alias_column_alias(path, newAlias);
+}
+
+void SatManager::replace_alias_column_command(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
+{
+    if(exists_script(scriptName))
+        this->scripts[scriptName.c_str()]->replace_alias_column_command(path, newAlias);
 }

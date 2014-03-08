@@ -13,7 +13,6 @@ OUTPUT=XCubeSat_Controler
 all:
 	cd src; make
 	$(CC) $(C_FLAGS) -I$(INCLUDE_PATH) $(LIBS) $(OBJ) $(MAIN) -o $(OUTPUT);
-	cp defaults/XCubeSat_Controler.session.save defaults/XCubeSat_Controler.session
 
 clean:
 	rm $(OUTPUT) $(LOG) $(OBJ)

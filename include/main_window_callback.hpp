@@ -48,6 +48,8 @@ class MainWindowCallback
         bool update_curr_satellite();
         bool on_key_press_event(GdkEventKey* event);
         void quit_cb();
+        bool quit_all_cb(GdkEventAny *event);
+        void on_response_save_message_dialog(int response_id);
         /*----------------------------------------------*/
 
     public:

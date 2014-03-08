@@ -112,3 +112,66 @@ void Script::rename(Glib::ustring *newName)
     else
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to rename script", __FILE__, __LINE__);
 }
+
+void Script::replace_alias_column_alias(const Glib::ustring& path, const Glib::ustring& newAlias){
+    Gtk::TreePath treePath(path);
+    Gtk::ListStore::Row it;
+    Glib::ustring command;
+    Glib::ustring oldAlias;
+
+    if(treePath) {
+        it = *(this->modelAliasList->get_iter(treePath));
+
+        if(it) {
+            // Refresh the hash table
+            oldAlias = it[this->modelAliasColumns.col_alias];
+            command = (*this->alias)[oldAlias.c_str()];
+
+            this->alias->erase(oldAlias.c_str());
+
+            std::pair<std::string, std::string> pair (newAlias.c_str(), command);
+            this->alias->insert(pair);
+
+            // Refresh the listStore of alias
+            it[this->modelAliasColumns.col_alias] = newAlias.c_str();
+        }
+    }
+}
+
+void Script::replace_alias_column_command(const Glib::ustring& path, const Glib::ustring& newCommand)
+{
+    Glib::ustring new_alias("new_alias");
+    Glib::ustring new_command("new_command");
+    Glib::ustring oldAlias;
+    Glib::ustring oldCommand;
+
+    Gtk::TreePath treePath(path);
+    Gtk::ListStore::Row it;
+
+    if(treePath) {
+        it = *(this->modelAliasList->get_iter(treePath));
+
+        if(it) {
+            oldAlias = it[this->modelAliasColumns.col_alias];
+
+            // Refresh alias hash table
+            oldCommand = (*this->alias)[oldAlias.c_str()];
+            (*this->alias)[oldAlias.c_str()] = newCommand.c_str();
+
+            // add new row if necessary
+            if(!oldCommand.compare(new_command) && newCommand.compare(new_command)) {
+                Gtk::TreeModel::Row newRow = *this->modelAliasList->append();
+
+                if(newRow) {
+                    newRow.set_value(this->modelAliasColumns.col_alias, new_alias);
+                    newRow.set_value(this->modelAliasColumns.col_command, new_command);
+                    // Refresh alias hash table
+                    std::pair<std::string, std::string> pair(new_alias.c_str(), new_command.c_str());
+                    this->alias->insert(pair);
+                }
+            }
+            // Set the new value in the treeModel
+            it[this->modelAliasColumns.col_command] = newCommand.c_str();
+        }
+    }
+}
