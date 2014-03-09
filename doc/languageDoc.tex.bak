@@ -1,0 +1,152 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\usepackage{framed}
+
+\author{Tiago Lobato Gimenes}
+\title{X-CubeSat Controller language documentation}
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+In this file you will be able to find the definitions of the language used in the X-CubeSat Controller.
+
+\begin{center}
+\line(1,0){500}
+\end{center}
+
+\section*{Types:}
+\begin{itemize}
+\item \textbf{string}
+\item \textbf{data}
+\item \textbf{bool}
+\item \textbf{int}
+\end{itemize}
+
+\begin{center}
+\line(1,0){500}
+\end{center}
+
+\section*{SEND()}
+\begin{framed}
+\subsection*{bool SEND( string )}
+\begin{itemize}
+\item \textbf{Params:} string to be sent to the interface (often the modem).
+\item \textbf{Return:} boolean value indicating if the send process was successfully accomplished (true) or not (false).
+\end{itemize}
+\end{framed}
+
+\section*{RECEIVE()}
+\begin{framed}
+\subsection*{data RECEIVE( string )}
+\begin{itemize}
+\item \textbf{Params:} string with the name of the format that will be received.
+\item \textbf{Return:} read data from the interface  (modem) with the right format associated.
+\end{itemize}
+\end{framed}
+
+\section*{SAVE()}
+\begin{framed}
+\subsection*{bool SAVE( data, string )}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item data with the data to be saved.
+\item string with the file name that the data will be saved.
+\end{enumerate}
+\item \textbf{Return:} boolean indicating if the save was successful (true) or not (false).
+\end{itemize}
+\end{framed}
+
+\section*{IF(){}}
+\begin{framed}
+\subsection*{bool IF (bool)}
+\begin{itemize}
+\item \textbf{Params:} if true to run what is inside of {}, else to continue.
+\item \textbf{Return:} true if it should run the {} or false if it should continue.
+\end{itemize}
+\end{framed}
+
+\section*{DECLARE()}
+\begin{framed}
+\subsection*{bool DECLARE( type, string )}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item the type of the new variable.
+\item the name of the new variable.
+\end{enumerate}
+\item \textbf{Return:} true if the declaration was successful, false otherwise.
+\end{itemize}
+\end{framed}
+
+\section*{EQ()}
+\begin{framed}
+\subsection*{bool EQ(int, int)}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item first element to compare.
+\item second element to compare.
+\end{enumerate}
+\item \textbf{Return:} true if first element equals the second one, false otherwise.
+\end{itemize}
+\end{framed}
+
+\section*{LL()}
+\begin{framed}
+\subsection*{bool LL(int, int)}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item first element to compare.
+\item second element to compare.
+\end{enumerate}
+\item \textbf{Return:} true if first element is less than the second one, false otherwise.
+\end{itemize}
+\end{framed}
+
+\section*{LEQ()}
+\begin{framed}
+\subsection*{bool LEQ(int, int)}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item first element to compare.
+\item second element to compare.
+\end{enumerate}
+\item \textbf{Return:} true if first element is less or equal the second one, false otherwise.
+\end{itemize}
+\end{framed}
+
+\section*{FILE()}
+\begin{framed}
+\subsection*{string FILE( string )}
+\begin{itemize}
+\item \textbf{Params:} string with the name of the file to be opened.
+\item \textbf{Return:} string with the content of the file.
+\end{itemize}
+\end{framed}
+
+\section*{FILEDATE()}
+\begin{framed}
+\subsection*{string FILEDATE( string )}
+\begin{itemize}
+\item \textbf{Params:} string.
+\item \textbf{Return:} the parameter appended with the date (dd/mm/yyyy:hh:mm:ss) of execution of this function.
+\end{itemize}
+\end{framed}
+
+\section*{FORMAT()}
+\begin{framed}
+\subsection*{string FORMAT( string )}
+\begin{itemize}
+\item \textbf{Params:} string with the name of the format.
+\item \textbf{Return:} string with the name of the format.
+\end{itemize}
+\end{framed}
+
+\end{document}

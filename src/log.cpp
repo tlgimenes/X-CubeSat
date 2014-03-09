@@ -10,6 +10,7 @@
 #include <errno.h>   /* Error number definitions */
 
 #include "log.hpp"
+#include "defs.hpp"
 
 Glib::RefPtr<Gtk::Builder> *Log::dialogBuilder = NULL;
 Gtk::MessageDialog *Log::warnDialog  = NULL;
