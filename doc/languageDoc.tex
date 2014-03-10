@@ -26,6 +26,21 @@ In this file you will be able to find the definitions of the language used in th
 \item \textbf{int}
 \end{itemize}
 
+\section*{Functions:}
+\begin{itemize}
+\item \textbf{bool SEND( string )}
+\item \textbf{bool SAVE( data, string )}
+\item \textbf{bool IF( bool )}
+\item \textbf{bool DECLARE( string, string)}
+\item \textbf{bool EQ( int, int )}
+\item \textbf{bool LL( int, int )}
+\item \textbf{bool LEQ( int, int )}
+\item \textbf{string FILE( string )}
+\item \textbf{string APPENDDATE( string )}
+\item \textbf{string FORMAT( string )}
+\item \textbf{data RECEIVE( string )}
+\end{itemize}
+
 \begin{center}
 \line(1,0){500}
 \end{center}
@@ -72,7 +87,7 @@ In this file you will be able to find the definitions of the language used in th
 
 \section*{DECLARE()}
 \begin{framed}
-\subsection*{bool DECLARE( type, string )}
+\subsection*{bool DECLARE( string, string )}
 \begin{itemize}
 \item \textbf{Params:}
 \begin{enumerate}
@@ -131,9 +146,9 @@ In this file you will be able to find the definitions of the language used in th
 \end{itemize}
 \end{framed}
 
-\section*{FILEDATE()}
+\section*{APPENDDATE()}
 \begin{framed}
-\subsection*{string FILEDATE( string )}
+\subsection*{string APPENDDATE( string )}
 \begin{itemize}
 \item \textbf{Params:} string.
 \item \textbf{Return:} the parameter appended with the date (dd/mm/yyyy:hh:mm:ss) of execution of this function.

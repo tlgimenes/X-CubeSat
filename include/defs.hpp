@@ -96,4 +96,5 @@
 #define ERROR_DIALOG_WIDGET "errorDialog"
 #define INFO_DIALOG_WIDGET  "infoDialog"
 
+/* ---------------------------------------------------- */
 #endif
