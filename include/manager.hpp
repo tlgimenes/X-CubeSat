@@ -52,6 +52,8 @@ class Manager
 
         void save(Glib::ustring sessionFile);
         void rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName);
+
+        void run_next_script(Glib::ustring satName);
 };
 
 #endif

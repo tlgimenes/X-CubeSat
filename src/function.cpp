@@ -3,10 +3,12 @@
 
 Function::Function()
 {
-    this->returnValue = NULL;
+    this->interface = NULL;
+    this->variables = NULL;
 }
 
-Function *Function::get_return()
+Function::Function(InOutInterface *interface, std::unordered_map<std::string, Function*> *variables)
 {
-    return this->returnValue;
+    this->variables = variables;
+    this->interface = interface;
 }

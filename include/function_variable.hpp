@@ -3,10 +3,21 @@
 
 #include "function.hpp"
 
+typedef enum var_t {
+    BOOL_T,
+    DATA_T,
+    INT_T,
+    STRING_T
+} var_t;
+
 class FunctionVariable : public Function
 {
+    protected:
+        Glib::ustring name;
+
     public:
-        void *get_value();
+        virtual void set_value();
+        virtual void *get_value();
 };
 
 #endif

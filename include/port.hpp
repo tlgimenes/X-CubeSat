@@ -34,6 +34,7 @@ class Port
         Port(const char *);
         void write_to_port(char *, unsigned int);
         void read_port(char* buff, size_t count);
+        char *read_port(char delim);
         bool is_oppenned();
         bool is_configured();
         bool open_port(const char *portName, int speed);

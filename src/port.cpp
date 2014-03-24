@@ -123,16 +123,39 @@ void Port::read_port(char *buff, size_t count)
     int nread_port;
 
     if(this->isOppenned) {
-    nread_port = read(this->fd, (void*)buff, count);
+        nread_port = read(this->fd, (void*)buff, count);
 
-    if(nread_port < 0)
-        Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
+        if(nread_port < 0)
+            Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
     }
     else {
         Log::LogWarn(LEVEL_LOG_WARNING, "Tried to read to not oppenned port", __FILE__, __LINE__);
     }
 
     return;
+}
+
+char *Port::read_port(char delim)
+{
+    Glib::ustring buff;
+    char c;
+    int nread_port;
+
+    if(this->isOppenned && this->isConfigured) {
+        nread_port = read(this->fd, &c, 1);
+        while(c != delim) {
+            buff.append(&c);
+            nread_port = read(this->fd, &c, 1);
+
+            if(nread_port < 0)
+            Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
+        }
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Tried to read to not oppenned port", __FILE__, __LINE__);
+    }
+    
+    return (char*)buff.c_str();
 }
 
 bool Port::is_oppenned()

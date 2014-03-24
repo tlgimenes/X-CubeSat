@@ -13,7 +13,7 @@ class Satellite
 {
     private:
         Glib::ustring *nickname;
-        int         *id;
+        int           *id;
 
     public:
         Satellite(Glib::ustring *nickname, int id);

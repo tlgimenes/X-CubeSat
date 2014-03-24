@@ -1,0 +1,16 @@
+#Write your code here
+
+DECLARE(string, str)
+SET(str, "today")
+
+DECLARE(int, int1)
+DECLARE(int, int2)
+
+SET(int1, 2)
+SET(int2, 2)
+
+IF(EQ(int1, int2)) {
+	SET(str, APPENDDATE(str))
+}
+
+APPENDDATE("QWE")

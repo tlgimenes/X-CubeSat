@@ -57,7 +57,7 @@ void SatManager::add_script(Glib::ustring *name, Glib::ustring *script, Glib::us
 void SatManager::run_script(Glib::ustring scriptName)
 {
     try{
-        this->scripts[scriptName]->run();
+        this->scripts[scriptName]->run(this->sat->get_nickname());
     } 
     catch(std::allocator<std::unordered_map<std::string, Script*>> alloc) {
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the scripts list", __FILE__, __LINE__);
@@ -77,8 +77,16 @@ void SatManager::enqueue_script(Glib::ustring scriptName)
 void SatManager::run_next_script()
 {
     try {
-        this->scriptsQueue.back()->run();
-        this->scriptsQueue.pop_back();
+        if(!this->scriptsQueue.empty()) {
+            this->scriptsQueue.front()->run(this->sat->get_nickname());
+            this->scriptsQueue.push_back(this->scriptsQueue.front());
+            this->scriptsQueue.erase(this->scriptsQueue.begin());
+
+            Gtk::ListStore::Row beg = *this->scriptsPriorityQueue->children().begin();
+            Gtk::ListStore::Row row = *this->scriptsPriorityQueue->append();
+            row[this->modelScriptsPriorityQueue.col_script_name] = beg->get_value(this->modelScriptsPriorityQueue.col_script_name);
+            this->scriptsPriorityQueue->erase(beg);
+        }
     }
     catch(std::allocator<std::unordered_map<std::string, Script*>> alloc) {
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the scripts list", __FILE__, __LINE__);
@@ -235,15 +243,16 @@ std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile)
     std::fstream fs(sessionFile.c_str(), std::fstream::out);
     std::stringstream *sst = new std::stringstream();
     Glib::ustring name;
+    std::vector<Script*> queue;
 
     if(fs.is_open()) {
         set_stream_ptr(&fs, *this->sat->get_nickname());
+        queue = scriptsQueue;
 
         *sst << "\n" << this->scripts.size() << " ";
         for(unsigned int i=0; i < this->scriptsQueue.size(); i++) {
-
-            this->scriptsQueue[i]->save();
-            name = *this->scriptsQueue[i]->get_name();
+            queue[i]->save();
+            name = *queue[i]->get_name();
             *sst << name << " ";
             name.append(".alias");
             *sst << name << " ";

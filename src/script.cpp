@@ -9,6 +9,7 @@
 
 #include "script.hpp"
 #include "log.hpp"
+#include "data_base.hpp"
 
 Script::Script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter)
 {
@@ -76,34 +77,64 @@ void Script::append(Glib::ustring txt)
 }
 
 /* rever */
-void Script::run()
+void Script::run(Glib::ustring *satName)
 {
-    this->logList.push_back(this->interpreter->interpret(script, alias));
+    this->logList.push_back(this->interpreter->interpret(script, alias, satName));
 }
 
 void Script::save()
 {
-    std::fstream script(this->name->c_str(), std::fstream::out);
+    Glib::ustring textBuff = textBuffer->get_text();
+    std::stringstream aliasStream;
 
-    // Save the script content
-    if(script.is_open())
-        script << textBuffer->get_text();
+    if(!*this->interpreter->are_there_syntax_errors(&textBuff, alias)) {
+        this->script = new Glib::ustring(textBuff);
 
-    // Save the alias table content
-    Glib::ustring aliasName = this->name->c_str();
-    aliasName.append(".alias");
-
-    std::fstream alias(aliasName.c_str(), std::fstream::out);
-
-    if(alias.is_open())
         for(auto it = this->alias->begin(); it != this->alias->end(); it++) {
-            alias << it->first.c_str()  << '\n';
-            alias << it->second.c_str() << '\n';
+            aliasStream << it->first.c_str()  << '\n';
+            aliasStream << it->second.c_str() << '\n';
         }
 
-    script.close();
-    alias.close();
+        if(!DataBase::save_script(*this->name, textBuff, aliasStream.str()))
+            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
+    }
 }
+
+/*
+void Script::save()
+{
+    Glib::ustring textBuff = textBuffer->get_text();
+
+    if(!*this->interpreter->are_there_syntax_errors(&textBuff, alias)) {
+        std::fstream script(this->name->c_str(), std::fstream::out);
+        // Save the script content
+        if(script.is_open()) {
+            script << textBuffer->get_text();
+            this->script = new Glib::ustring(textBuffer->get_text());
+        }
+
+        // Save the alias table content
+        Glib::ustring aliasName = this->name->c_str();
+        aliasName.append(".alias");
+
+        std::fstream alias(aliasName.c_str(), std::fstream::out);
+
+        if(alias.is_open())
+            for(auto it = this->alias->begin(); it != this->alias->end(); it++) {
+                alias << it->first.c_str()  << '\n';
+                alias << it->second.c_str() << '\n';
+            }
+
+        alias.close();
+        script.close();
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
+    }
+}*/
 
 void Script::rename(Glib::ustring *newName)
 {

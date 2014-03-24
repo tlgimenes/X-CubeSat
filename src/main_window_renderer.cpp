@@ -150,6 +150,13 @@ void MainWindowRenderer::render_curr_sat_name_refresh(Glib::ustring data)
     }
 }
 
+void MainWindowRenderer::render_curr_status_refresh(Glib::ustring status)
+{
+    if(status.size() > 0) {
+        this->status->set_text(status);
+    }
+}
+
 void MainWindowRenderer::render_new_alias_row(Glib::ustring aliasName, Glib::ustring commandName)
 {
     Gtk::TreeModel::Row newRow = *this->get_model_treeview_alias()->append();

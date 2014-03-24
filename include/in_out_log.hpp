@@ -9,8 +9,8 @@
 #include <gtkmm.h>
 
 typedef enum log_nature_t {
-    SEND,
-    RECEIVE,
+    SEND_LOG,
+    RECEIVE_LOG,
 } log_nature;
 
 class InOutLog
@@ -26,10 +26,10 @@ class InOutLog
         InOutLog(log_nature nature, Glib::ustring *id, Glib::ustring *data);
         InOutLog(log_nature nature, Glib::ustring *id);
         InOutLog(log_nature nature, Glib::ustring *data, bool success);
-        log_nature  GetNature();
-        Glib::ustring *GetId();
-        Glib::ustring *GetData();
-        bool isSuccessful();
+        log_nature  get_nature();
+        Glib::ustring *get_id();
+        Glib::ustring *get_data();
+        bool is_successful();
 };
 
 #endif

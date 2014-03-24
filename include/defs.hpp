@@ -37,7 +37,7 @@
  * Curr sat
  */
 #define CURR_SAT_LABEL_WIDGET "sat"
-#define STATUS_LABEL_WIDGET "status"
+#define STATUS_LABEL_WIDGET "stat"
 #define ELEVATION_LABEL_WIDGET "elevation"
 #define AZIMUTH_LABEL_WIDGET "azimuth"
 
@@ -81,7 +81,7 @@
 
 /* ---------------------------------------------------- */
 #define DEFAULT_SCRIPT_NAME "defaults/new_script.txt"
-#define DEFAULT_CODE_NAME "type-me\n"
+#define DEFAULT_CODE_NAME "#Write your code here\n"
 #define DEFAULT_ALIAS "OK\ninsert_ok\nnew_alias\nnew_command\n"
 
 /* ---------------------------------------------------- */
@@ -97,4 +97,15 @@
 #define INFO_DIALOG_WIDGET  "infoDialog"
 
 /* ---------------------------------------------------- */
+#define MAX_COMMENTS_SIZE 999
+
+/* ---------------------------------------------------- */
+/* DATABASE DEFINITIONS */
+/* ---------------------------------------------------- */
+#define DATABASE_NAME "XCubeSat_Controler"
+#define DATABASE_CONFIG "dataBase/tables.sql"
+#define SCI_DATA_TABLE "XCubeSat_Controller_sciData"
+#define WOD_DATA_TABLE "XCubeSat_Controller_wodData" 
+#define SCRIPTS_DATA_TABLE "XCubeSat_Controller_scripts"
+
 #endif

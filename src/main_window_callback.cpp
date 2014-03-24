@@ -25,6 +25,8 @@ MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
     openFifoFile(&this->fifo_fd);
 
     this->connect_callbacks();
+
+    this->isRunning = false;
 }
 
 Gtk::Window *MainWindowCallback::get_main_window()
@@ -229,7 +231,7 @@ void MainWindowCallback::new_script_button_clicked_cb()
     Glib::ustring *scriptName = new Glib::ustring(DEFAULT_SCRIPT_NAME);
     Glib::ustring *scriptData = new Glib::ustring(DEFAULT_CODE_NAME);
     Glib::ustring *alias      = new Glib::ustring(DEFAULT_ALIAS);
-    Interpreter   *interpreter= new Interpreter(this->inter); 
+    Interpreter   *interpreter= new XCubeSatInterpreter(this->inter); 
 
     Glib::ustring satName;
 
@@ -358,24 +360,47 @@ char * read_fifo_format(int fifo_fd)
     return satInfo;
 }
 
+#define REMOVE_LF(string) \
+    size = 0; \
+    if(string != NULL) \
+        size = strlen(string); \
+    if(size > 0) \
+        string[size-1] = '\0';
+
 bool MainWindowCallback::update_curr_satellite()
 {
     char *satName, *satEl, *satAz;
+    int size;
 
+    /* Renders the new info in CurrSat frame */
     satName = read_fifo_format(this->fifo_fd);
+    REMOVE_LF(satName);
     if(satName == NULL) satName = (char*)"Not Found";
     Glib::ustring satNameStr = satName;
     this->main_window_renderer->render_curr_sat_name_refresh(satNameStr);
     
     satEl = read_fifo_format(this->fifo_fd);
+    REMOVE_LF(satEl);
     if(satEl == NULL) satEl = (char*)"Not Set";
     Glib::ustring satElStr = satEl;
     this->main_window_renderer->render_curr_sat_el_refresh(satElStr);
 
     satAz = read_fifo_format(this->fifo_fd);
+    REMOVE_LF(satAz);
     if(satAz == NULL) satAz = (char*)"Not Set";
     Glib::ustring satAzStr = satAz;
     this->main_window_renderer->render_curr_sat_az_refresh(satAzStr);
+
+    /* Runs the script to be runned */
+    if(!isRunning && satElStr.compare("Not Set")) {
+        if(std::stof(satEl) >= 0.0f) {
+            this->isRunning = true;
+            this->main_window_renderer->render_curr_status_refresh("running script");
+            this->man->run_next_script(satName);
+            this->isRunning = false;
+            this->main_window_renderer->render_curr_status_refresh("Idle");
+        }
+    }
 
     return true;
 }

@@ -24,6 +24,7 @@ In this file you will be able to find the definitions of the language used in th
 \item \textbf{data}
 \item \textbf{bool}
 \item \textbf{int}
+\item \textbf{void}
 \end{itemize}
 
 \section*{Functions:}
@@ -31,7 +32,6 @@ In this file you will be able to find the definitions of the language used in th
 \item \textbf{bool SEND( string )}
 \item \textbf{bool SAVE( data, string )}
 \item \textbf{bool IF( bool )}
-\item \textbf{bool DECLARE( string, string)}
 \item \textbf{bool EQ( int, int )}
 \item \textbf{bool LL( int, int )}
 \item \textbf{bool LEQ( int, int )}
@@ -39,6 +39,8 @@ In this file you will be able to find the definitions of the language used in th
 \item \textbf{string APPENDDATE( string )}
 \item \textbf{string FORMAT( string )}
 \item \textbf{data RECEIVE( string )}
+\item \textbf{void DECLARE( type, string)}
+\item \textbf{void SET(string, type)}
 \end{itemize}
 
 \begin{center}
@@ -87,14 +89,14 @@ In this file you will be able to find the definitions of the language used in th
 
 \section*{DECLARE()}
 \begin{framed}
-\subsection*{bool DECLARE( string, string )}
+\subsection*{void DECLARE( type, string )}
 \begin{itemize}
 \item \textbf{Params:}
 \begin{enumerate}
 \item the type of the new variable.
 \item the name of the new variable.
 \end{enumerate}
-\item \textbf{Return:} true if the declaration was successful, false otherwise.
+\item \textbf{Return:} void
 \end{itemize}
 \end{framed}
 
@@ -161,6 +163,19 @@ In this file you will be able to find the definitions of the language used in th
 \begin{itemize}
 \item \textbf{Params:} string with the name of the format.
 \item \textbf{Return:} string with the name of the format.
+\end{itemize}
+\end{framed}
+
+\section*{SET()}
+\begin{framed}
+\subsection*{void SET(string, type)}
+\begin{itemize}
+\item \textbf{Params:}
+\begin{enumerate}
+\item variable name
+\item type with the correct data to set the variable
+\end{enumerate}
+\item \textbf{Return:} void
 \end{itemize}
 \end{framed}
 

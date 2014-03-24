@@ -10,6 +10,7 @@
 
 #include "init.hpp"
 #include "log.hpp"
+#include "xcubesat_interpreter.hpp"
 
 Init::Init()
 {
@@ -63,7 +64,7 @@ Manager *Init::load_previus_section(Glib::ustring *previusSection, Manager* man)
                     aliasStr = new Glib::ustring(DataBase::get_alias(aliasNameStr->c_str())->str());
 
                     // Creates a new script associated with the satellite
-                    man->add_script(satNameStr, scriptNameStr, scriptStr, aliasStr, new Interpreter(this->inOutInterface));
+                    man->add_script(satNameStr, scriptNameStr, scriptStr, aliasStr, new XCubeSatInterpreter(this->inOutInterface));
                 }
             }
         }

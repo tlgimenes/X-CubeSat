@@ -174,3 +174,10 @@ void Manager::rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName
     else
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to rename satellite because satellite not found", __FILE__, __LINE__); 
 }
+
+void Manager::run_next_script(Glib::ustring satName)
+{
+    if(exists_sat(&satName)) {
+        this->satManagers[satName.c_str()]->run_next_script();
+    }
+}
