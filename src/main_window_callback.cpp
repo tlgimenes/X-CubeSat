@@ -417,7 +417,7 @@ void openFifoFile(int *fifo_fd)
 }
 
 #define SAVE_SESSION() \
-    this->man->save(session); \
+    this->man->save(); \
     Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
 
 bool MainWindowCallback::on_key_press_event(GdkEventKey *event)
@@ -440,7 +440,8 @@ bool MainWindowCallback::on_key_press_event(GdkEventKey *event)
 void MainWindowCallback::quit_cb()
 {
     Glib::ustring session = DEFAULT_SESSION_FILE; 
-    this->man->save(session); 
+ //   this->man->save(session); 
+    this->man->save();
     Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
  
     gtk_main_quit();
@@ -469,7 +470,8 @@ void MainWindowCallback::on_response_save_message_dialog(int response_id)
     Glib::ustring session = DEFAULT_SESSION_FILE; 
 
     if(response_id == Gtk::RESPONSE_YES) {
-        this->man->save(session);
+ //       this->man->save(session);
+        this->man->save();
         Log::LogWarn(LEVEL_LOG_INFO, "Session saved", __FILE__, __LINE__);
     }
 }

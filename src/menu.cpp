@@ -123,7 +123,7 @@ void Menu::saveAs_cancelButton_clicked_cb()
 void Menu::save_activate_cb()
 {
     Glib::ustring session = DEFAULT_SESSION_FILE;
-    this->man->save(session);
+    this->man->save();
 }
 
 void Menu::saveAs_activate_cb()

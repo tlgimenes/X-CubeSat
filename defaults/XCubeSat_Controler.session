@@ -1,5 +1,5 @@
 AMAZONAS
-1 defaults/new_script.txt defaults/new_script.txt.alias 
+2 script.txt new_script.txt 
 AAUSAT-II
 0 
 BEESAT-2
@@ -7,11 +7,11 @@ BEESAT-2
 BEESAT-3
 0 
 AIST-2
-0 
+1 new_script.txt 
 STPSAT-3
 0 
 ABS-7 (KOREASAT 3)
-0 
+1 new_script.txt 
 AAU CUBESAT
 0 
 BEESAT
@@ -19,7 +19,7 @@ BEESAT
 AUBIESAT-1 (AO-71)
 0 
 AAUSAT3
-0 
+1 new_script.txt 
 ISS
 0 
 BRITE-AUSTRIA

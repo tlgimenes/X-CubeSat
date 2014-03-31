@@ -96,7 +96,7 @@ void Script::save()
         }
 
         if(!DataBase::save_script(*this->name, textBuff, aliasStream.str()))
-            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
+            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because a problem in the database occurred", this->name->c_str(), __LINE__);
     }
     else {
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);

@@ -10,6 +10,9 @@
 #include "log.hpp"
 #include "satellite.hpp"
 #include "sat_manager.hpp"
+#include "data_base.hpp"
+
+
 
 Manager::Manager()
 {
@@ -151,7 +154,18 @@ void Manager::decrease_priority(int index, Glib::ustring satName)
     }
 }
 
-void Manager::save(Glib::ustring sessionFile)
+void Manager::save()
+{
+    for(auto it = this->satManagers.begin(); it != this->satManagers.end(); it++) {
+        DataBase::save_session(it->first, it->second->get_num_scripts(), it->second->get_save_str()->str());
+        it->second->save();
+    }
+}
+
+/* TODO: FINISH OF IMPLEMENTING THE SESSION SAVING */
+/* TODO: FINISH IMPLEMENT Manager::save() and SatManager::get_save_string()*/
+
+/*void Manager::save(Glib::ustring sessionFile)
 {
     std::fstream fs(sessionFile.c_str(), std::fstream::out);
     std::stringstream scratch;
@@ -164,7 +178,7 @@ void Manager::save(Glib::ustring sessionFile)
     fs << scratch.str().c_str();
 
 fs.close();
-}
+}*/
 
 void Manager::rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName)
 {

@@ -238,6 +238,24 @@ bool set_stream_ptr(std::fstream *fs, Glib::ustring str)
     return false;
 }
 
+std::stringstream *SatManager::get_save_str()
+{
+    std::stringstream *sst = new std::stringstream();
+
+    for(unsigned int i = 0; i < this->scriptsQueue.size(); i++) {
+        *sst << *this->scriptsQueue[i]->get_name() << '\n';
+    }
+    return sst;
+}
+
+void SatManager::save()
+{
+     for(unsigned int i = 0; i < this->scriptsQueue.size(); i++) {
+         this->scriptsQueue[i]->save();
+    }
+}
+
+/*
 std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile) 
 {
     std::fstream fs(sessionFile.c_str(), std::fstream::out);
@@ -253,15 +271,13 @@ std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile)
         for(unsigned int i=0; i < this->scriptsQueue.size(); i++) {
             queue[i]->save();
             name = *queue[i]->get_name();
-            *sst << name << " ";
-            name.append(".alias");
-            *sst << name << " ";
+            *sst << name << ' ';
        }
     }
     fs.close();
 
     return sst;
-}
+}*/
 
 void SatManager::replace_alias_column_alias(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
 {
@@ -273,4 +289,9 @@ void SatManager::replace_alias_column_command(Glib::ustring scriptName, const Gl
 {
     if(exists_script(scriptName))
         this->scripts[scriptName.c_str()]->replace_alias_column_command(path, newAlias);
+}
+
+int SatManager::get_num_scripts()
+{
+    return this->scripts.size();
 }

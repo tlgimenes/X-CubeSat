@@ -10,3 +10,5 @@ doc/*.log
 doc/*.synctex.gz
 doc/*.tex.bak
 
+#Ignore databases
+dataBase/*.db

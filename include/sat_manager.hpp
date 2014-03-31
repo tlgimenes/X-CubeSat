@@ -58,7 +58,9 @@ class SatManager
 
         bool exists_script(Glib::ustring name);
 
-        std::stringstream *get_save_str(Glib::ustring sessionFile);
+        void save();
+        std::stringstream *get_save_str();
+        int get_num_scripts();
 };
 
 #endif
