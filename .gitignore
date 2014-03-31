@@ -3,3 +3,12 @@ src/*.o
 
 #Ignore the compiled version
 XCubeSat_Controler
+
+#Ignore latex useless files
+doc/*.aux 
+doc/*.log
+doc/*.synctex.gz
+doc/*.tex.bak
+
+#Ignore databases
+dataBase/*.db

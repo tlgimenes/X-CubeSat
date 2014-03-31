@@ -47,7 +47,7 @@ class Script
         void replace_alias_column_alias(const Glib::ustring& path, const Glib::ustring& newAlias);
         void replace_alias_column_command(const Glib::ustring& path, const Glib::ustring& new_text);
         void save();
-        void run();
+        void run(Glib::ustring *satName);
 };
 
 #endif

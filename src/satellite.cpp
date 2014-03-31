@@ -14,3 +14,4 @@ Glib::ustring *Satellite::get_nickname()
 {
     return this->nickname;
 }
+

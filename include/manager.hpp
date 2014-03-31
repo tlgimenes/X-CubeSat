@@ -51,7 +51,10 @@ class Manager
         void decrease_priority(int index, Glib::ustring satName);
 
         void save(Glib::ustring sessionFile);
+        void save();
         void rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName);
+
+        void run_next_script(Glib::ustring satName);
 };
 
 #endif

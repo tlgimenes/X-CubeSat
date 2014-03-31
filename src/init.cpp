@@ -10,6 +10,7 @@
 
 #include "init.hpp"
 #include "log.hpp"
+#include "xcubesat_interpreter.hpp"
 
 Init::Init()
 {
@@ -21,12 +22,11 @@ Init::Init()
         sstm->seekg((int)sstm->tellg() + 1); \
     }
 
-Manager *Init::load_previus_section(Glib::ustring *previusSection, Manager* man)
+/*Manager *Init::load_previus_section(Glib::ustring *previusSection, Manager* man)
 {
     std::stringstream satName;
     Glib::ustring       *satNameStr;
     Glib::ustring       *scriptNameStr;
-    Glib::ustring       *aliasNameStr;
     Glib::ustring       *aliasStr;
     Glib::ustring       *scriptStr;
     std::stringstream scriptsNumStr;
@@ -54,16 +54,14 @@ Manager *Init::load_previus_section(Glib::ustring *previusSection, Manager* man)
                 psf->get(aux, 999, ' ');
                 scriptNameStr = new Glib::ustring(aux);
                 discard_spaces(psf);
-                psf->getline(aux, 999, ' ');
-                aliasNameStr = new Glib::ustring(aux);
 
-                if(DataBase::exists_script(*scriptNameStr) && DataBase::exists_alias(*aliasNameStr)) {
+                if(DataBase::exists_script(*scriptNameStr)) {
                     // Get the content of the scripts
                     scriptStr = new Glib::ustring(DataBase::get_scripts(scriptNameStr->c_str())->str());
-                    aliasStr = new Glib::ustring(DataBase::get_alias(aliasNameStr->c_str())->str());
+                    aliasStr = new Glib::ustring(DataBase::get_alias(scriptNameStr->c_str())->str());
 
                     // Creates a new script associated with the satellite
-                    man->add_script(satNameStr, scriptNameStr, scriptStr, aliasStr, new Interpreter(this->inOutInterface));
+                    man->add_script(satNameStr, scriptNameStr, scriptStr, aliasStr, new XCubeSatInterpreter(this->inOutInterface));
                 }
             }
         }
@@ -71,9 +69,50 @@ Manager *Init::load_previus_section(Glib::ustring *previusSection, Manager* man)
     }
 
     return man;
+}*/
+
+void Init::load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, InOutInterface *inter)
+{
+    Glib::ustring *scriptStr, *aliasStr;
+    Glib::ustring *scriptNameStr;
+    char aux[999];
+
+    for(int i=0; i < scriptsNum && !scripts->eof(); i++) {
+        scripts->getline(aux, 999);
+        scriptNameStr = new Glib::ustring(aux);
+        discard_spaces(scripts);
+
+        if(DataBase::exists_script(*scriptNameStr)) {
+            // Get the content of the scripts
+            scriptStr = new Glib::ustring(DataBase::get_scripts(scriptNameStr->c_str())->str());
+            aliasStr = new Glib::ustring(DataBase::get_alias(scriptNameStr->c_str())->str());
+
+            // Creates a new script associated with the satellite
+            man->add_script(satName, scriptNameStr, scriptStr, aliasStr, new XCubeSatInterpreter(inter));
+        }
+    }
 }
 
-Manager *Init::load_current_sats(Glib::ustring * gpredictSats)
+void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOutInterface *inter)
+{
+    if(!DataBase::exists_file(*gpredictSats)) {
+        Log::LogWarn(LEVEL_LOG_ERROR, "Could not open Sats file from Gpredict !", __FILE__, __LINE__);
+   }
+    std::stringstream *sats = DataBase::get_sats(*gpredictSats);
+    Glib::ustring *satNameStr;
+    char aux[999];
+    
+    while(!sats->eof()) {
+        sats->getline(aux, 999);
+        satNameStr = new Glib::ustring(aux);
+        man->add_sat(satNameStr);
+        load_scripts(DataBase::get_session_script_num(*satNameStr), DataBase::get_session_script_names(*satNameStr), satNameStr, man, inter);
+    }
+
+    return;
+}
+
+/*Manager *Init::load_current_sats(Glib::ustring * gpredictSats)
 {
     if(!DataBase::exists_sats(*gpredictSats)) {
         Log::LogWarn(LEVEL_LOG_ERROR, "Could not open Sats file from Gpredict !", __FILE__, __LINE__);
@@ -92,8 +131,17 @@ Manager *Init::load_current_sats(Glib::ustring * gpredictSats)
     }
 
     return man;
+}*/
+
+void Init::XCubeSat_Controller_start(Manager **man, InOutInterface **inter)
+{
+    *inter = new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT));
+
+    *man = new Manager();
+    Init::load_previous_session(new Glib::ustring(DEFAULT_GPREDICT_SATS_FILE), *man, *inter);
 }
 
+/*
 void Init::XCubeSat_Controller_start(Manager **man, InOutInterface **inter)
 {
     Init *init = new Init();
@@ -105,4 +153,4 @@ void Init::XCubeSat_Controller_start(Manager **man, InOutInterface **inter)
 
     return;
 }
-
+*/

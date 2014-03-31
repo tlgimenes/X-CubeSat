@@ -37,7 +37,7 @@
  * Curr sat
  */
 #define CURR_SAT_LABEL_WIDGET "sat"
-#define STATUS_LABEL_WIDGET "status"
+#define STATUS_LABEL_WIDGET "stat"
 #define ELEVATION_LABEL_WIDGET "elevation"
 #define AZIMUTH_LABEL_WIDGET "azimuth"
 
@@ -80,8 +80,8 @@
 #define ADD_NEW_SCRIPT_BUTTON "addNewScriptButton"
 
 /* ---------------------------------------------------- */
-#define DEFAULT_SCRIPT_NAME "defaults/new_script.txt"
-#define DEFAULT_CODE_NAME "type-me\n"
+#define DEFAULT_SCRIPT_NAME "new_script.txt"
+#define DEFAULT_CODE_NAME "#Write your code here\n"
 #define DEFAULT_ALIAS "OK\ninsert_ok\nnew_alias\nnew_command\n"
 
 /* ---------------------------------------------------- */
@@ -95,5 +95,18 @@
 #define WARN_DIALOG_WIDGET  "warnDialog"
 #define ERROR_DIALOG_WIDGET "errorDialog"
 #define INFO_DIALOG_WIDGET  "infoDialog"
+
+/* ---------------------------------------------------- */
+#define MAX_COMMENTS_SIZE 999
+
+/* ---------------------------------------------------- */
+/* DATABASE DEFINITIONS */
+/* ---------------------------------------------------- */
+#define DATABASE_NAME "dataBase/XCubeSat_Controler.db"
+#define DATABASE_CONFIG "dataBase/tables.sql"
+#define SCI_DATA_TABLE "XCubeSat_Controler_sciData"
+#define WOD_DATA_TABLE "XCubeSat_Controler_wodData" 
+#define SCRIPTS_DATA_TABLE "XCubeSat_Controler_scripts"
+#define SESSION_DATA_TABLE "XCubeSat_Controler_session"
 
 #endif

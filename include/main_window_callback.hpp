@@ -5,6 +5,7 @@
 #include "in_out_interface.hpp"
 #include "manager.hpp"
 #include "menu.hpp"
+#include "xcubesat_interpreter.hpp"
 #include "interpreter.hpp"
 
 class MainWindowCallback
@@ -17,6 +18,11 @@ class MainWindowCallback
         Manager *man;
         InOutInterface *inter;
         MainWindowRenderer *main_window_renderer;
+        /*----------------------------------------------*/
+
+        /*----------------------------------------------*/
+        /* Timeout callback attributes */
+        bool isRunning;
         /*----------------------------------------------*/
 
         /*----------------------------------------------*/

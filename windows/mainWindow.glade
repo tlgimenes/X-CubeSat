@@ -8,13 +8,40 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">SEND</col>
+        <col id="0" translatable="yes">SEND()</col>
       </row>
       <row>
-        <col id="0" translatable="yes">RECEIVE</col>
+        <col id="0" translatable="yes">SAVE(,)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">IF()</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">EQ(,)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LL(,)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LEQ(,)</col>
       </row>
       <row>
         <col id="0" translatable="yes">FILE()</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">APPENDDATE()</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">FORMAT()</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">RECEIVE()</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">DECLARE(,)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">SET(,)</col>
       </row>
     </data>
   </object>

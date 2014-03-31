@@ -25,6 +25,7 @@ class InOutInterface
         bool open(Glib::ustring deviceName, int speed);
         InOutLog * write(Glib::ustring *data);
         InOutLog * read(size_t count);
+        InOutLog * read(char delim);
 
         bool set_device_speed(int);
 

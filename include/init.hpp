@@ -22,6 +22,8 @@ class Init
         Init();
         Manager *load_current_sats(Glib::ustring *gpredictSatsFile);
         Manager *load_previus_section(Glib::ustring *previusSection, Manager *man);
+        static void load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOutInterface *inter);
+        static void load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, InOutInterface *inter);
     public:
         static void XCubeSat_Controller_start(Manager **man, InOutInterface **inter);
 };

@@ -107,6 +107,7 @@ class MainWindowRenderer
         void render_curr_sat_el_refresh(Glib::ustring);
         void render_curr_sat_az_refresh(Glib::ustring);
         void render_curr_sat_name_refresh(Glib::ustring);
+        void render_curr_status_refresh(Glib::ustring);
         void render_new_alias_row(Glib::ustring aliasName, Glib::ustring commandName);
         void render_alias_column_refresh(Gtk::ListStore::iterator it, const Glib::ustring& new_text, Gtk::TreeModelColumn<Glib::ustring> column);
         void render_new_scritp_name(Glib::ustring);

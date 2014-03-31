@@ -1,4 +1,6 @@
 #include <gtkmm.h>
+#include <sqlite3.h>
+#include <libsqlitewrapped.h>
 #include <iostream>
 
 #include "log.hpp"
@@ -24,6 +26,7 @@ int main (int argc, char *argv[])
     InOutInterface *inter;
     
     Log::init();
+    DataBase::init();
     
     Init::XCubeSat_Controller_start(&man, &inter);
 

@@ -9,8 +9,11 @@
 
 #include <gtkmm.h>
 #include <unordered_map>
+#include <iostream>
+
 #include "in_out_interface.hpp"
 #include "in_out_log.hpp"
+#include "log.hpp"
 
 class Interpreter
 {
@@ -21,8 +24,19 @@ class Interpreter
         Interpreter(InOutInterface *);
         Interpreter(Glib::ustring *portName);
 
-        virtual InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias){return NULL;}
+        virtual InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName)
+        {
+            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to interpret because specific interpreter was not set", __FILE__, __LINE__);
 
+            return NULL;
+        }
+
+        virtual bool *are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias) 
+        {
+            Log::LogWarn(LEVEL_LOG_WARNING, "Unable to interpret because specific interpreter was not set", __FILE__, __LINE__);
+
+            return NULL;
+        }
 };
 
 #endif

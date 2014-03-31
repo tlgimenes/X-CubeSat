@@ -45,22 +45,22 @@ InOutLog::InOutLog(log_nature nature, Glib::ustring *data, bool success)
     this->success = success;
 }
 
-log_nature InOutLog::GetNature()
+log_nature InOutLog::get_nature()
 {
     return this->nature;
 }
 
-Glib::ustring * InOutLog::GetId()
+Glib::ustring * InOutLog::get_id()
 {
     return this->id;
 }
 
-Glib::ustring * InOutLog::GetData()
+Glib::ustring * InOutLog::get_data()
 {
     return this->data;
 }
 
-bool InOutLog::isSuccessful()
+bool InOutLog::is_successful()
 {
     return this->success;
 }
