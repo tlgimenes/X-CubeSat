@@ -2,11 +2,19 @@
 
 #include "xcubesat_token.hpp"
 
+/*  --------------------------------------------------------  */
+/*  Constructors 
+ */
 XCubeSatToken::XCubeSatToken(token t)
 {
     this->type = t;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Set the token a type and the data in case of string and 
+ * variable
+ */
 XCubeSatToken::XCubeSatToken(Glib::ustring *str)
 {
     if(!str->compare("SEND")) 
@@ -52,33 +60,58 @@ XCubeSatToken::XCubeSatToken(Glib::ustring *str)
     }
     std::cout << "the string read was " << str->c_str() << std::endl;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Set the string data to the token
+ */
 void XCubeSatToken::set_data(Glib::ustring *str)
 {
     this->data.sdata = str;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Set the boolean data to the token
+ */
 void XCubeSatToken::set_data(bool b)
 {
     this->data.bdata = b;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Set the integer data to the token
+ */
 void XCubeSatToken::set_data(int i)
 {
     this->data.idata = i;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Get the type of the token
+ */
 token XCubeSatToken::get_type()
 {
     return this->type;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Get the value of the token converted in string
+ */
 Glib::ustring *XCubeSatToken::get_value_str()
 {
     return this->data.sdata;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*  Get the value of the token converted in int
+ */
 int XCubeSatToken::get_value_int()
 {
     return this->data.idata;
 }
+/*  --------------------------------------------------------  */

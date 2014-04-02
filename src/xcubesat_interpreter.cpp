@@ -11,6 +11,10 @@
 #include "xcubesat_interpreter.hpp"
 #include "function.hpp"
 
+/*  --------------------------------------------------------  */
+/*
+ *  Constructors
+ */
 XCubeSatInterpreter::XCubeSatInterpreter(InOutInterface *inOutInterface) : Interpreter(inOutInterface)
 {
     this->compiler = new XCubeSatCompiler();
@@ -20,7 +24,12 @@ XCubeSatInterpreter::XCubeSatInterpreter(Glib::ustring *portName) : Interpreter(
 {
     this->compiler = new XCubeSatCompiler();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/*
+ *  Inteprets the script and creates errors dialogs in case of errors. 
+ */
 InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName)
 {
     try {
@@ -36,9 +45,6 @@ InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map
             f->run(&this->runQueue, satName);
             std::cout << std::endl;
         }
-        /*
-         * TODO: FINISH HERE
-         */
     }
     catch(std::bad_typeid *e) {
         Log::LogWarn(LEVEL_LOG_INFO, "Error while compilling file", __FILE__, __LINE__);
@@ -49,8 +55,12 @@ InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map
 
     return new InOutLog(SEND_LOG, NULL, true);
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/*
+ *  Check if there are syntax errors
+ */
 bool *XCubeSatInterpreter::are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias) 
 {
     std::stringstream *sstr = new std::stringstream(text->c_str());
@@ -68,3 +78,4 @@ bool *XCubeSatInterpreter::are_there_syntax_errors(Glib::ustring *text, std::uno
 
     return res;
 }
+/*  --------------------------------------------------------  */

@@ -15,14 +15,13 @@
 class XCubeSatCompiler 
 {
     private:
-        std::unordered_map<std::string, std::string> *alias;
-        std::stringstream *fileString;
         std::vector<XCubeSatToken*> *tokens;
         Glib::ustring log;
         bool error;
 
     protected:
-        std::vector<XCubeSatToken*> *tokenizer();
+        std::vector<XCubeSatToken*> *tokenizer(std::stringstream *fileString);
+        std::stringstream *replace_alias(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString);
 
     public:
         XCubeSatCompiler();

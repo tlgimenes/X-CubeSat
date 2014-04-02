@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS XCubeSat_Controler_session(
-    S
-    it->second->save();atId integer primary key autoincrement not null,
+    SatId integer primary key autoincrement not null,
     SatName text not null,
     AmountOfScripts integer not null,
     ScriptNames text);

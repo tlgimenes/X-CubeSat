@@ -1,0 +1,14 @@
+\BOOKMARK [0][-]{chapter.1}{Requirements}{}% 1
+\BOOKMARK [0][-]{chapter.2}{Installation Instructions}{}% 2
+\BOOKMARK [1][-]{section.2.1}{Installing dependencies}{chapter.2}% 3
+\BOOKMARK [1][-]{section.2.2}{Compiling}{chapter.2}% 4
+\BOOKMARK [0][-]{chapter.3}{Overview}{}% 5
+\BOOKMARK [0][-]{chapter.4}{Frame: Port Config}{}% 6
+\BOOKMARK [0][-]{chapter.5}{Frame: Sats}{}% 7
+\BOOKMARK [0][-]{chapter.6}{Frame: CurrSat}{}% 8
+\BOOKMARK [0][-]{chapter.7}{Frame: Config}{}% 9
+\BOOKMARK [1][-]{section.7.1}{Sub Frame: Alias}{chapter.7}% 10
+\BOOKMARK [1][-]{section.7.2}{Sub Frame: CommandFile}{chapter.7}% 11
+\BOOKMARK [1][-]{section.7.3}{Sub Frame: Commands}{chapter.7}% 12
+\BOOKMARK [0][-]{chapter.8}{Frame: Scripts}{}% 13
+\BOOKMARK [1][-]{section.8.1}{Sub Frame: Scripts Exec Order}{chapter.8}% 14

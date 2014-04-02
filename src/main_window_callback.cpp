@@ -413,7 +413,7 @@ void openFifoFile(int *fifo_fd)
 {
     *fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
     if(*fifo_fd == -1)
-        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict data, the program will be closed !", __FILE__, __LINE__);
+        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict FIFO file, the program will be closed !", __FILE__, __LINE__);
 }
 
 #define SAVE_SESSION() \

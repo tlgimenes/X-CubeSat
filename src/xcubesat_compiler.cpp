@@ -20,11 +20,10 @@
 
 XCubeSatCompiler::XCubeSatCompiler()
 {
-    this->alias = NULL;
-    this->fileString = NULL;
     this->tokens = NULL;
     this->error = false;
 }
+
 
 std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, InOutInterface *interface) throw(std::bad_typeid*)
 {
@@ -33,10 +32,8 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
     XCubeSatToken *t;
     Function *f;
 
-    this->alias = alias;
-    this->fileString = fileString;
-
-    this->tokens = this->tokenizer();
+    std::stringstream *fileStringNoAlias = this->replace_alias(alias, fileString);
+    this->tokens = this->tokenizer(fileStringNoAlias);
 
     // At this point tokens should be ok (they 
     // should respect the language definition)
@@ -180,7 +177,7 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
         t = NULL2;
 
 
-std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
+std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer(std::stringstream *fileString)
 {
     char *garbage = new char[MAX_COMMENTS_SIZE];
     char c;
@@ -194,64 +191,14 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
     this->tokens = new std::vector<XCubeSatToken*>();
     this->error = false;
 
-    discard_blanks(this->fileString);
-    while(!this->fileString->eof() && !error) {
+    discard_blanks(fileString);
+    while(!fileString->eof() && !error) {
         c = fileString->get();
         switch(c) {
             case '(':
-                if(insideStr) break;
-                if(!buffer.empty()) {
-                    t = new XCubeSatToken(&buffer);
-                    this->tokens->push_back(t);
-                    buffer.clear();
-                }
-                paren.push(c);
-                discard_blanks(this->fileString);
-                continue;
-            case '{':
-                if(insideStr) break;
-                if(!buffer.empty()) {
-                    t = new XCubeSatToken(&buffer);
-                    this->tokens->push_back(t);
-                    buffer.clear();
-                }
-                buffer.push_back(c);
-                t = new XCubeSatToken(&buffer);
-                this->tokens->push_back(t);
-                buffer.clear();
-                paren.push(c);
-                discard_blanks(this->fileString);
-                continue;
-            case '}':
-                if(insideStr) break;
-                if(!buffer.empty()) {
-                    t = new XCubeSatToken(&buffer);
-                    this->tokens->push_back(t);
-                    buffer.clear();
-                }
-                buffer.push_back(c);
-                t = new XCubeSatToken(&buffer);
-                this->tokens->push_back(t);
-                buffer.clear();
-                if(!paren.empty()) 
-                    paren.pop();
-                else 
-                    error = true;
-                discard_blanks(this->fileString);
-                continue;
             case ')':
-                if(insideStr) break;
-                if(!buffer.empty()) {
-                    t = new XCubeSatToken(&buffer);
-                    this->tokens->push_back(t);
-                    buffer.clear();
-                }
-                if(!paren.empty()) 
-                    paren.pop();
-                else 
-                    error = true;
-                discard_blanks(this->fileString);
-                continue;
+            case '{':
+            case '}':
             case '=':
             case ',':
                 if(insideStr) break;
@@ -260,7 +207,41 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
                     this->tokens->push_back(t);
                     buffer.clear();
                 }
-                discard_blanks(this->fileString);
+        }
+        switch(c) {
+            case '(':
+                paren.push(c);
+                discard_blanks(fileString);
+                continue;
+            case '{':
+                buffer.push_back(c);
+                t = new XCubeSatToken(&buffer);
+                this->tokens->push_back(t);
+                buffer.clear();
+                paren.push(c);
+                discard_blanks(fileString);
+                continue;
+            case '}':
+                buffer.push_back(c);
+                t = new XCubeSatToken(&buffer);
+                this->tokens->push_back(t);
+                buffer.clear();
+                if(!paren.empty()) 
+                    paren.pop();
+                else 
+                    error = true;
+                discard_blanks(fileString);
+                continue;
+            case ')':
+                if(!paren.empty()) 
+                    paren.pop();
+                else 
+                    error = true;
+                discard_blanks(fileString);
+                continue;
+            case '=':
+            case ',':
+                discard_blanks(fileString);
                 continue;
             case '"':
                 insideStr = false;
@@ -279,11 +260,11 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
                     quotes.pop();
                     insideStr = false;
                 }
-                discard_blanks(this->fileString);
+                discard_blanks(fileString);
                 continue;
             case '#':
                 fileString->getline(garbage, MAX_COMMENTS_SIZE);
-                discard_blanks(this->fileString);
+                discard_blanks(fileString);
                 continue;
 
         }
@@ -291,7 +272,7 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
         buffer.push_back(c);
 
         if(!insideStr)
-            discard_blanks(this->fileString);
+            discard_blanks(fileString);
     }
     if(!buffer.empty()) {
         t = new XCubeSatToken(&buffer);
@@ -303,6 +284,112 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer()
     }
 
     return this->tokens;
+}
+
+std::stringstream *XCubeSatCompiler::replace_alias(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString)
+{ 
+    char *garbage = new char[MAX_COMMENTS_SIZE];
+    char c;
+    bool entered = false;
+    bool insideStr = false;
+    Glib::ustring buffer;
+    std::stringstream *str = new std::stringstream();
+    std::stack<char> paren;
+    std::stack<char> quotes;
+
+    while(!fileString->eof() && !error) {
+        c = fileString->get();
+        switch(c) {
+            case '(':
+            case ')':
+            case '{':
+            case '}':
+            case '=':
+            case ',':
+            case '"':
+                if(insideStr) break;
+                if(!buffer.empty()) {
+                    if(alias->find(buffer.c_str()) != alias->end()) {
+                        *str << (*alias)[buffer.c_str()];
+                    }
+                    else {
+                        *str << buffer;
+                    }
+                    buffer.clear();
+                }
+                *str << c;
+                break;
+        }
+
+        switch(c) {
+            case '(':
+                paren.push(c);
+                discard_blanks(fileString);
+                continue;
+            case '{':
+                paren.push(c);
+                discard_blanks(fileString);
+                continue;
+            case '}':
+                if(!paren.empty()) 
+                    paren.pop();
+                else 
+                    error = true;
+                discard_blanks(fileString);
+                continue;
+            case ')':
+                if(!paren.empty()) 
+                    paren.pop();
+                else 
+                    error = true;
+                discard_blanks(fileString);
+                continue;
+            case '=':
+            case ',':
+                discard_blanks(fileString);
+                continue;
+            case '"':
+                insideStr = false;
+                if(!buffer.empty()) {
+                    if(alias->find(buffer.c_str()) != alias->end()) {
+                        *str << (*alias)[buffer.c_str()];
+                    }
+                    else {
+                        *str << buffer;
+                    }
+                    buffer.clear();
+                }
+                *str << c;
+                if(quotes.empty()) {
+                    quotes.push(c);
+                    insideStr = true;
+                    c = toupper(c);
+                    buffer.push_back(c);
+                }
+                else {
+                    quotes.pop();
+                    insideStr = false;
+                }
+                discard_blanks(fileString);
+                continue;
+            case '#':
+                fileString->getline(garbage, MAX_COMMENTS_SIZE);
+                discard_blanks(fileString);
+                continue;
+
+        }
+        c = toupper(c);
+        buffer.push_back(c);
+
+        if(!insideStr)
+            discard_blanks(fileString);
+    }
+    if(!quotes.empty() || !paren.empty() || error) {
+        this->log = "Unmatched number of parenthesis and string signal";
+        this->error = true;
+    }
+
+    return str;
 }
 
 bool XCubeSatCompiler::are_there_syntax_errors()
