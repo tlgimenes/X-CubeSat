@@ -18,13 +18,21 @@
 #include "function_variable_string.hpp"
 #include "defs.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructors
+ */
 XCubeSatCompiler::XCubeSatCompiler()
 {
     this->tokens = NULL;
     this->error = false;
 }
 
-
+/*  --------------------------------------------------------  */
+/* Gets a raw string with its alias and a valid Input/Output
+ * Interface and returns a vector of Function to be executed.
+ * If all goes well it is just necessary to do a foreach in
+ * the return structure asking for the method run
+ */
 std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, InOutInterface *interface) throw(std::bad_typeid*)
 {
     std::unordered_map<std::string, Function*> variables;
@@ -98,8 +106,11 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
     }
     return vec;
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Discard space, newline and tab characters of a stringstream
+ */
 #define discard_blanks(sstm) \
     while(!sstm->eof()) { \
         entered = false; \
@@ -123,31 +134,11 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
             break;\
         }\
     }
+/*  --------------------------------------------------------  */
 
-/*#define discard_paren(sstm) \
-    while(!sstm->eof()) { \
-        entered = false; \
-        while(sstm->peek() == '(') { \
-            sstm->seekg((int)sstm->tellg() + 1); \
-            entered = true;\
-        } \
-        while(sstm->peek() == ')') { \
-            sstm->seekg((int)sstm->tellg() + 1); \
-            entered = true; \
-        } \
-        while(sstm->peek() == '{') { \
-            sstm->seekg((int)sstm->tellg() + 1); \
-            entered = true; \
-        } \
-        while(sstm->peek() == '}') { \
-            sstm->seekg((int)sstm->tellg() + 1); \
-            entered = true; \
-        } \
-        if(!entered) { \
-            break; \
-        } \
-    }*/
-
+/*  --------------------------------------------------------  */
+/* Gets the type represented by the string str
+ */
 #define get_type(str) \
     if(!str.compare("SEND")) \
         t = SEND; \
@@ -175,8 +166,13 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
         t = RECEIVE; \
     else \
         t = NULL2;
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Generates tokens from the string fileString. 
+ * This function also generates errors dialogs if the string
+ * fileString contains syntax errors.
+ */
 std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer(std::stringstream *fileString)
 {
     char *garbage = new char[MAX_COMMENTS_SIZE];
@@ -285,7 +281,12 @@ std::vector<XCubeSatToken*> *XCubeSatCompiler::tokenizer(std::stringstream *file
 
     return this->tokens;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Gets a string fileString and replaces each word that has
+ * a corresponding alias
+ */
 std::stringstream *XCubeSatCompiler::replace_alias(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString)
 { 
     char *garbage = new char[MAX_COMMENTS_SIZE];
@@ -391,15 +392,24 @@ std::stringstream *XCubeSatCompiler::replace_alias(std::unordered_map<std::strin
 
     return str;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Check for the flag of syntax_errors
+ */
 bool XCubeSatCompiler::are_there_syntax_errors()
 {
     if(this->error)
         return true;
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Get the string with syntax errors
+ */
 Glib::ustring XCubeSatCompiler::get_syntax_errors()
 {
     return this->log;
 }
+/*  --------------------------------------------------------  */

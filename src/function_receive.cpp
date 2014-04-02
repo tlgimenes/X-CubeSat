@@ -8,11 +8,19 @@
 #include "function_variable_string.hpp"
 #include "function_variable_data.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionReceive::FunctionReceive(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(str);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -48,7 +56,11 @@ FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, InOutInter
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     FunctionVariableData *data = NULL;
@@ -75,3 +87,4 @@ Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *
 
     return data;
 }
+/*  --------------------------------------------------------  */

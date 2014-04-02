@@ -10,12 +10,9 @@
 #include "script.hpp"
 #include "log.hpp"
 
-/*SatManager::SatManager(Satellite *sat)
-{
-    this->sat = sat;
-    this->row = NULL;
-}*/
-
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 SatManager::SatManager(Satellite *sat, Gtk::TreeModel::RowReference *row, ModelSatsColumns *model)
 {
     this->sat = sat;
@@ -24,7 +21,14 @@ SatManager::SatManager(Satellite *sat, Gtk::TreeModel::RowReference *row, ModelS
 
     this->scriptsPriorityQueue = Gtk::ListStore::create(this->modelScriptsPriorityQueue); 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Add a new script to this satellite manager. The given
+ * interpreter is used to interpret the script that is
+ * being added giving the possibility of writing different
+ * interpreters to different satellites and scripts
+ */
 void SatManager::add_script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter)
 {
     if(scripts.find(name->c_str()) == scripts.end()) {
@@ -53,7 +57,11 @@ void SatManager::add_script(Glib::ustring *name, Glib::ustring *script, Glib::us
         Log::LogWarn(LEVEL_LOG_WARNING, "New script not added because it already exists", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* run the script of name scriptName
+ */
 void SatManager::run_script(Glib::ustring scriptName)
 {
     try{
@@ -63,7 +71,12 @@ void SatManager::run_script(Glib::ustring scriptName)
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the scripts list", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Inserts in the last position of the FIFO queue the script
+ * with name scriptName to be executed
+ */
 void SatManager::enqueue_script(Glib::ustring scriptName)
 {
     try {
@@ -73,7 +86,12 @@ void SatManager::enqueue_script(Glib::ustring scriptName)
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the scripts list", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Run the first script in the FIFO queue and set it in the
+ * last position of the same queue
+ */
 void SatManager::run_next_script()
 {
     try {
@@ -92,7 +110,11 @@ void SatManager::run_next_script()
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the scripts list", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if the script exists, false in the other way
+ */
 bool SatManager::exists_script(Glib::ustring name)
 {
     if(this->scripts.find(name.c_str()) != this->scripts.end())
@@ -100,7 +122,12 @@ bool SatManager::exists_script(Glib::ustring name)
     else
         return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Renames the script with the name oldName with a the new 
+ * name newName
+ */
 void SatManager::rename_script(Glib::ustring *oldName, Glib::ustring *newName)
 {
     Script *script;
@@ -131,18 +158,30 @@ void SatManager::rename_script(Glib::ustring *oldName, Glib::ustring *newName)
     else
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to rename script because it was not found", __FILE__, __LINE__);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the alias of the first script in the scripts 
+ * hash table
+ */
 std::stringstream *SatManager::get_first_alias()
 {
     return this->scripts.begin()->second->get_alias();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the alias of the script with name scriptName
+ */
 std::stringstream *SatManager::get_alias(Glib::ustring scriptName)
 {
     return this->scripts[scriptName.c_str()]->get_alias();
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Returns the GTK model of the alias frame list
+ */
 Glib::RefPtr<Gtk::ListStore> *SatManager::get_model_alias_list(Glib::ustring scriptName)
 {
     std::unordered_map<std::string, Script*>::iterator it = this->scripts.find(scriptName.c_str());
@@ -154,7 +193,11 @@ Glib::RefPtr<Gtk::ListStore> *SatManager::get_model_alias_list(Glib::ustring scr
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the text buffer of the script with name scriptName
+ */
 Glib::RefPtr<Gtk::TextBuffer> *SatManager::get_text_buffer(Glib::ustring scriptName)
 {
     std::unordered_map<std::string, Script*>::iterator it = this->scripts.find(scriptName.c_str());
@@ -166,18 +209,30 @@ Glib::RefPtr<Gtk::TextBuffer> *SatManager::get_text_buffer(Glib::ustring scriptN
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the row in the Sats frame where this object 
+ * appears
+ */
 Gtk::TreeModel::RowReference *SatManager::get_row_reference()
 {
     return this->row;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the FIFO queue of scripts to be executed
+ */
 Glib::RefPtr<Gtk::ListStore>* SatManager::get_scripts_priority_queue()
 {
     return &(this->scriptsPriorityQueue);
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Prints the FIFO queue. For debug only purposes
+ */
 void print_priority_queue(std::vector<Script*> q)
 {
     int count = 0;
@@ -187,7 +242,11 @@ void print_priority_queue(std::vector<Script*> q)
         count++;
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Increase the priority of a script in the FIFO queue
+ */
 void SatManager::increase_priority(int index)
 {
     Script *aux;
@@ -205,7 +264,11 @@ void SatManager::increase_priority(int index)
 
     print_priority_queue(this->scriptsQueue);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Decrease the priority of a script in the FIFO queue
+ */
 void SatManager::decrease_priority(int index)
 {
     Script *aux;
@@ -223,8 +286,11 @@ void SatManager::decrease_priority(int index)
 
     print_priority_queue(this->scriptsQueue);
 }
+/*  --------------------------------------------------------  */
 
-/* Sets the pointer of fs to a string str in the file */
+/*  --------------------------------------------------------  */
+/* Sets the pointer of fs to a string str in the file 
+ */
 bool set_stream_ptr(std::fstream *fs, Glib::ustring str)
 {
     char cmp[MAX_SAT_NAME_SIZE];
@@ -237,7 +303,12 @@ bool set_stream_ptr(std::fstream *fs, Glib::ustring str)
     }
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Transform the scripts hash table in a string with the 
+ * name of each script per line to save it in the database
+ */
 std::stringstream *SatManager::get_save_str()
 {
     std::stringstream *sst = new std::stringstream();
@@ -247,51 +318,47 @@ std::stringstream *SatManager::get_save_str()
     }
     return sst;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Save each content of script in the database
+ */
 void SatManager::save()
 {
      for(unsigned int i = 0; i < this->scriptsQueue.size(); i++) {
          this->scriptsQueue[i]->save();
     }
 }
+/*  --------------------------------------------------------  */
 
-/*
-std::stringstream *SatManager::get_save_str(Glib::ustring sessionFile) 
-{
-    std::fstream fs(sessionFile.c_str(), std::fstream::out);
-    std::stringstream *sst = new std::stringstream();
-    Glib::ustring name;
-    std::vector<Script*> queue;
-
-    if(fs.is_open()) {
-        set_stream_ptr(&fs, *this->sat->get_nickname());
-        queue = scriptsQueue;
-
-        *sst << "\n" << this->scripts.size() << " ";
-        for(unsigned int i=0; i < this->scriptsQueue.size(); i++) {
-            queue[i]->save();
-            name = *queue[i]->get_name();
-            *sst << name << ' ';
-       }
-    }
-    fs.close();
-
-    return sst;
-}*/
-
+/*  --------------------------------------------------------  */
+/* Replace the old cell of the "alias" column with the 
+ * new string newAlias
+ */
 void SatManager::replace_alias_column_alias(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
 {
     if(exists_script(scriptName))
         this->scripts[scriptName.c_str()]->replace_alias_column_alias(path, newAlias);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Replace the old cell of the "command" column with the
+ * new string newAlias
+ */
 void SatManager::replace_alias_column_command(Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
 {
     if(exists_script(scriptName))
         this->scripts[scriptName.c_str()]->replace_alias_column_command(path, newAlias);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the number of scripts associated with this 
+ * satellite manager
+ */
 int SatManager::get_num_scripts()
 {
     return this->scripts.size();
 }
+/*  --------------------------------------------------------  */

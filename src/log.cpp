@@ -12,11 +12,19 @@
 #include "log.hpp"
 #include "defs.hpp"
 
+/*  --------------------------------------------------------  */
 Glib::RefPtr<Gtk::Builder> *Log::dialogBuilder = NULL;
 Gtk::MessageDialog *Log::warnDialog  = NULL;
 Gtk::MessageDialog *Log::errorDialog = NULL;
 Gtk::MessageDialog *Log::infoDialog  = NULL;
+/*  --------------------------------------------------------  */
+/*  --------------------------------------------------------  */
+std::fstream * Log::logFile = new std::fstream(LOG_FILE, std::fstream::in | std::fstream::out | std::fstream::ate);
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Inits the log class
+ */
 void Log::init()
 {
     Log::dialogBuilder = new Glib::RefPtr<Gtk::Builder>();
@@ -25,9 +33,11 @@ void Log::init()
     (*Log::dialogBuilder)->get_widget(ERROR_DIALOG_WIDGET, Log::errorDialog);
     (*Log::dialogBuilder)->get_widget(INFO_DIALOG_WIDGET, Log::infoDialog);
 }
+/*  --------------------------------------------------------  */
 
-std::fstream * Log::logFile = new std::fstream(LOG_FILE, std::fstream::in | std::fstream::out | std::fstream::ate);
-
+/*  --------------------------------------------------------  */
+/* Creates the erros/warnings/info dialogs
+ */
 #define writeMessageLogFile(logStr, logMessage, file, line) \
     *(Log::logFile) << logStr; \
     if(file != NULL) *(Log::logFile) << "in file " << file; \
@@ -80,3 +90,4 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             exit(1);
     }
 }
+/*  --------------------------------------------------------  */

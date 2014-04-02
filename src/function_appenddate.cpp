@@ -7,11 +7,19 @@
 #include "function_receive.hpp"
 #include "function_variable_string.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionAppendDate::FunctionAppendDate(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(str);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionAppendDate::FunctionAppendDate(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -48,7 +56,11 @@ FunctionAppendDate::FunctionAppendDate(std::vector<XCubeSatToken*> *tokens, InOu
     
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionAppendDate::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     FunctionVariableString *res = NULL;
@@ -73,3 +85,4 @@ Function *FunctionAppendDate::run(std::vector<Function*> *runQueue, Glib::ustrin
     }
     return res;
 }
+/*  --------------------------------------------------------  */

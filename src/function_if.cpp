@@ -18,11 +18,19 @@
 #include "function_set.hpp"
 #include "function_declare.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionIf::FunctionIf(FunctionVariableBool *boolean, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(boolean);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -116,20 +124,17 @@ FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, InOutInterface *inte
                 /* TODO */
                 break;
             case STRING:
- /*               f = new FunctionVariableString(t->get_value_str());
-                break;
-            case VARIABLE:
-                if(variables->find(*t->get_value_str()) == variables->end()) 
-                    throw new std::bad_typeid();
-                f = (*variables)[*t->get_value_str()];
-                break;*/
             default:
                 throw new std::bad_typeid();
         }
         this->params.push_back(f);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionIf::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     bool res;
@@ -153,3 +158,4 @@ std::cout << "}" << std::endl;
 
     return new FunctionVariableBool(true);
 }
+/*  --------------------------------------------------------  */

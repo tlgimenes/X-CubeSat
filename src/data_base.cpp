@@ -12,10 +12,13 @@
 #include "log.hpp"
 #include "defs.hpp"
 
+/*  --------------------------------------------------------  */
 #define CHECK_CONNECTED(db) \
     if (!db.Connected()) { \
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to connect to the DATA BASE to set a sci/wod data", __FILE__, __LINE__);}
-/* TODO: Implement the .read stuff */
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
 void DataBase::init()
 { 
     Database db(DATABASE_NAME);
@@ -23,14 +26,10 @@ void DataBase::init()
 
     Query q(db);
     CHECK_CONNECTED(q);
-
-  /*  std::stringstream sstr;
-
-    sstr << ".read " << DATABASE_CONFIG;
-    if(!q.execute(sstr.str().c_str()))
-        Log::LogWarn(LEVEL_LOG_ERROR, q.GetError().c_str(), __FILE__, __LINE__);*/
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 int DataBase::get_session_script_num(Glib::ustring satName)
 {
     Database db(DATABASE_NAME);
@@ -49,7 +48,9 @@ int DataBase::get_session_script_num(Glib::ustring satName)
     }
     return 0;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 std::stringstream *DataBase::get_session_script_names(Glib::ustring satName)
 { 
     Database db(DATABASE_NAME);
@@ -70,7 +71,9 @@ std::stringstream *DataBase::get_session_script_names(Glib::ustring satName)
         return NULL;
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 std::stringstream *DataBase::get_section(Glib::ustring key)
 {
     std::ifstream ifs(key.c_str());
@@ -79,7 +82,9 @@ std::stringstream *DataBase::get_section(Glib::ustring key)
 
     return new std::stringstream(*content);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 std::stringstream *DataBase::get_scripts(Glib::ustring key)
 {
     Database db(DATABASE_NAME);
@@ -95,7 +100,9 @@ std::stringstream *DataBase::get_scripts(Glib::ustring key)
 
     return scriptContent;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 std::stringstream *DataBase::get_alias(Glib::ustring key)
 {
     Database db(DATABASE_NAME);
@@ -111,12 +118,16 @@ std::stringstream *DataBase::get_alias(Glib::ustring key)
 
     return alias;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 std::stringstream *DataBase::get_sats(Glib::ustring key)
 {
     return DataBase::get_section(key);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool DataBase::exists_section(Glib::ustring key)
 {
     std::ifstream ifit(key.c_str(), std::ifstream::in);
@@ -126,7 +137,9 @@ bool DataBase::exists_section(Glib::ustring key)
     else
         return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool DataBase::exists_script(Glib::ustring key)
 {
     Database db(DATABASE_NAME);
@@ -142,23 +155,9 @@ bool DataBase::exists_script(Glib::ustring key)
         return false;
     return true;
 }
+/*  --------------------------------------------------------  */
 
-/*bool DataBase::exists_alias(Glib::ustring key)
-{
-    Database db(DATABASE_NAME);
-    CHECK_CONNECTED(db);
-
-    Query q(db);
-    CHECK_CONNECTED(q);
-
-    std::stringstream sstr;
-
-    sstr << "select ScriptId from " << SCRIPTS_DATA_TABLE << " where " << "ScriptName='" << key << "'";
-    if(!q.get_num(sstr.str().c_str()))
-        return false;
-    return true;
-}*/
-
+/*  --------------------------------------------------------  */
 bool DataBase::exists_sats(Glib::ustring key)
 {
     Database db(DATABASE_NAME);
@@ -174,8 +173,9 @@ bool DataBase::exists_sats(Glib::ustring key)
         return false;
     return true;
 }
+/*  --------------------------------------------------------  */
 
-/* TODO: See if it is working */
+/*  --------------------------------------------------------  */
 bool DataBase::save_sci_data(sci_data data)
 {
     Database db(DATABASE_NAME);
@@ -193,7 +193,9 @@ bool DataBase::save_sci_data(sci_data data)
     }
     return true;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool DataBase::save_wod_data(wod_data data)
 {
     Database db(DATABASE_NAME);
@@ -211,7 +213,9 @@ bool DataBase::save_wod_data(wod_data data)
     }
     return true;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 Glib::ustring DataBase::get_content_file(Glib::ustring fileName)
 {
     std::stringstream sstr;
@@ -225,8 +229,9 @@ std::cout << "Openning file" << std::endl;
     }
     return data;
 }
+/*  --------------------------------------------------------  */
 
-/* TODO: end this */
+/*  --------------------------------------------------------  */
 bool DataBase::save_script(Glib::ustring scriptName, Glib::ustring scriptContent, Glib::ustring scriptAlias)
 {
     Database db(DATABASE_NAME);
@@ -257,8 +262,9 @@ bool DataBase::save_script(Glib::ustring scriptName, Glib::ustring scriptContent
 
     return res;
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
 bool DataBase::save_session(Glib::ustring satName, int numScripts, Glib::ustring scriptNames)
 {
     Database db(DATABASE_NAME);
@@ -289,7 +295,9 @@ bool DataBase::save_session(Glib::ustring satName, int numScripts, Glib::ustring
 
     return res;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool DataBase::exists_file(Glib::ustring file)
 {
     std::ifstream f(file);
@@ -299,3 +307,4 @@ bool DataBase::exists_file(Glib::ustring file)
     else
         return false;
 }
+/*  --------------------------------------------------------  */

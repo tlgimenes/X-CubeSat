@@ -12,8 +12,9 @@
 #include "sat_manager.hpp"
 #include "data_base.hpp"
 
-
-
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 Manager::Manager()
 {
     this->elevation = 0.0f;
@@ -22,7 +23,11 @@ Manager::Manager()
 
     this->satsTreeStore = Gtk::TreeStore::create(*this->modelSatsColumns);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */a
+/* Adds a new satellite
+ */
 void Manager::add_sat(Glib::ustring *satName)
 {
     try {
@@ -39,7 +44,11 @@ void Manager::add_sat(Glib::ustring *satName)
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the satellites list", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Adds a new script to the satellite satName
+ */
 void Manager::add_script(Glib::ustring *satName, Glib::ustring *scriptName, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter)
 {   
     if(this->satManagers.find(satName->c_str()) != this->satManagers.end()) {
@@ -54,7 +63,12 @@ void Manager::add_script(Glib::ustring *satName, Glib::ustring *scriptName, Glib
         Log::LogWarn(LEVEL_LOG_WARNING, "The selected satellite is unavailable", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if the satellite is in the hash table,
+ * false otherwise
+ */
 bool Manager::exists_sat(Glib::ustring *satName)
 {
     if(this->satManagers.find(satName->c_str()) == this->satManagers.end()){
@@ -63,7 +77,13 @@ bool Manager::exists_sat(Glib::ustring *satName)
     else
         return true;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if there is a script with the name
+ * scriptName associated with the satellite with the 
+ * name satName
+ */
 bool Manager::exists_script(Glib::ustring *satName, Glib::ustring *scriptName)
 {
     if(exists_sat(satName))
@@ -72,29 +92,52 @@ bool Manager::exists_script(Glib::ustring *satName, Glib::ustring *scriptName)
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Replace the old cell of the "alias" column with the 
+ * new string newAlias
+ */
 void Manager::replace_alias_column_alias(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
 {
     if(exists_sat(&satName))
         this->satManagers[satName.c_str()]->replace_alias_column_alias(scriptName, path, newAlias);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Replace the old cell of the "command" column with the 
+ * new string newAlias
+ */
 void Manager::replace_alias_column_command(Glib::ustring satName, Glib::ustring scriptName, const Glib::ustring& path, const Glib::ustring& newAlias)
 {
     if(exists_sat(&satName))
         this->satManagers[satName.c_str()]->replace_alias_column_command(scriptName, path, newAlias);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the alias of the first script in the scripts 
+ * hash table
+ */
 std::stringstream *Manager::get_first_alias(Glib::ustring satName)
 {
     return this->satManagers[satName.c_str()]->get_first_alias();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the alias of the script with name scriptName
+ */
 std::stringstream *Manager::get_alias(Glib::ustring satName, Glib::ustring script)
 {
     return this->satManagers[satName.c_str()]->get_alias(script);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the GTK model of the alias frame list
+ */
 Glib::RefPtr<Gtk::ListStore> *Manager::get_model_alias_list(Glib::ustring satName, Glib::ustring scriptName)
 {
     std::unordered_map<std::string, SatManager*>::iterator it = this->satManagers.find(satName.c_str());
@@ -106,7 +149,11 @@ Glib::RefPtr<Gtk::ListStore> *Manager::get_model_alias_list(Glib::ustring satNam
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the text buffer of the script with name scriptName
+ */
 Glib::RefPtr<Gtk::TextBuffer> *Manager::get_text_buffer(Glib::ustring satName, Glib::ustring scriptName)
 {
     std::unordered_map<std::string, SatManager*>::iterator it = this->satManagers.find(satName.c_str());
@@ -118,12 +165,20 @@ Glib::RefPtr<Gtk::TextBuffer> *Manager::get_text_buffer(Glib::ustring satName, G
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the GTK model of the sats frame list
+ */
 Glib::RefPtr<Gtk::TreeStore> *Manager::get_model_sats_store()
 {
     return &(this->satsTreeStore);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the FIFO queue of scripts to be executed
+ */
 Glib::RefPtr<Gtk::ListStore>* Manager::get_scripts_priority_queue(Glib::ustring *satName)
 {
     if(satManagers.find(satName->c_str()) != satManagers.end())
@@ -133,7 +188,11 @@ Glib::RefPtr<Gtk::ListStore>* Manager::get_scripts_priority_queue(Glib::ustring 
     }
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Increase the priority of a script in the FIFO queue
+ */
 void Manager::increase_priority(int index, Glib::ustring satName)
 {
     if(exists_sat(&satName)) {
@@ -143,7 +202,11 @@ void Manager::increase_priority(int index, Glib::ustring satName)
         Log::LogWarn(LEVEL_LOG_WARNING, "the satellite does not exists", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Decrease the priority of a script in the FIFO queue
+ */
 void Manager::decrease_priority(int index, Glib::ustring satName)
 {
     if(exists_sat(&satName)) {
@@ -153,7 +216,12 @@ void Manager::decrease_priority(int index, Glib::ustring satName)
         Log::LogWarn(LEVEL_LOG_WARNING, "the satelllite dows not exists", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Save each content of script in the database and saves the
+ * session
+ */
 void Manager::save()
 {
     for(auto it = this->satManagers.begin(); it != this->satManagers.end(); it++) {
@@ -161,25 +229,12 @@ void Manager::save()
         it->second->save();
     }
 }
+/*  --------------------------------------------------------  */
 
-/* TODO: FINISH OF IMPLEMENTING THE SESSION SAVING */
-/* TODO: FINISH IMPLEMENT Manager::save() and SatManager::get_save_string()*/
-
-/*void Manager::save(Glib::ustring sessionFile)
-{
-    std::fstream fs(sessionFile.c_str(), std::fstream::out);
-    std::stringstream scratch;
-
-    for(auto it = this->satManagers.begin(); it != this->satManagers.end(); it++) {
-        scratch << it->first;
-        scratch << it->second->get_save_str(sessionFile)->str() << std::endl;
-    }
-
-    fs << scratch.str().c_str();
-
-fs.close();
-}*/
-
+/*  --------------------------------------------------------  */
+/* Renames the script with the name oldName with a the new 
+ * name newName
+ */
 void Manager::rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName)
 {
     if(exists_sat(satName)) {
@@ -188,10 +243,16 @@ void Manager::rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName
     else
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to rename satellite because satellite not found", __FILE__, __LINE__); 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Run the first script in the FIFO queue and set it in the
+ * last position of the same queue
+ */
 void Manager::run_next_script(Glib::ustring satName)
 {
     if(exists_sat(&satName)) {
         this->satManagers[satName.c_str()]->run_next_script();
     }
 }
+/*  --------------------------------------------------------  */

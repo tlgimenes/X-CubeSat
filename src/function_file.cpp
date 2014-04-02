@@ -6,11 +6,19 @@
 #include "function_variable_string.hpp"
 #include "data_base.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionFile::FunctionFile(FunctionVariableString *stringName, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(stringName);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionFile::FunctionFile(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -46,7 +54,11 @@ FunctionFile::FunctionFile(std::vector<XCubeSatToken*> *tokens, InOutInterface *
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionFile::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     Glib::ustring *data = NULL;
@@ -63,3 +75,4 @@ Function *FunctionFile::run(std::vector<Function*> *runQueue, Glib::ustring *sat
     }
     return str;
 }
+/*  --------------------------------------------------------  */

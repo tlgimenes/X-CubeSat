@@ -11,12 +11,15 @@
 #include "defs.hpp"
 #include "log.hpp"
 
+/*  --------------------------------------------------------  */
 /*
  *  Auxiliary fonctions | It's always good to be 
  *  modular
  */
 void openFifoFile(int *fifo_fd);
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
 {
     this->man = man;
@@ -28,7 +31,9 @@ MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
 
     this->isRunning = false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 Gtk::Window *MainWindowCallback::get_main_window()
 {
     if(this->main_window_renderer->mainWindow)
@@ -36,7 +41,9 @@ Gtk::Window *MainWindowCallback::get_main_window()
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::connect_callbacks()
 {
     /* Connect hot keys callbacks */
@@ -86,7 +93,9 @@ void MainWindowCallback::connect_callbacks()
     this->main_window_renderer->upButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::up_button_clicked_cb));
     this->main_window_renderer->downButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::down_button_clicked_cb));
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::sats_treeview_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
 {
     Glib::ustring scriptName;
@@ -112,56 +121,29 @@ void MainWindowCallback::sats_treeview_activated_cb(const Gtk::TreeModel::Path& 
             Log::LogWarn(LEVEL_LOG_WARNING, "Unable to find this script in database, have you already saved it ?", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::cellrender_column_alias_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text) 
 {
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
     Glib::ustring scriptName = this->main_window_renderer->get_config_script_name();
 
     this->man->replace_alias_column_alias(satName, scriptName, path, new_text);
-    /*
-    Gtk::TreePath treePath(path);
-    Gtk::ListStore::iterator it;
-
-    if(treePath) {
-        it = this->main_window_renderer->get_model_treeview_alias()->get_iter(treePath);
-
-        if(it)
-            this->main_window_renderer->render_alias_column_refresh(it, new_text, this->modelAliasColumns.col_alias);
-    }*/
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::cellrender_column_command_edited_cb(const Glib::ustring& path, const Glib::ustring& new_text)
 {
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
     Glib::ustring scriptName = this->main_window_renderer->get_config_script_name();
 
     this->man->replace_alias_column_command(satName, scriptName, path, new_text);
-
-    /*Glib::ustring new_alias("new_alias");
-    Glib::ustring new_command("new_command");
-    Gtk::TreePath treePath(path);
-
-    Glib::ustring old_text;
-
-    if(treePath) {
-        Gtk::TreeModel::Row row = this->main_window_renderer->get_row_treeview_alias(treePath);
-
-        if(row) {
-            old_text = row.get_value(this->modelAliasColumns.col_command);
-
-            // If we are adding a new command
-            // than add new row
-            if(!old_text.compare(new_command) && new_text.compare(new_command)) {
-                this->main_window_renderer->render_new_alias_row(new_alias, new_command);
-            }
-
-            // Updates the changed column
-            this->main_window_renderer->render_alias_column_refresh(*row, new_text, this->modelAliasColumns.col_command);
-        }
-    }*/
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::command_treeview_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column)
 {
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
@@ -176,7 +158,9 @@ void MainWindowCallback::command_treeview_activated_cb(const Gtk::TreeModel::Pat
         Log::LogWarn(LEVEL_LOG_INFO, "open a script associated with a satellite first", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::device_name_entry_activated_cb()
 {
     try {
@@ -205,7 +189,9 @@ void MainWindowCallback::device_name_entry_activated_cb()
         Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::device_speed_combobox_changed_cb()
 {
     try {
@@ -225,7 +211,9 @@ void MainWindowCallback::device_speed_combobox_changed_cb()
         Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::new_script_button_clicked_cb()
 {
     Glib::ustring *scriptName = new Glib::ustring(DEFAULT_SCRIPT_NAME);
@@ -248,7 +236,9 @@ void MainWindowCallback::new_script_button_clicked_cb()
     this->main_window_renderer->render_scripts_priority_queue(this->man->get_scripts_priority_queue(&satName));
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::up_button_clicked_cb()
 {
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
@@ -277,7 +267,9 @@ void MainWindowCallback::up_button_clicked_cb()
         Log::LogWarn(LEVEL_LOG_WARNING, "Choose a satellite before doing this action", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::down_button_clicked_cb()
 {
     Glib::ustring satName = this->main_window_renderer->get_config_sat_name();
@@ -306,7 +298,9 @@ void MainWindowCallback::down_button_clicked_cb()
         Log::LogWarn(LEVEL_LOG_WARNING, "Choose a satellite before doing this action", __FILE__, __LINE__);
     }  
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 /*
  * TODO:
  * Improove newScriptName verification for the user does
@@ -335,7 +329,9 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
         Log::LogWarn(LEVEL_LOG_ERROR, "Error in the sats treeview path", __FILE__, __LINE__);
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 char * read_fifo_format(int fifo_fd)
 { 
     char rawIn[MAX_M_SIZE] = "0";
@@ -359,14 +355,18 @@ char * read_fifo_format(int fifo_fd)
 
     return satInfo;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 #define REMOVE_LF(string) \
     size = 0; \
     if(string != NULL) \
         size = strlen(string); \
     if(size > 0) \
         string[size-1] = '\0';
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool MainWindowCallback::update_curr_satellite()
 {
     char *satName, *satEl, *satAz;
@@ -404,7 +404,9 @@ bool MainWindowCallback::update_curr_satellite()
 
     return true;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 /* 
  * TODO:
  * IMPROVE IMPLEMENTATION
@@ -415,11 +417,15 @@ void openFifoFile(int *fifo_fd)
     if(*fifo_fd == -1)
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict FIFO file, the program will be closed !", __FILE__, __LINE__);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 #define SAVE_SESSION() \
     this->man->save(); \
     Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool MainWindowCallback::on_key_press_event(GdkEventKey *event)
 {
     Glib::ustring session = DEFAULT_SESSION_FILE; 
@@ -436,17 +442,20 @@ bool MainWindowCallback::on_key_press_event(GdkEventKey *event)
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::quit_cb()
 {
     Glib::ustring session = DEFAULT_SESSION_FILE; 
- //   this->man->save(session); 
     this->man->save();
     Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
  
     gtk_main_quit();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool MainWindowCallback::quit_all_cb(GdkEventAny *event)
 {
     Glib::RefPtr<Gtk::Builder> bd = Gtk::Builder::create_from_file(DIALOG_WINDOW_GLADE);
@@ -464,14 +473,16 @@ bool MainWindowCallback::quit_all_cb(GdkEventAny *event)
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void MainWindowCallback::on_response_save_message_dialog(int response_id)
 {
     Glib::ustring session = DEFAULT_SESSION_FILE; 
 
     if(response_id == Gtk::RESPONSE_YES) {
- //       this->man->save(session);
         this->man->save();
         Log::LogWarn(LEVEL_LOG_INFO, "Session saved", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */

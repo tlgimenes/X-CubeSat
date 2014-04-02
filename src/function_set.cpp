@@ -17,6 +17,10 @@
 #include "function_variable_data.hpp"
 #include "function_variable_string.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -130,7 +134,11 @@ FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, InOutInterface *in
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionSet::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     Function *var = this->params[0];
@@ -168,3 +176,4 @@ std::cout << ")";
     else throw new std::bad_typeid();
     return NULL;
 }
+

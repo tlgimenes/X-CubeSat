@@ -6,11 +6,19 @@
 #include "function_format.hpp"
 #include "function_variable_string.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionFormat::FunctionFormat(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(str);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -46,7 +54,11 @@ FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, InOutInterfa
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionFormat::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     std::cout << "Format(";
@@ -58,3 +70,4 @@ Function *FunctionFormat::run(std::vector<Function*> *runQueue, Glib::ustring *s
 
     return NULL;
 }
+/*  --------------------------------------------------------  */

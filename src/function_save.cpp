@@ -11,12 +11,20 @@
 #include "data_base.hpp"
 #include "log.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionSave::FunctionSave(FunctionVariableData *dat, FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(dat);
     this->params.push_back(str);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -72,7 +80,11 @@ FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, InOutInterface *
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionSave::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     FunctionVariableBool *res = NULL;
@@ -111,3 +123,4 @@ Function *FunctionSave::run(std::vector<Function*> *runQueue, Glib::ustring *sat
 
     return res;
 }
+/*  --------------------------------------------------------  */

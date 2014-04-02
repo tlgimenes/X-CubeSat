@@ -6,6 +6,9 @@
 #include "log.hpp"
 #include "menu.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 Menu::Menu(MainWindowRenderer * mainWindow, Manager *man)
 {
     try {
@@ -44,7 +47,9 @@ Menu::Menu(MainWindowRenderer * mainWindow, Manager *man)
         Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::open_openButton_clicked_cb()
 {
     std::ifstream file(this->openFile->get_filename().c_str());
@@ -63,7 +68,9 @@ void Menu::open_openButton_clicked_cb()
 
     file.close();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::open_cancelButton_clicked_cb()
 {
     if(this->openFile == 0)
@@ -71,7 +78,9 @@ void Menu::open_cancelButton_clicked_cb()
 
     this->openFile->hide();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::open_activate_cb()
 {
     if(!this->openFile)
@@ -80,7 +89,9 @@ void Menu::open_activate_cb()
     this->openFile->set_current_folder(GetCurrentDir());
     this->openFile->run();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::saveAs_saveAsButton_clicked_cb()
 {
     Glib::ustring ext(".xcs");
@@ -108,7 +119,9 @@ void Menu::saveAs_saveAsButton_clicked_cb()
 
     this->saveAsFile->hide();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::saveAs_cancelButton_clicked_cb()
 {
     if(!this->saveAsFile)
@@ -116,9 +129,10 @@ void Menu::saveAs_cancelButton_clicked_cb()
 
     this->saveAsFile->hide();
 }
+/*  --------------------------------------------------------  */
 
-/*
- * TODO: FINISH HERE !!!
+/*  --------------------------------------------------------  */
+/* TODO: FINISH HERE !!! 
  */
 void Menu::save_activate_cb()
 {
@@ -126,6 +140,7 @@ void Menu::save_activate_cb()
     this->man->save();
 }
 
+/*  --------------------------------------------------------  */
 void Menu::saveAs_activate_cb()
 {
     if(!this->saveAsFile)
@@ -134,7 +149,9 @@ void Menu::saveAs_activate_cb()
     this->saveAsFile->set_current_folder(GetCurrentDir());
     this->saveAsFile->run();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Menu::about_activate_cb()
 {
    if(!this->aboutDialog)
@@ -142,4 +159,4 @@ void Menu::about_activate_cb()
 
     this->aboutDialog->run();
 }
-
+/*  --------------------------------------------------------  */

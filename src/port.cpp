@@ -13,6 +13,9 @@
 #include "port.hpp"
 #include "log.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 Port::Port(const char * portName)
 {
     this->fd = -1;
@@ -32,7 +35,11 @@ Port::Port(const char * portName)
     // configure the port
     this->configure();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Opens serial port
+ */
 void Port::open_port()
 {
     // open_ports the port; default if not specified
@@ -56,8 +63,11 @@ void Port::open_port()
 
     return;
 }
+/*  --------------------------------------------------------  */
 
-// configure port with default configurations
+/*  --------------------------------------------------------  */
+/* Configure port with default configurations
+ */
 void Port::configure() {
     struct termios options;
 
@@ -89,7 +99,12 @@ void Port::configure() {
     else
         Log::LogWarn(LEVEL_LOG_INFO, "Tried to configure port not oppenned", __FILE__, __LINE__);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Write to the configured port the string data of size
+ * bytesSize
+ */
 void Port::write_to_port(char *data, unsigned int bytesSize)
 {
     unsigned int written, dataLen;
@@ -117,7 +132,12 @@ void Port::write_to_port(char *data, unsigned int bytesSize)
         Log::LogWarn(LEVEL_LOG_WARNING, "Tried to write to not oppenned port", __FILE__, __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Reads from the configured and oppenned port count bytes
+ * and saves it in buff
+ */
 void Port::read_port(char *buff, size_t count)
 {
     int nread_port;
@@ -134,7 +154,13 @@ void Port::read_port(char *buff, size_t count)
 
     return;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Reads the configured and oppenned port until the char
+ * delim is read. Pay attention, this function is blocking
+ * TODO: Implement a non-blocking version of this function
+ */
 char *Port::read_port(char delim)
 {
     Glib::ustring buff;
@@ -157,17 +183,29 @@ char *Port::read_port(char delim)
     
     return (char*)buff.c_str();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if port is oppenned or false otherwise
+ */
 bool Port::is_oppenned()
 {
     return this->isOppenned;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if port is configured, false otherwise
+ */
 bool Port::is_configured()
 {
     return this->isConfigured;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Open the port named portName with the speed speed
+ */
 bool Port::open_port(const char*portName, int speed)
 {
     this->fd = -1;
@@ -184,13 +222,16 @@ bool Port::open_port(const char*portName, int speed)
 
     return (this->isOppenned);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 #define CASE(int_speed, speed_t) \
     case int_speed: \
         newSpeed = speed_t; \
         break;
 
-// configure port with the speed speed
+/* Configure port with the speed speed
+ */
 bool Port::set_speed(int speed) {
     struct termios options;
     speed_t newSpeed;
@@ -245,4 +286,4 @@ bool Port::set_speed(int speed) {
     }
     return true;
 }
-
+/*  --------------------------------------------------------  */

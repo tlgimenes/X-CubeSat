@@ -8,18 +8,29 @@
 #include "init.hpp"
 #include "log.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 InOutInterface::InOutInterface()
 {
     this->port = new Port(NULL);
     this->deviceName = DEFAULT_OUTPUT;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 InOutInterface::InOutInterface(Glib::ustring *deviceName)
 {
     this->port = new Port(deviceName->c_str());
     this->deviceName = *deviceName;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Opens a port named devieName with the speed speed
+ */
 bool InOutInterface::open(Glib::ustring deviceName, int speed)
 {
     if(this->port != NULL) {
@@ -28,7 +39,11 @@ bool InOutInterface::open(Glib::ustring deviceName, int speed)
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Write to the port the string data
+ */
 InOutLog * InOutInterface::write(Glib::ustring *data)
 {
     InOutLog *log = NULL;
@@ -44,7 +59,12 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 
     return log;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Read from the port until to find the delim character. 
+ * TODO: Implement a non blocking call of this function
+ */
 InOutLog * InOutInterface::read(char delim)
 {
     Glib::ustring *data = new Glib::ustring();
@@ -61,7 +81,11 @@ InOutLog * InOutInterface::read(char delim)
 
     return log;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Read count bytes from the port
+ */
 InOutLog * InOutInterface::read(size_t count)
 {
     char *data = new char[count];
@@ -78,7 +102,11 @@ InOutLog * InOutInterface::read(size_t count)
 
     return log;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Change the port speed to speed
+ */
 bool InOutInterface::set_device_speed(int speed)
 {
     if(speed >= 0) {
@@ -87,12 +115,20 @@ bool InOutInterface::set_device_speed(int speed)
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Return the name of the port entered
+ */
 Glib::ustring InOutInterface::get_device_name()
 {
     return this->deviceName;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if is configured, false otherwise
+ */
 bool InOutInterface::is_configured()
 {
     if(this->port != NULL)
@@ -100,7 +136,11 @@ bool InOutInterface::is_configured()
 
     return false;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns true if it's oppenned, false otherwise
+ */
 bool InOutInterface::is_oppenned()
 {
     if(this->port != NULL)
@@ -108,3 +148,4 @@ bool InOutInterface::is_oppenned()
 
     return false;
 }
+/*  --------------------------------------------------------  */

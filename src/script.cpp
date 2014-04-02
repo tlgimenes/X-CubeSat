@@ -11,6 +11,9 @@
 #include "log.hpp"
 #include "data_base.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 Script::Script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasList, Interpreter *inter)
 {
     char alias[MAX_ALIAS_SIZE];
@@ -43,13 +46,21 @@ Script::Script(Glib::ustring *name, Glib::ustring *script, Glib::ustring *aliasL
     this->textBuffer = Gtk::TextBuffer::create();
     this->textBuffer->set_text(script->c_str());
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Get the GTK model of the Alias frame
+ */
 Glib::RefPtr<Gtk::ListStore> *Script::get_model_alias_list()
 {
     return &(this->modelAliasList);
 }
 
+/*  --------------------------------------------------------  */
+/* Get the hash table of alias in the form of a stringstream
+ * Each celule of the alias table is in one line of the 
+ * stringstream returned.
+ */
 std::stringstream *Script::get_alias()
 {
     std::stringstream *atoss = new std::stringstream();
@@ -60,28 +71,50 @@ std::stringstream *Script::get_alias()
 
     return atoss;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Return the name of the script
+ */
 Glib::ustring *Script::get_name()
 {
     return this->name;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Returns the GTK text buffer of the CommandFile frame
+ */
 Glib::RefPtr<Gtk::TextBuffer> *Script::get_text_buffer()
 {
     return &(this->textBuffer);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Appends the string txt to the cursor position in the 
+ * text buffer of the CommndFile frame
+ */
 void Script::append(Glib::ustring txt)
 {
     this->textBuffer->insert_at_cursor(txt);
 }
+/*  --------------------------------------------------------  */
 
-/* rever */
+/*  --------------------------------------------------------  */
+/* Runs the string and alias associated with this script.
+ * The satName is used to put it in the database while
+ * saving SCI and/or WOD data
+ */
 void Script::run(Glib::ustring *satName)
 {
     this->logList.push_back(this->interpreter->interpret(script, alias, satName));
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Saves the script in the database
+ */
 void Script::save()
 {
     Glib::ustring textBuff = textBuffer->get_text();
@@ -102,40 +135,11 @@ void Script::save()
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
     }
 }
+/*  --------------------------------------------------------  */
 
-/*
-void Script::save()
-{
-    Glib::ustring textBuff = textBuffer->get_text();
-
-    if(!*this->interpreter->are_there_syntax_errors(&textBuff, alias)) {
-        std::fstream script(this->name->c_str(), std::fstream::out);
-        // Save the script content
-        if(script.is_open()) {
-            script << textBuffer->get_text();
-            this->script = new Glib::ustring(textBuffer->get_text());
-        }
-
-        // Save the alias table content
-        Glib::ustring aliasName = this->name->c_str();
-        aliasName.append(".alias");
-
-        std::fstream alias(aliasName.c_str(), std::fstream::out);
-
-        if(alias.is_open())
-            for(auto it = this->alias->begin(); it != this->alias->end(); it++) {
-                alias << it->first.c_str()  << '\n';
-                alias << it->second.c_str() << '\n';
-            }
-
-        alias.close();
-        script.close();
-    }
-    else {
-        Log::LogWarn(LEVEL_LOG_WARNING, "Unable to save script because there are syntax errors in it", this->name->c_str(), __LINE__);
-    }
-}*/
-
+/*  --------------------------------------------------------  */
+/* Rename the script name
+ */
 void Script::rename(Glib::ustring *newName)
 {
     if(newName != NULL && newName->size() > 0)
@@ -143,7 +147,12 @@ void Script::rename(Glib::ustring *newName)
     else
         Log::LogWarn(LEVEL_LOG_WARNING, "Unable to rename script", __FILE__, __LINE__);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Replace the text in the alias column of the alias hash 
+ * table.
+ */
 void Script::replace_alias_column_alias(const Glib::ustring& path, const Glib::ustring& newAlias){
     Gtk::TreePath treePath(path);
     Gtk::ListStore::Row it;
@@ -168,7 +177,12 @@ void Script::replace_alias_column_alias(const Glib::ustring& path, const Glib::u
         }
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Replace the text in the command column of the alias hash 
+ * table.
+ */
 void Script::replace_alias_column_command(const Glib::ustring& path, const Glib::ustring& newCommand)
 {
     Glib::ustring new_alias("new_alias");
@@ -206,3 +220,4 @@ void Script::replace_alias_column_command(const Glib::ustring& path, const Glib:
         }
     }
 }
+/*  --------------------------------------------------------  */

@@ -8,14 +8,21 @@
 #include "function_variable_string.hpp"
 #include "function_variable_bool.hpp"
 
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionSend::FunctionSend(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(str);
 
     this->interface = interface;
 }
+/*  --------------------------------------------------------  */
 
-
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -50,7 +57,11 @@ FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, InOutInterface *
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionSend::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
 std::cout << "SEND(";
@@ -71,3 +82,4 @@ std::cout << "{" << *send_str->get_value() << "}";
     }
     return res;
 }
+/*  --------------------------------------------------------  */

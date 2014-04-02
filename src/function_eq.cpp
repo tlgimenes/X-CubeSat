@@ -5,13 +5,20 @@
 #include "function_variable_string.hpp"
 #include "function_variable_bool.hpp"
 
-
+/*  --------------------------------------------------------  */
+/* Constructor
+ */
 FunctionEq::FunctionEq(FunctionVariableInt *int1, FunctionVariableInt *int2, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
 {
     this->params.push_back(int1);
     this->params.push_back(int2);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Constructor: Imitates the form of this function in the
+ * definition of the language
+ */
 FunctionEq::FunctionEq(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
 {
     if(tokens->empty()) throw new std::exception();
@@ -58,7 +65,11 @@ FunctionEq::FunctionEq(std::vector<XCubeSatToken*> *tokens, InOutInterface *inte
     }
     this->params.push_back(f);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+/* Runs the function of the language
+ */
 Function *FunctionEq::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     std::cout << "EQ(";
@@ -90,3 +101,4 @@ Function *FunctionEq::run(std::vector<Function*> *runQueue, Glib::ustring *satNa
 
     return NULL;
 }
+/*  --------------------------------------------------------  */
