@@ -971,9 +971,6 @@ green: port set and oppenned</property>
                                                     <property name="title" translatable="yes">Alias</property>
                                                     <child>
                                                       <object class="GtkCellRendererText" id="cellrenderertext2"/>
-                                                      <attributes>
-                                                        <attribute name="text">0</attribute>
-                                                      </attributes>
                                                     </child>
                                                   </object>
                                                 </child>
@@ -983,9 +980,6 @@ green: port set and oppenned</property>
                                                     <property name="title" translatable="yes">Command</property>
                                                     <child>
                                                       <object class="GtkCellRendererText" id="cellrenderertext3"/>
-                                                      <attributes>
-                                                        <attribute name="text">1</attribute>
-                                                      </attributes>
                                                     </child>
                                                   </object>
                                                 </child>

@@ -41,7 +41,7 @@ along with this program; if not, visit http://www.fsf.org/
  *  Auxiliary fonctions | It's always good to be 
  *  modular
  */
-void openFifoFile(int *fifo_fd);
+//void openFifoFile(int *fifo_fd);
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
@@ -50,7 +50,7 @@ MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
     this->man = man;
     this->inter = inter;
     this->main_window_renderer = new MainWindowRenderer(man, inter);
-    openFifoFile(&this->fifo_fd);
+  //  openFifoFile(&this->fifo_fd);
 
     this->connect_callbacks();
 
@@ -350,14 +350,12 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
 
         currRow.set_value(modelSatsColumns.col_script_name, new_text);
     }
-    else 
-        Log::LogWarn(LEVEL_LOG_ERROR, "Error in the sats treeview path", __FILE__, __LINE__);
-
 }
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-char * read_fifo_format(int fifo_fd)
+/* Deprecated VERSION */
+/*char * read_fifo_format(int fifo_fd)
 { 
     char rawIn[MAX_M_SIZE] = "0";
     char * satInfo = NULL;
@@ -365,6 +363,7 @@ char * read_fifo_format(int fifo_fd)
 
     // Reads the fifo file
     if(read(fifo_fd, rawIn, 1) == -1) return NULL;
+
     for(; rawIn[0]-'0' < 10 && rawIn[0]-'0' >= 0; it*=10) {
         rawIn_size = rawIn_size * it + (rawIn[0]-'0');
         if(read(fifo_fd, rawIn, 1) == -1) return NULL;
@@ -379,51 +378,66 @@ char * read_fifo_format(int fifo_fd)
     satInfo[rawIn_size] = '\0';
 
     return satInfo;
-}
+}*/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-#define REMOVE_LF(string) \
-    size = 0; \
-    if(string != NULL) \
-        size = strlen(string); \
-    if(size > 0) \
-        string[size-1] = '\0';
+fifo_file_model *read_fifo_format(std::string fileName)
+{
+    std::ifstream fifo(fileName.c_str());
+    char line[MAX_M_SIZE];
+    fifo_file_model * fifofm = new fifo_file_model[1];
+
+    if(fifo) {
+        fifo.getline(line, MAX_M_SIZE);
+        fifofm->satName = new std::string(line);
+
+        fifo.getline(line, MAX_M_SIZE);
+        fifofm->el = new std::string(line);
+
+        fifo.getline(line, MAX_M_SIZE);
+        fifofm->az = new std::string(line);
+
+        fifo.close();
+    }
+    else {
+        fifofm->satName = NULL;
+        fifofm->el      = NULL;
+        fifofm->az      = NULL;
+    }
+
+    return fifofm;
+}
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 bool MainWindowCallback::update_curr_satellite()
 {
-    char *satName, *satEl, *satAz;
-    int size;
+    fifo_file_model *m = read_fifo_format(FIFO_FILE);
 
     /* Renders the new info in CurrSat frame */
-    satName = read_fifo_format(this->fifo_fd);
-    REMOVE_LF(satName);
-    if(satName == NULL) satName = (char*)"Not Found";
-    Glib::ustring satNameStr = satName;
-    this->main_window_renderer->render_curr_sat_name_refresh(satNameStr);
-    
-    satEl = read_fifo_format(this->fifo_fd);
-    REMOVE_LF(satEl);
-    if(satEl == NULL) satEl = (char*)"Not Set";
-    Glib::ustring satElStr = satEl;
-    this->main_window_renderer->render_curr_sat_el_refresh(satElStr);
+    if(m->satName == NULL) m->satName = new std::string("Not Found");
+    this->main_window_renderer->render_curr_sat_name_refresh((*m->satName));
 
-    satAz = read_fifo_format(this->fifo_fd);
-    REMOVE_LF(satAz);
-    if(satAz == NULL) satAz = (char*)"Not Set";
-    Glib::ustring satAzStr = satAz;
-    this->main_window_renderer->render_curr_sat_az_refresh(satAzStr);
+    if(m->el == NULL) m->el = new std::string("Not Set");
+    this->main_window_renderer->render_curr_sat_el_refresh((*m->el));
+
+    if(m->az == NULL) m->az = new std::string("Not Set");
+    this->main_window_renderer->render_curr_sat_az_refresh((*m->az));
 
     /* Runs the script to be runned */
-    if(!isRunning && satElStr.compare("Not Set")) {
-        if(std::stof(satEl) >= 0.0f) {
-            this->isRunning = true;
-            this->main_window_renderer->render_curr_status_refresh("running script");
-            this->man->run_next_script(satName);
-            this->isRunning = false;
-            this->main_window_renderer->render_curr_status_refresh("Idle");
+    if(!isRunning && m->el->compare("Not Set")) {
+        try {
+            if(std::stof(m->el->c_str()) >= 0.0f) {
+                this->isRunning = true;
+                this->main_window_renderer->render_curr_status_refresh("running script");
+                this->man->run_next_script((*m->satName));
+                this->isRunning = false;
+                this->main_window_renderer->render_curr_status_refresh("Idle");
+            }
+        }
+        catch (std::exception &e) {
+            /* ERROR in FIFO FILE ! What TODO next ? */
         }
     }
 
@@ -435,13 +449,13 @@ bool MainWindowCallback::update_curr_satellite()
 /* 
  * TODO:
  * IMPROVE IMPLEMENTATION
- */
+ *//* 
 void openFifoFile(int *fifo_fd)
 {
     *fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
     if(*fifo_fd == -1)
         Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict FIFO file, the program will be closed !", __FILE__, __LINE__);
-}
+}*/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */

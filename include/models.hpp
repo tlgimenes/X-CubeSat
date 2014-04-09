@@ -134,4 +134,17 @@ class ModelScriptsPriorityQueue : public Gtk::TreeModel::ColumnRecord
 };
 /* --------------------------------------------------------------*/
 
+/* --------------------------------------------------------------*/
+/* FIFO_FILE Model 
+ * SAT_NAME
+ * SAT_EL
+ * SAT_AZ 
+*/
+typedef struct fifo_file_model_t
+{
+    std::string *satName;
+    std::string *el;
+    std::string *az;
+} fifo_file_model;
+/* --------------------------------------------------------------*/
 #endif

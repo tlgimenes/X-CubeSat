@@ -40,7 +40,6 @@ class MainWindowCallback
     private:
         /*----------------------------------------------*/
         /* General attributes */
-        int fifo_fd;
         Manager *man;
         InOutInterface *inter;
         MainWindowRenderer *main_window_renderer;
