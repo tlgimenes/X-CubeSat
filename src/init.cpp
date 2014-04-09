@@ -96,11 +96,12 @@ void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOu
     Glib::ustring *satNameStr;
     char aux[999];
     
+    sats->getline(aux, 999);
     while(!sats->eof()) {
-        sats->getline(aux, 999);
         satNameStr = new Glib::ustring(aux);
         man->add_sat(satNameStr);
         load_scripts(DataBase::get_session_script_num(*satNameStr), DataBase::get_session_script_names(*satNameStr), satNameStr, man, inter);
+        sats->getline(aux, 999);
     }
 
     return;

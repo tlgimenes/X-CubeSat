@@ -106,7 +106,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define ADD_NEW_SCRIPT_BUTTON "addNewScriptButton"
 
 /* ---------------------------------------------------- */
-#define DEFAULT_SCRIPT_NAME "new_script.txt"
+#define DEFAULT_SCRIPT_NAME "new_script_"
 #define DEFAULT_CODE_NAME "#Write your code here\n"
 #define DEFAULT_ALIAS "OK\ninsert_ok\nnew_alias\nnew_command\n"
 
@@ -124,6 +124,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 /* ---------------------------------------------------- */
 #define MAX_COMMENTS_SIZE 999
+/* ---------------------------------------------------- */
 
 /* ---------------------------------------------------- */
 /* DATABASE DEFINITIONS */

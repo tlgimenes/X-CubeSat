@@ -287,7 +287,7 @@ void SatManager::increase_priority(int index)
         Log::LogWarn(LEVEL_LOG_WARNING, "Error in the priority queue", __FILE__, __LINE__);
     }
 
-    print_priority_queue(this->scriptsQueue);
+    //print_priority_queue(this->scriptsQueue);
 }
 /*  --------------------------------------------------------  */
 

@@ -90,15 +90,15 @@ FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, InOutInterface *
  */
 Function *FunctionSend::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
-std::cout << "SEND(";
+//std::cout << "SEND(";
     FunctionVariableBool *res = new FunctionVariableBool(true);
     Function *str = this->params[0]->run(runQueue, satName);
     //InOutLog *log = NULL;
-std::cout << ")";
+//std::cout << ")";
 
     if(str != NULL && typeid(*str) == typeid(FunctionVariableString)) {
         FunctionVariableString *send_str = static_cast<FunctionVariableString*>(str);
-std::cout << "{" << *send_str->get_value() << "}";
+//std::cout << "{" << *send_str->get_value() << "}";
         if(this->interface->is_configured() && this->interface->is_oppenned())
             this->interface->write(send_str->get_value());
         //    log = this->interface->write(send_str->get_value());

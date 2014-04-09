@@ -15,4 +15,4 @@ LIBS=`pkg-config gtkmm-3.0 sqlite3 --cflags --libs`
 all: $(OBJ)
 
 %.o: %.cpp
-	$(CC) $< -o $@ $(C_FLAGS) -I$(SQLITE3_INCLUDE) -I$(INCLUDE_PATH) $(SQLITE3_LIBS) $(LIBS);
+	$(CC) $(C_FLAGS) -I$(SQLITE3_INCLUDE) -I$(INCLUDE_PATH) $(SQLITE3_LIBS) $(LIBS) $< -o $@;

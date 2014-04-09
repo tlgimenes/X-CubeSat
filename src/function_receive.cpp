@@ -96,9 +96,9 @@ Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *
     time(&raw_time);
     struct tm *ptm = gmtime(&raw_time);
 
-    std::cout << "Receive(";
+   // std::cout << "Receive(";
     Function *format = this->params[0]->run(runQueue, satName);
-    std::cout << ")";
+    //std::cout << ")";
 
     if(format != NULL && typeid(*format) == typeid(FunctionVariableString)) {
         FunctionVariableString *format_str = static_cast<FunctionVariableString*>(format);

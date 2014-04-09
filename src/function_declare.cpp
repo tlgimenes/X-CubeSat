@@ -90,7 +90,7 @@ FunctionDeclare::FunctionDeclare(std::vector<XCubeSatToken*> *tokens, InOutInter
 
 Function *FunctionDeclare::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
-    std::cout << "Declare(NULL)";
+    //std::cout << "Declare(NULL)";
 
     return NULL;
 }

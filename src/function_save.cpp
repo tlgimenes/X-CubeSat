@@ -115,11 +115,11 @@ Function *FunctionSave::run(std::vector<Function*> *runQueue, Glib::ustring *sat
 {
     FunctionVariableBool *res = NULL;
 
-    std::cout << "Save(";
+   // std::cout << "Save(";
     Function *par1 = this->params[0]->run(runQueue, satName);
-    std::cout << ",";
+   // std::cout << ",";
     Function *par2 = this->params[1]->run(runQueue, satName);
-    std::cout << ")";
+   // std::cout << ")";
 
     if(par1 != NULL && par2 != NULL && typeid(par1) == typeid(FunctionVariableData) && typeid(par2) == typeid(FunctionVariableString)) {
         FunctionVariableData   *data = static_cast<FunctionVariableData*>(par1);

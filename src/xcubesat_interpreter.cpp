@@ -68,7 +68,7 @@ InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map
             f = this->runQueue.front();
             this->runQueue.erase(this->runQueue.begin());
             f->run(&this->runQueue, satName);
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
     }
     catch(std::bad_typeid *e) {

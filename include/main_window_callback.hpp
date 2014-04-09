@@ -36,7 +36,6 @@ along with this program; if not, visit http://www.fsf.org/
 
 class MainWindowCallback
 {
-
     private:
         /*----------------------------------------------*/
         /* General attributes */

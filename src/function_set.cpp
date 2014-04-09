@@ -169,29 +169,29 @@ Function *FunctionSet::run(std::vector<Function*> *runQueue, Glib::ustring *satN
 {
     Function *var = this->params[0];
     Function *as  = this->params[1];
-std::cout << "SET(";
+//std::cout << "SET(";
     if(var != NULL && as != NULL) {
         as  = as->run(runQueue, satName);
         if(as != NULL && var != NULL && typeid(*var) == typeid(*as)) {
             if(typeid(*var) == typeid(FunctionVariableBool)) {
                 FunctionVariableBool *var2 = static_cast<FunctionVariableBool*>(var);
                 var2->set_value(static_cast<FunctionVariableBool*>(as->run(runQueue, satName)));
-std::cout << ")";
+//std::cout << ")";
             }
             else if(typeid(*var) == typeid(FunctionVariableData)) {
                 FunctionVariableData *var2 = static_cast<FunctionVariableData*>(var);
                 var2->set_value(static_cast<FunctionVariableData*>(as->run(runQueue, satName)));
-std::cout << ")";
+//std::cout << ")";
             }
             else if(typeid(*var) == typeid(FunctionVariableInt)) {
                 FunctionVariableInt *var2 = static_cast<FunctionVariableInt*>(var);
                 var2->set_value(static_cast<FunctionVariableInt*>(as->run(runQueue, satName)));
-std::cout << ")";
+//std::cout << ")";
             } 
             else if(typeid(*var) == typeid(FunctionVariableString)) {
                 FunctionVariableString *var2 = static_cast<FunctionVariableString*>(var);
                 var2->set_value(static_cast<FunctionVariableString*>(as->run(runQueue, satName)));
-std::cout << ")";
+//std::cout << ")";
             }
             else 
                 throw new std::bad_typeid();

@@ -87,9 +87,9 @@ FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, InOutInterfa
  */
 Function *FunctionFormat::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
-    std::cout << "Format(";
+    //std::cout << "Format(";
     Function* par1 = this->params[0]->run(runQueue, satName);
-    std::cout << ")";
+    //std::cout << ")";
 
     if(par1 != NULL && typeid(*par1) == typeid(FunctionVariableString))
         return par1;

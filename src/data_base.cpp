@@ -267,26 +267,16 @@ bool DataBase::save_script(Glib::ustring scriptName, Glib::ustring scriptContent
     CHECK_CONNECTED(q);
 
     std::stringstream sstr;
-    bool res = false;
 
-    if(DataBase::exists_script(scriptName)) {
-        sstr << "update " << SCRIPTS_DATA_TABLE << " set ScriptContent='" << scriptContent << "' where ScriptName='" << scriptName << "'";
-        if(q.execute(sstr.str().c_str())) {
-            sstr.str("");
-            sstr << "update " << SCRIPTS_DATA_TABLE << " set Alias='" << scriptAlias << "' where ScriptName='"<< scriptName << "'";
-            res = q.execute(sstr.str().c_str());
-        }
-    }
-    else {
-        sstr.str("");
-        sstr << "insert into " << SCRIPTS_DATA_TABLE << " (ScriptContent, Alias, ScriptName) values('" << scriptContent << "','" << scriptAlias << "','" << scriptName << "')";
-        res = q.execute(sstr.str().c_str());
-    }
+    sstr << "INSERT OR REPLACE INTO " << SCRIPTS_DATA_TABLE;
+    sstr << " (ScriptId, ScriptName, ScriptContent, Alias) VALUES((SELECT ScriptId FROM ";
+    sstr << SCRIPTS_DATA_TABLE << " WHERE ScriptName='" << scriptName << "'), '";
+    sstr << scriptName << "', '" << scriptContent << "', '" << scriptAlias << "')";
 
-    if(!res)
+    if(!q.execute(sstr.str().c_str()))
         Log::LogWarn(LEVEL_LOG_ERROR, q.GetError().c_str(), __FILE__, __LINE__);
 
-    return res;
+    return true;
 }
 /*  --------------------------------------------------------  */
 
@@ -300,26 +290,16 @@ bool DataBase::save_session(Glib::ustring satName, int numScripts, Glib::ustring
     CHECK_CONNECTED(q);
 
     std::stringstream sstr;
-    bool res = false;
 
-    if(DataBase::exists_sats(satName)) {
-        sstr << "update " << SESSION_DATA_TABLE << " set AmountOfScripts='" << numScripts << "' where SatName='" << satName << "'";
-        if(q.execute(sstr.str().c_str())) {
-            sstr.str("");
-            sstr << "update " << SESSION_DATA_TABLE << " set ScriptNames='" << scriptNames << "' where SatName='" << satName << "'";
-            res = q.execute(sstr.str().c_str());
-        }
-    }
-    else {
-        sstr << "insert into " << SESSION_DATA_TABLE << " (SatName, AmountOfScripts, ScriptNames) values('" << satName << "','" << numScripts << "','" << scriptNames << "')";
-        res = q.execute(sstr.str().c_str());
-    }
+    sstr << "INSERT OR REPLACE INTO " << SESSION_DATA_TABLE;
+    sstr << " (SatId, SatName, AmountOfScripts, ScriptNames) VALUES ((SELECT SatId FROM ";
+    sstr << SESSION_DATA_TABLE << " WHERE SatName='" << satName << "'), '";
+    sstr << satName << "', " << numScripts << ", '" << scriptNames << "')";
 
-    if(!res) {
+    if(!q.execute(sstr.str().c_str()))
         Log::LogWarn(LEVEL_LOG_ERROR, q.GetError().c_str(), __FILE__, __LINE__);
-    }
 
-    return res;
+    return true;
 }
 /*  --------------------------------------------------------  */
 

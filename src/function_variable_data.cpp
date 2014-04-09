@@ -113,7 +113,7 @@ unsigned int FunctionVariableData::get_value_date()
  */
 Function *FunctionVariableData::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
-    std::cout << "VariableData";
+    //std::cout << "VariableData";
 
     return this;
 }

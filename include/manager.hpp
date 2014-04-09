@@ -47,6 +47,7 @@ class Manager
         Glib::ustring *tracking;
         float elevation;
         
+        /* Gtk attributes */
         Glib::RefPtr<Gtk::TreeStore> satsTreeStore;
         ModelSatsColumns *modelSatsColumns;
 

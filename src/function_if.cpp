@@ -165,20 +165,20 @@ Function *FunctionIf::run(std::vector<Function*> *runQueue, Glib::ustring *satNa
 {
     bool res;
 
-std::cout << "IF(";
+//std::cout << "IF(";
     Function *f = this->params[0]->run(runQueue, satName);
-std::cout << ")";
+//std::cout << ")";
 
     if(f != NULL && typeid(*f) == typeid(FunctionVariableBool)) {
         FunctionVariableBool *f2 = static_cast<FunctionVariableBool*>(f);
         res = f2->get_value();
         if(res && this->params.size() > 1) {
-std::cout << std::endl << "{" << std::endl;
+//std::cout << std::endl << "{" << std::endl;
             for(unsigned int i=1; i < this->params.size(); i++) {
                 this->params[i]->run(runQueue, satName);
-std::cout << std::endl;
+//std::cout << std::endl;
             }
-std::cout << "}" << std::endl;
+//std::cout << "}" << std::endl;
         }
     }
 

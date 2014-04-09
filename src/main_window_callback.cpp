@@ -37,20 +37,11 @@ along with this program; if not, visit http://www.fsf.org/
 #include "log.hpp"
 
 /*  --------------------------------------------------------  */
-/*
- *  Auxiliary fonctions | It's always good to be 
- *  modular
- */
-//void openFifoFile(int *fifo_fd);
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
 MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
 {
     this->man = man;
     this->inter = inter;
     this->main_window_renderer = new MainWindowRenderer(man, inter);
-  //  openFifoFile(&this->fifo_fd);
 
     this->connect_callbacks();
 
@@ -254,6 +245,7 @@ void MainWindowCallback::new_script_button_clicked_cb()
     if(par)
         it = par;
     satName = it->get_value(this->modelSatsColumns.col_sat_name);
+    scriptName->append(satName.c_str());
 
     this->man->add_script(&satName, scriptName, scriptData, alias, interpreter);
 
@@ -346,39 +338,18 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
         *oldScriptName = currRow.get_value(modelSatsColumns.col_script_name);
         *newScriptName = new_text;
 
+        /* Renames the script in the Config frame */
+        if(main_window_renderer->configSatNameLabel != NULL && \
+                !satName->compare(main_window_renderer->configSatNameLabel->get_text()) && \
+                main_window_renderer->configSatNameLabel != NULL && \
+                !oldScriptName->compare(main_window_renderer->configScriptNameLabel->get_text()))
+            this->main_window_renderer->configScriptNameLabel->set_text(*newScriptName);
+
         this->man->rename_script(satName, oldScriptName, newScriptName);
 
         currRow.set_value(modelSatsColumns.col_script_name, new_text);
     }
 }
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
-/* Deprecated VERSION */
-/*char * read_fifo_format(int fifo_fd)
-{ 
-    char rawIn[MAX_M_SIZE] = "0";
-    char * satInfo = NULL;
-    int rawIn_size = 0, it = 1, it2 = 1;
-
-    // Reads the fifo file
-    if(read(fifo_fd, rawIn, 1) == -1) return NULL;
-
-    for(; rawIn[0]-'0' < 10 && rawIn[0]-'0' >= 0; it*=10) {
-        rawIn_size = rawIn_size * it + (rawIn[0]-'0');
-        if(read(fifo_fd, rawIn, 1) == -1) return NULL;
-        it2++;
-    }
-    rawIn_size = rawIn_size - it2;
-
-    satInfo = (char *)malloc(sizeof(char)*rawIn_size);
-
-    if(read(fifo_fd, satInfo, rawIn_size) == -1) return NULL;
-
-    satInfo[rawIn_size] = '\0';
-
-    return satInfo;
-}*/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
@@ -443,19 +414,6 @@ bool MainWindowCallback::update_curr_satellite()
 
     return true;
 }
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
-/* 
- * TODO:
- * IMPROVE IMPLEMENTATION
- *//* 
-void openFifoFile(int *fifo_fd)
-{
-    *fifo_fd = open(FIFO_FILE, O_RDWR | O_ASYNC | O_NONBLOCK);
-    if(*fifo_fd == -1)
-        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load Gpredict FIFO file, the program will be closed !", __FILE__, __LINE__);
-}*/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */

@@ -94,9 +94,9 @@ Function *FunctionAppendDate::run(std::vector<Function*> *runQueue, Glib::ustrin
     Glib::ustring *aux;
     time_t raw_time;
 
-    std::cout << "AppendDate(";
+ //   std::cout << "AppendDate(";
     Function *par1 = this->params[0]->run(runQueue, satName);
-    std::cout << ")";
+ //   std::cout << ")";
 
     if(par1 != NULL && typeid(*par1) == typeid(FunctionVariableString)) {
         FunctionVariableString *str = static_cast<FunctionVariableString*>(par1);

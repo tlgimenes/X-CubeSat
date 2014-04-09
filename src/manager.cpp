@@ -36,6 +36,7 @@ along with this program; if not, visit http://www.fsf.org/
 #include "satellite.hpp"
 #include "sat_manager.hpp"
 #include "data_base.hpp"
+#include "defs.hpp"
 
 /*  --------------------------------------------------------  */
 /* Constructor
@@ -47,6 +48,7 @@ Manager::Manager()
     this->modelSatsColumns = new ModelSatsColumns();
 
     this->satsTreeStore = Gtk::TreeStore::create(*this->modelSatsColumns);
+
 }
 /*  --------------------------------------------------------  */
 

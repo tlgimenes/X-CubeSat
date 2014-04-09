@@ -90,9 +90,9 @@ Function *FunctionFile::run(std::vector<Function*> *runQueue, Glib::ustring *sat
     Glib::ustring *data = NULL;
     FunctionVariableString *str = NULL; 
 
-    std::cout << "File(";
+    //std::cout << "File(";
     Function *par1 = this->params[0]->run(runQueue, satName);
-    std::cout << ")";
+    //std::cout << ")";
 
     if(par1 != NULL && typeid(*par1) == typeid(FunctionVariableString)) {
         FunctionVariableString *fileName = static_cast<FunctionVariableString*>(par1);

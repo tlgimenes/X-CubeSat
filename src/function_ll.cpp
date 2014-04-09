@@ -98,11 +98,11 @@ FunctionLl::FunctionLl(std::vector<XCubeSatToken*> *tokens, InOutInterface *inte
  */
 Function *FunctionLl::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {    
-    std::cout << "LL(";
+    //std::cout << "LL(";
     Function *par1 = this->params[0]->run(runQueue, satName);
-    std::cout << ",";
+    //std::cout << ",";
     Function *par2 = this->params[1]->run(runQueue, satName);
-    std::cout << ")";
+    //std::cout << ")";
 
     if(typeid(*par1) == typeid(FunctionVariableInt) && typeid(*par2) == typeid(FunctionVariableInt)) {
        FunctionVariableInt* int1 = static_cast<FunctionVariableInt*>(par1);

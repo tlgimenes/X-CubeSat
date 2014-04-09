@@ -135,6 +135,9 @@
     <property name="events">GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
     <property name="title" translatable="yes">XCubeSat_Controler</property>
     <property name="window_position">center</property>
+    <property name="default_width">698</property>
+    <property name="default_height">634</property>
+    <property name="icon_name">applications-science</property>
     <child>
       <object class="GtkViewport" id="viewport1">
         <property name="visible">True</property>
@@ -518,10 +521,15 @@
                       <object class="GtkViewport" id="viewport7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="border_width">6</property>
+                        <property name="hscroll_policy">natural</property>
+                        <property name="vscroll_policy">natural</property>
                         <child>
                           <object class="GtkScrolledWindow" id="SatsScrolledwindow">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">never</property>
+                            <property name="vscrollbar_policy">never</property>
                             <property name="shadow_type">in</property>
                             <child>
                               <object class="GtkTreeView" id="satsTreeview">
@@ -971,6 +979,9 @@ green: port set and oppenned</property>
                                                     <property name="title" translatable="yes">Alias</property>
                                                     <child>
                                                       <object class="GtkCellRendererText" id="cellrenderertext2"/>
+                                                      <attributes>
+                                                        <attribute name="text">0</attribute>
+                                                      </attributes>
                                                     </child>
                                                   </object>
                                                 </child>
@@ -980,6 +991,9 @@ green: port set and oppenned</property>
                                                     <property name="title" translatable="yes">Command</property>
                                                     <child>
                                                       <object class="GtkCellRendererText" id="cellrenderertext3"/>
+                                                      <attributes>
+                                                        <attribute name="text">1</attribute>
+                                                      </attributes>
                                                     </child>
                                                   </object>
                                                 </child>
