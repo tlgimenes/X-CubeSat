@@ -147,4 +147,16 @@ typedef struct fifo_file_model_t
     std::string *az;
 } fifo_file_model;
 /* --------------------------------------------------------------*/
+
+/* --------------------------------------------------------------*/
+/* Model for the Config port combobox */
+class PortSpeedComboBoxModel : public Gtk::TreeModel::ColumnRecord
+{
+    public:
+        PortSpeedComboBoxModel()
+        { add(speedName);}
+
+        Gtk::TreeModelColumn<Glib::ustring> speedName;
+};
+/* --------------------------------------------------------------*/
 #endif

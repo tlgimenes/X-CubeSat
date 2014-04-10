@@ -84,6 +84,7 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             errorStr.append(" in file ");
             errorStr.append(file); errorStr.append(" in line ");
             errorStr.append(std::to_string(line));
+            Log::errorDialog->set_default_response(GTK_RESPONSE_OK);
             Log::errorDialog->set_secondary_text(errorStr);
             Log::errorDialog->set_message(strerror(errno));
             Log::errorDialog->run();
@@ -96,6 +97,7 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             errorStr.append(" in file ");
             errorStr.append(file); errorStr.append(" in line ");
             errorStr.append(std::to_string(line)); 
+            Log::warnDialog->set_default_response(GTK_RESPONSE_OK);
             Log::warnDialog->set_message(strerror(errno));
             Log::warnDialog->set_secondary_text(errorStr);
             Log::warnDialog->run();
@@ -104,6 +106,7 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             writeMessageTerminal("WARNING " << strerror(errno) << "! ", logMessage, file, line);
             break;
         case LEVEL_LOG_INFO:
+            Log::infoDialog->set_default_response(GTK_RESPONSE_OK);
             Log::infoDialog->set_secondary_text(errorStr);
             Log::infoDialog->run();
             Log::infoDialog->hide();

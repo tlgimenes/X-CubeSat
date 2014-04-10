@@ -3,7 +3,8 @@
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkMessageDialog" id="errorDialog">
-    <property name="can_focus">False</property>
+    <property name="can_focus">True</property>
+    <property name="is_focus">True</property>
     <property name="border_width">5</property>
     <property name="type">popup</property>
     <property name="title" translatable="yes">Error</property>
@@ -12,6 +13,7 @@
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="message_type">error</property>
+    <property name="buttons">ok</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="messagedialog-vbox2">
         <property name="can_focus">False</property>
@@ -39,7 +41,8 @@
     </child>
   </object>
   <object class="GtkMessageDialog" id="infoDialog">
-    <property name="can_focus">False</property>
+    <property name="can_focus">True</property>
+    <property name="is_focus">True</property>
     <property name="border_width">5</property>
     <property name="type">popup</property>
     <property name="title" translatable="yes">Information</property>
@@ -75,7 +78,8 @@
     </child>
   </object>
   <object class="GtkMessageDialog" id="quitDialog">
-    <property name="can_focus">False</property>
+    <property name="can_focus">True</property>
+    <property name="is_focus">True</property>
     <property name="border_width">5</property>
     <property name="type">popup</property>
     <property name="window_position">center</property>
@@ -86,6 +90,7 @@
     <property name="text" translatable="yes">Do you want to save the changes bofore quitting ?</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="messagedialog-vbox7">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -111,7 +116,9 @@
     </child>
   </object>
   <object class="GtkMessageDialog" id="warnDialog">
-    <property name="can_focus">False</property>
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="is_focus">True</property>
     <property name="border_width">5</property>
     <property name="type">popup</property>
     <property name="title" translatable="yes">Warning</property>
