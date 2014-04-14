@@ -4,14 +4,14 @@ This repository contains all the sotfware that was developed by the ground stati
 
     The current version of X-CubeSat Controler works only in POSIX compliant operating sy(-)s, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating sy(-)s like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controler. The versions of the libraries and software below were tested, try other versions at your own risk.
 
-    (-) g++ version 4.7.2
-    (-) GNU Make 3.81
-    (-) Git version 1.7
-    (-) GTK+3 
-    (-) gtkmm version 3.0 or above
-    (-) SQLite version 3.7.13
-    (-) SQLite Wrapped version 1.3.1
-    (-) Gpredict modified version that can be found in the following address https://github.com/tlgimenes/gpredict
+    - g++ version 4.7.2
+    - GNU Make 3.81
+    - Git version 1.7
+    - GTK+3 
+    - gtkmm version 3.0 or above
+    - SQLite version 3.7.13
+    - SQLite Wrapped version 1.3.1
+    - Gpredict modified version that can be found in the following address https://github.com/tlgimenes/gpredict
 
 - Compiling and Installing
 

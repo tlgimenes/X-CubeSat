@@ -42,8 +42,8 @@ Tiago \textsc{L. Gimenes}
 \end{minipage}
 \begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
-\emph{Programmer:} \\
-Tiago \textsc{L. Gimenes}
+\emph{Project Page:} \\
+\url{https://github.com/tlgimenes/X-CubeSat}
 \end{flushright}
 \end{minipage}
 
@@ -56,14 +56,18 @@ Tiago \textsc{L. Gimenes}
 \end{titlepage}
 
 %------------------------------------------------------------%
-%	Index Page
+%	Table Of Contents
 %------------------------------------------------------------%
+\tableofcontents
+\newpage
 
 %------------------------------------------------------------%
 %	Chapter - Requirements
 %------------------------------------------------------------%
 \chapter{Requirements}
 \hspace{0.4cm} The current version of X-CubeSat Controler works only in POSIX compliant operating systems, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating systems like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controler. The versions of the libraries and software below were tested, try other versions at your own risk.
+
+\section{Basic Requirements}
 \begin{itemize}
 \item g++ version 4.7.2
 \item GNU Make 3.81
@@ -71,9 +75,21 @@ Tiago \textsc{L. Gimenes}
 \item GTK+3 
 \item gtkmm version 3.0 or above
 \item SQLite version 3.7.13
-\item SQLite Wrapped version 1.3.1
+\item SQLite Wrapped version 1.3.1 \url{http://www.alhem.net/project/sqlite/}
 \item Gpredict modified version that can be found in the following address \url{https://github.com/tlgimenes/gpredict} 
-\end{itemize} 
+\end{itemize}
+
+\section{Recommended Requirements}
+\begin{itemize}
+\item Hamlib version 1.2.15.3
+\end{itemize}
+
+\section{Warnings}
+\begin{itemize}
+\item It's absolutely necessary to use the modified version of Gpredict to realy be able to communicate with satellites, so do not download/install
+the default version of Gpredict in distro repositories or from any official Gpredict site. 
+\item For X-CubeSat Controler to work, the system needs to implement something called FIFO file. FIFO file is a type of file that allows the communication between Gpredict and X-CubeSat Controler, so if you are running a non POSIX compliant system, like Windows, it might not work or work as well as it does in a POSIX compliant system.
+\end{itemize}
 
 %------------------------------------------------------------%
 %	Chapter - Install
@@ -86,21 +102,21 @@ You can install this program in any directory that you want. For doing it
 \section{Installing dependencies}
 \begin{itemize}
 \item \textbf{Install g++}: Open a terminal and type:
-\begin{frame}
+\begin{framed}
 \$ sudo apt-get install -y g++
-\end{frame}
+\end{framed}
 If you get no errors, you can go to the next item, otherwise google the problem.
 
 \item \textbf{Install GNU Make}: In the same terminal type:
-\begin{frame}
+\begin{framed}
 \$ sudo apt-get install -y make
-\end{frame}
+\end{framed}
 If you get no errors, you can go to the next item, otherwise google the problem.
 
 \item \textbf{Install Git}: In the same terminal type:
-\begin{frame}
+\begin{framed}
 \$ sudo apt-get install -y git
-\end{frame}
+\end{framed}
 If you get no errors, you can go to the next item, otherwise google the problem.
 
 \item \textbf{Install gtkmm version 3.0}: In the same terminal type:
@@ -117,7 +133,7 @@ If you get no errors, you can go to the next item, otherwise google the problem.
 
 \item \textbf{Install SQLite Wrapped version 1.3.1}: Go the a directory that you want with the command \textbf{cd} and in the same terminal type:
 \begin{framed}
-\$ wget http://www.alhem.net/project/sqlite/sqlitewrapped-1.3.1.tar.gz \\
+\$ wget \url{http://www.alhem.net/project/sqlite/sqlitewrapped-1.3.1.tar.gz} \\
 \$ tar -zxvf sqlitewrapped-1.3.1.tar.gz \\
 \$ cd sqlitewrapped-1.3.1/ \\
 \$ make \&\& make install
@@ -126,10 +142,12 @@ If you get errors in this part, go to the url of the SQLite Wrapped project,\url
 
 \item \textbf{Install Gpredict modified version}: Go the a directory that you want to install Gpredict with the command \textbf{cd} and in the same terminal type:
 \begin{framed}
-\$ git clone https://github.com/tlgimenes/gpredict.git \\
+\$ sudo apt-get install libtool intltool \\
+\$ git clone \url{https://github.com/tlgimenes/gpredict.git} \\
 \$ cd gpredict \\
+\$ sh autogen.sh \\
+\$ ./configure \\
 \$ make \&\& make install
-\$ ./src/gpredict
 \end{framed}
 If you get errors in this part, go to the url of the Gpredict modified version project,\url{https://github.com/tlgimenes/gpredict}, and follow their install instructions, or read the \textbf{README} file provided with Gpredict, sometimes the installation of this part is a little tricky. 
 \end{itemize}
@@ -138,18 +156,69 @@ If you get errors in this part, go to the url of the Gpredict modified version p
 Usually if you got to this part, you should be ok to compile and install XCubeSat Controler. Open a terminal, go to the folder that you want to install XCubeSat Controler with the \textbf{cd} command and type:
 
 \begin{framed}
-\& git clone https://github.com/tlgimenes/X-CubeSat \\
+\$ git clone \url{https://github.com/tlgimenes/X-CubeSat.git} \\
 \$ cd X-CubeSat \\
 \$ make \\
 \$ cd dataBase \\
-\$ sqlite3 XCubeSat\_ Controler.db \\
+\$ sqlite3 XCubeSat\_Controler.db \\
 .read tables.sql \\
-.q \\
-\$ cd .. \\
-\$ ./XCubeSat\_ Controler 
+.q
 \end{framed}
 
-Here you are running XCubeSat\_ Controler \textbackslash o/.
+Here you are ready to configure the XCubeSat\_ Controler \textbackslash o/.
+
+%------------------------------------------------------------%
+%	Chapter - Configure and Run
+%------------------------------------------------------------%
+\chapter{Configure and Run}
+For X-CubeSat Controler to run, we need first to run Gpredict and if you want to use a rotator and/or a radio, you need to set Hamlib first.
+
+In this session we are going first to configure a rotator, than a radio, than we are going to run Gpredict and finally we are going to run X-CubeSat Controler
+
+First of all, we need to know the models of rotators that are supported and their ID. Open a terminal and type:
+\begin{framed}
+\$ rotctrl --list
+\end{framed}
+
+The output of this command is a list of rotator and models. Write down the value of the \textbf{Rig \#} column and type the following command.
+
+\begin{framed}
+\$ rotctrld -m "Model\_Value" -r "Serial\_Port" -t  "Port"
+\end{framed}
+
+Where 
+\begin{itemize}
+\item "Model\_Value" is the \textbf{Rig \#} value of the rotator that we found with the other command.
+\item "Serial\_Port" is the name of the serial port connected to the rotator. Usually in Linux systems, the default port is located in /dev/ttyS0 or /dev/ttyUSB0 in the case of the use of USB to Serial adpters.
+\item "Port" is the port that you want Hamlib to connect to. Pay attention in what port you put it to listen to, because Gpredict will ask the name of this port later. 
+\end{itemize}
+
+An example of this command for an Yaesu GS-232B connected in the serial port ttyS0 would be:
+\begin{framed}
+\$ rotctrld -m 603 -r /dev/ttyS0 -t 4533
+\end{framed}
+
+To configure a transceiver you basicaly need to do the same steps, so they won't be covered here. You can take a look in the Gpredict and Hamlib manuals for more configuration details.
+
+Now that we have Hamlib running, it's time to set Gpredict. Open a new terminal and type:
+\begin{framed}
+\$ gpredict
+\end{framed}
+If the installation process worked well you are now runnig Gpredict. To configure the rotator and the transciever in Gpredict go to
+\begin{framed}
+edit $->$ preferences
+\end{framed}
+
+click in the \textbf{Interfaces} tab and add a new rotator and transciever with the port number that you passed in the "Port" parameter to Hamlib. 
+
+To launch the tracking tool click in the down pointing arrow in the up right corner and select Antenna Control. It will open a new window with the satellites that you want to follow. 
+
+Now, finaly we are going to launch XCubeSat Controler. To do so, open a new terminal and look for a folder called X-CubeSat with the "cd" and "ls" commands. Once you found the folder, enter in it and type:
+\begin{framed}
+\$ ./XCubeSat\_Controler
+\end{framed}
+
+Now you should be running the X-CubeSat Controler \textbackslash o/
 
 %------------------------------------------------------------%
 %	Chapter - Overview
@@ -303,4 +372,21 @@ You can view this frame in figure \ref{ScriptsFrame}.
 %------------------------------------------------------------%
 \section{Sub Frame: Scripts Exec Order}
 The scripts exec order shows the execution order of the scripts. The higher is the script, closer it is of being executed.
+
+%------------------------------------------------------------%
+%	Chapter - Bug Issues
+%------------------------------------------------------------%
+\chapter{Bug Issue}
+\begin{framed}
+Oh NO ! X-CubeSat Controler just bugged !!!
+\end{framed} 
+
+If you just said the phrase above, don't worry ! X-CubeSat Controler is hosted by GitHub and it has an integrated Bug Issue Tracking system. If you have a new bug or issue and wants to tell it to the develpers go to the link: \url{https://github.com/tlgimenes/X-CubeSat/issues} and add a new issu, the XCubeSat Controler team will work as fast as possible to fix your issue, but for doing so, we need a good description of the bug and the executing conditions, so fill well the fields of the Bug Issue Tracker that we are going to do what we can to improve your experience with our software.
+
+If you are an experienced C++ programmer, do not wait for us ! Make a pull request or fork the repository, it's free software ! Be Happy !
+
+%------------------------------------------------------------%
+\vspace{10cm}
+\hspace{6cm}
+\textbf{Enjoy your new XCubeSat Controler !}
 \end{document}

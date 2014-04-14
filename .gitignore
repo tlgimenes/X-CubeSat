@@ -8,7 +8,9 @@ XCubeSat_Controler
 doc/*.aux 
 doc/*.log
 doc/*.synctex.gz
-doc/*.tex.bak
+doc/*.tex.bak 
+doc/*.nav
+doc/*.snm
 
 #Ignore databases
 dataBase/*.db

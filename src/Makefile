@@ -1,6 +1,8 @@
 SHELL=/bin/bash
 CC=g++
-C_FLAGS=-c -g -O0 -Wall -std=c++11
+
+C_FLAGS_DEBUG=-g3 -c -O0 -Wall -std=c++11
+C_FLAGS_RELEASE=-c -O2 -std=c++11
 
 SQLITE3_INCLUDE=/usr/devel/include
 SQLITE3_LIBS=-lsqlitewrapped -lsqlite3 -L/usr/devel/lib 
@@ -15,4 +17,5 @@ LIBS=`pkg-config gtkmm-3.0 sqlite3 --cflags --libs`
 all: $(OBJ)
 
 %.o: %.cpp
-	$(CC) $(C_FLAGS) -I$(SQLITE3_INCLUDE) -I$(INCLUDE_PATH) $(SQLITE3_LIBS) $(LIBS) $< -o $@;
+	$(CC) $(C_FLAGS_DEBUG) -I$(SQLITE3_INCLUDE) -I$(INCLUDE_PATH) $(SQLITE3_LIBS) $(LIBS) $< -o $@;
+

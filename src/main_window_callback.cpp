@@ -352,12 +352,19 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
 }
 /*  --------------------------------------------------------  */
 
-/*  --------------------------------------------------------  */
-fifo_file_model *read_fifo_format(std::string fileName)
+/*  --------------------------------------------------------  */  
+/* Reads the FIFO file. The format is :
+ * SatName'\n'
+ * Elevation'\n'
+ * Azimuth'\n'
+ */
+fifo_file_model *read_fifo_format(const char *fifoName)
 {
-    std::ifstream fifo(fileName.c_str());
     char line[MAX_M_SIZE];
     fifo_file_model * fifofm = new fifo_file_model[1];
+
+    /* Opens fifo file */
+    std::ifstream fifo(fifoName);
 
     if(fifo) {
         fifo.getline(line, MAX_M_SIZE);
@@ -368,8 +375,6 @@ fifo_file_model *read_fifo_format(std::string fileName)
 
         fifo.getline(line, MAX_M_SIZE);
         fifofm->az = new std::string(line);
-
-        fifo.close();
     }
     else {
         fifofm->satName = NULL;
@@ -377,6 +382,7 @@ fifo_file_model *read_fifo_format(std::string fileName)
         fifofm->az      = NULL;
     }
 
+    fifo.close();
     return fifofm;
 }
 /*  --------------------------------------------------------  */

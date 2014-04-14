@@ -28,7 +28,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define DEFS_HPP
 
 #define DEBUG 1
-#define DEFAULT_OUTPUT              "/dev/tty1"
+#define DEFAULT_OUTPUT              "/dev/ttyS0"
 #define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controler.session"
 #define DEFAULT_GPREDICT_SATS_FILE  "/tmp/GpredictSATS"
 

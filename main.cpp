@@ -1,7 +1,33 @@
+/* X-CubeSat Controler: Real-time communication with satellite program
+
+ Copyright (C)  2014 - Tiago Lobato Gimenes
+
+ Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
+
+ Comments, questions and bugreports should be submitted via
+ https://github.com/tlgimenes/X-CubeSat
+ More details can be found at the project home page:
+
+ https://github.com/tlgimenes/X-CubeSat
+
+ This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+along with this program; if not, visit http://www.fsf.org/
+*/
 #include <gtkmm.h>
 #include <sqlite3.h>
 #include <libsqlitewrapped.h>
 #include <iostream>
+#include <istream>
 
 #include "log.hpp"
 #include "port.hpp"
@@ -9,14 +35,19 @@
 #include "menu.hpp"
 #include "manager.hpp"
 #include "init.hpp"
+#include "defs.hpp"
 
-// Connects all the call back signals of the mainWindow
-//void ConnectSignalsMain(MainWindowRenderer * mainWindow);
-// Connects all the call back signals of the top menu
-//void ConnectSignalsMainMenu(MainWindowRenderer * mainWindow);
+/*  --------------------------------------------------------  */
+/*  Flush the content in the fifo file to allow to
+ *  track the most recent satellite
+ */
+void flush_fifo_file(const char *fileName);
+/*  --------------------------------------------------------  */
 
-/*
- * MAIN FUNCTION
+
+
+/*  --------------------------------------------------------  */
+/* MAIN FUNCTION
  */
 int main (int argc, char *argv[])
 {
@@ -25,6 +56,8 @@ int main (int argc, char *argv[])
     Manager *man;
     InOutInterface *inter;
     
+    flush_fifo_file(FIFO_FILE);
+
     Log::init();
     DataBase::init();
     
@@ -37,4 +70,27 @@ int main (int argc, char *argv[])
 
     return 0;
 }
+/*  --------------------------------------------------------  */
 
+
+
+/*  --------------------------------------------------------  */
+#define GET_FIFO_LINE(garbage) \
+    fifo.getline(garbage, MAX_M_SIZE); \
+    fifo.getline(garbage, MAX_M_SIZE); \
+    fifo.getline(garbage, MAX_M_SIZE);
+/*  --------------------------------------------------------  */
+void flush_fifo_file(const char *fileName)
+{
+    std::ifstream fifo(fileName, std::ifstream::in);
+    char *garbage = new char[MAX_M_SIZE];
+
+    if(fifo) {
+        GET_FIFO_LINE(garbage);
+        while(!fifo.eof()) {
+            GET_FIFO_LINE(garbage);
+        }
+    }
+    fifo.close();
+}
+/*  --------------------------------------------------------  */
