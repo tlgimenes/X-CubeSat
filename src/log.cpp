@@ -33,6 +33,7 @@ along with this program; if not, visit http://www.fsf.org/
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>   /* Error number definitions */
+#include <ctime>
 
 #include "log.hpp"
 #include "defs.hpp"
@@ -78,6 +79,9 @@ void Log::init()
 void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int line)
 {
     Glib::ustring errorStr(logMessage);
+    time_t raw_time;
+    
+    time(&raw_time);
 
     switch(level){
         case LEVEL_LOG_ERROR:
@@ -89,8 +93,8 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             Log::errorDialog->set_message(strerror(errno));
             Log::errorDialog->run();
             Log::errorDialog->hide();
-            writeMessageLogFile("ERROR " << strerror(errno) << "! ", logMessage, file, line);
-            writeMessageTerminal("ERROR " << strerror(errno) << "! ", logMessage, file, line);
+            writeMessageLogFile (asctime(gmtime(&raw_time)) << ": ERROR " << strerror(errno) << "! ", logMessage, file, line);
+            writeMessageTerminal(asctime(gmtime(&raw_time)) << ": ERROR " << strerror(errno) << "! ", logMessage, file, line);
             exit(1);
             break;
         case LEVEL_LOG_WARNING:
@@ -102,16 +106,16 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             Log::warnDialog->set_secondary_text(errorStr);
             Log::warnDialog->run();
             Log::warnDialog->hide();
-            writeMessageLogFile("WARNING " << strerror(errno) << "! ", logMessage, file, line);
-            writeMessageTerminal("WARNING " << strerror(errno) << "! ", logMessage, file, line);
+            writeMessageLogFile (asctime(gmtime(&raw_time)) << ": WARNING " << strerror(errno) << "! ", logMessage, file, line);
+            writeMessageTerminal(asctime(gmtime(&raw_time)) << ": WARNING " << strerror(errno) << "! ", logMessage, file, line);
             break;
         case LEVEL_LOG_INFO:
             Log::infoDialog->set_default_response(GTK_RESPONSE_OK);
             Log::infoDialog->set_secondary_text(errorStr);
             Log::infoDialog->run();
             Log::infoDialog->hide();
-            writeMessageLogFile("INFO ", logMessage, file, line);
-            writeMessageTerminal("INFO ", logMessage, file, line);
+            writeMessageLogFile (asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
+            writeMessageTerminal(asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
             break;
         default:
             *(Log::logFile) << "Error message not found ! This incident will be reported" << std::endl;

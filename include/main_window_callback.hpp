@@ -50,6 +50,11 @@ class MainWindowCallback
         /*----------------------------------------------*/
 
         /*----------------------------------------------*/
+        /* FIFO file for communication with Gpredict */
+        std::ifstream fifo;
+        /*----------------------------------------------*/
+
+        /*----------------------------------------------*/
         /* MODELS */
         ModelAliasColumns modelAliasColumns;
         ModelCommandsColumns modelCommandsColumns;

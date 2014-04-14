@@ -46,6 +46,8 @@ MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
     this->connect_callbacks();
 
     this->isRunning = false;
+
+    this->fifo.open(FIFO_FILE);
 }
 /*  --------------------------------------------------------  */
 
@@ -358,22 +360,23 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
  * Elevation'\n'
  * Azimuth'\n'
  */
-fifo_file_model *read_fifo_format(const char *fifoName)
+//fifo_file_model *read_fifo_format(const char *fifoName)
+fifo_file_model *read_fifo_format(std::ifstream *fifo)
 {
     char line[MAX_M_SIZE];
     fifo_file_model * fifofm = new fifo_file_model[1];
 
     /* Opens fifo file */
-    std::ifstream fifo(fifoName);
+    //std::ifstream fifo(fifoName);
 
-    if(fifo) {
-        fifo.getline(line, MAX_M_SIZE);
+    if(*fifo) {
+        fifo->getline(line, MAX_M_SIZE);
         fifofm->satName = new std::string(line);
 
-        fifo.getline(line, MAX_M_SIZE);
+        fifo->getline(line, MAX_M_SIZE);
         fifofm->el = new std::string(line);
 
-        fifo.getline(line, MAX_M_SIZE);
+        fifo->getline(line, MAX_M_SIZE);
         fifofm->az = new std::string(line);
     }
     else {
@@ -382,7 +385,7 @@ fifo_file_model *read_fifo_format(const char *fifoName)
         fifofm->az      = NULL;
     }
 
-    fifo.close();
+    //fifo.close();
     return fifofm;
 }
 /*  --------------------------------------------------------  */
@@ -390,7 +393,8 @@ fifo_file_model *read_fifo_format(const char *fifoName)
 /*  --------------------------------------------------------  */
 bool MainWindowCallback::update_curr_satellite()
 {
-    fifo_file_model *m = read_fifo_format(FIFO_FILE);
+ //   fifo_file_model *m = read_fifo_format(FIFO_FILE);
+    fifo_file_model *m = read_fifo_format(&this->fifo);
 
     /* Renders the new info in CurrSat frame */
     if(m->satName == NULL) m->satName = new std::string("Not Found");
