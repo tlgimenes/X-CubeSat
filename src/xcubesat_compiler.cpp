@@ -52,14 +52,15 @@ XCubeSatCompiler::XCubeSatCompiler()
     this->tokens = NULL;
     this->error = false;
 }
+/*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 /* Gets a raw string with its alias and a valid Input/Output
- * Interface and returns a vector of Function to be executed.
+ * term and returns a vector of Function to be executed.
  * If all goes well it is just necessary to do a foreach in
  * the return structure asking for the method run
  */
-std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, InOutInterface *interface) throw(std::bad_typeid*)
+std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, Terminal *term) throw(std::bad_typeid*)
 {
     std::unordered_map<std::string, Function*> variables;
     std::vector<Function*> *vec = new std::vector<Function*>();
@@ -76,46 +77,48 @@ std::vector<Function*> *XCubeSatCompiler::compile(std::unordered_map<std::string
         this->tokens->erase(this->tokens->begin());
         switch(t->get_type()) {
             case SEND:
-                f = new FunctionSend(this->tokens, interface, &variables);
+                f = new FunctionSend(this->tokens, term, &variables);
                 break;
             case SAVE:
-                f = new FunctionSave(this->tokens, interface, &variables);
+                f = new FunctionSave(this->tokens, term, &variables);
                 break;
             case IF:
-                f = new FunctionIf(this->tokens, interface, &variables);
+                f = new FunctionIf(this->tokens, term, &variables);
                 break;
             case EQ:
-                f = new FunctionEq(this->tokens, interface, &variables);
+                f = new FunctionEq(this->tokens, term, &variables);
                 break;
             case LL:
-                f = new FunctionLl(this->tokens, interface, &variables);
+                f = new FunctionLl(this->tokens, term, &variables);
                 break;
             case LEQ:
-                f = new FunctionLeq(this->tokens, interface, &variables);
+                f = new FunctionLeq(this->tokens, term, &variables);
                 break;
             case FILE2:
-                f = new FunctionFile(this->tokens, interface, &variables);
+                f = new FunctionFile(this->tokens, term, &variables);
                 break;
             case APPENDDATE:
-                f = new FunctionAppendDate(this->tokens, interface, &variables);
+                f = new FunctionAppendDate(this->tokens, term, &variables);
                 break;
             case FORMAT:
-                f = new FunctionFormat(this->tokens, interface, &variables);
+                f = new FunctionFormat(this->tokens, term, &variables);
                 break;
             case RECEIVE:
-                f = new FunctionReceive(this->tokens, interface, &variables);
+                f = new FunctionReceive(this->tokens, term, &variables);
                 break;
             case EQUALS:
                 /* TODO */
                 break;
             case STRING:
+                if(t->get_value_str()->size() <= 1) /* String can not be empty */
+                    continue;
                 f = new FunctionVariableString(t->get_value_str());
                 break;
             case DECLARE:
-                f = new FunctionDeclare(this->tokens, interface, &variables);
+                f = new FunctionDeclare(this->tokens, term, &variables);
                 break;
             case SET:
-                f = new FunctionSet(this->tokens, interface, &variables);
+                f = new FunctionSet(this->tokens, term, &variables);
                 break;
             case VARIABLE:
                 if(variables.find(*t->get_value_str()) == variables.end()) 
@@ -333,7 +336,6 @@ std::stringstream *XCubeSatCompiler::replace_alias(std::unordered_map<std::strin
             case '}':
             case '=':
             case ',':
-            case '"':
                 if(insideStr) break;
                 if(!buffer.empty()) {
                     if(alias->find(buffer.c_str()) != alias->end()) {
@@ -390,8 +392,6 @@ std::stringstream *XCubeSatCompiler::replace_alias(std::unordered_map<std::strin
                 if(quotes.empty()) {
                     quotes.push(c);
                     insideStr = true;
-                    c = toupper(c);
-                    buffer.push_back(c);
                 }
                 else {
                     quotes.pop();

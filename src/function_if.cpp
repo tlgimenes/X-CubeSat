@@ -47,7 +47,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionIf::FunctionIf(FunctionVariableBool *boolean, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionIf::FunctionIf(FunctionVariableBool *boolean, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(boolean);
 }
@@ -57,7 +57,7 @@ FunctionIf::FunctionIf(FunctionVariableBool *boolean, InOutInterface *interface,
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 
@@ -69,23 +69,23 @@ FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, InOutInterface *inte
 
     switch(t->get_type()) {
         case SEND:
-            f = new FunctionSend(tokens, this->interface, variables);
+            f = new FunctionSend(tokens, this->term, variables);
             break;
         case SAVE:
-            f = new FunctionSave(tokens, this->interface, variables);
+            f = new FunctionSave(tokens, this->term, variables);
             break;
         case IF:
-            f = new FunctionIf(tokens, this->interface, variables);
+            f = new FunctionIf(tokens, this->term, variables);
             break;
         case EQ:
         case EQUALS:
-            f = new FunctionEq(tokens, this->interface, variables);
+            f = new FunctionEq(tokens, this->term, variables);
             break;
         case LL:
-            f = new FunctionLl(tokens, this->interface, variables);
+            f = new FunctionLl(tokens, this->term, variables);
             break;
         case LEQ:
-            f = new FunctionLeq(tokens, this->interface, variables);
+            f = new FunctionLeq(tokens, this->term, variables);
             break;
         case VARIABLE:
             if(variables->find(*t->get_value_str()) == variables->end()) 
@@ -111,40 +111,40 @@ FunctionIf::FunctionIf(std::vector<XCubeSatToken*> *tokens, InOutInterface *inte
 
         switch(t->get_type()) {
             case SEND:
-                f = new FunctionSend(tokens, this->interface, variables);
+                f = new FunctionSend(tokens, this->term, variables);
                 break;
             case SAVE:
-                f = new FunctionSave(tokens, this->interface, variables);
+                f = new FunctionSave(tokens, this->term, variables);
                 break;
             case IF:
-                f = new FunctionIf(tokens, this->interface, variables);
+                f = new FunctionIf(tokens, this->term, variables);
                 break;
             case EQ:
-                f = new FunctionEq(tokens, this->interface, variables);
+                f = new FunctionEq(tokens, this->term, variables);
                 break;
             case LL:
-                f = new FunctionLl(tokens, this->interface, variables);
+                f = new FunctionLl(tokens, this->term, variables);
                 break;
             case LEQ:
-                f = new FunctionLeq(tokens, this->interface, variables);
+                f = new FunctionLeq(tokens, this->term, variables);
                 break;
             case FILE2:
-                f = new FunctionFile(tokens, this->interface, variables);
+                f = new FunctionFile(tokens, this->term, variables);
                 break;
             case APPENDDATE:
-                f = new FunctionAppendDate(tokens, this->interface, variables);
+                f = new FunctionAppendDate(tokens, this->term, variables);
                 break;
             case FORMAT:
-                f = new FunctionFormat(tokens, this->interface, variables);
+                f = new FunctionFormat(tokens, this->term, variables);
                 break;
             case RECEIVE:
-                f = new FunctionReceive(tokens, this->interface, variables);
+                f = new FunctionReceive(tokens, this->term, variables);
                 break;
             case SET:
-                f = new FunctionSet(tokens, this->interface, variables);
+                f = new FunctionSet(tokens, this->term, variables);
                 break;
             case DECLARE:
-                f = new FunctionDeclare(tokens, this->interface, variables);
+                f = new FunctionDeclare(tokens, this->term, variables);
                 break;
             case EQUALS:
                 /* TODO */

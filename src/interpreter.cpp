@@ -34,18 +34,8 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-Interpreter::Interpreter(InOutInterface *inOutInterface)
+Interpreter::Interpreter(Terminal *inOutterm)
 {
-    this->inOutInterface = inOutInterface;
+    this->term = inOutterm;
 }
 /*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
-/* Constructor
- */
-Interpreter::Interpreter(Glib::ustring *portName)
-{
-    this->inOutInterface = new InOutInterface(portName);
-}
-/*  --------------------------------------------------------  */
-

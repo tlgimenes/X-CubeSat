@@ -35,7 +35,7 @@ along with this program; if not, visit http://www.fsf.org/
 #include <unordered_map>
 
 #include "in_out_log.hpp"
-#include "in_out_interface.hpp"
+#include "terminal.hpp"
 #include "interpreter.hpp"
 #include "xcubesat_compiler.hpp"
 
@@ -46,8 +46,7 @@ class XCubeSatInterpreter : virtual public Interpreter
         std::vector<Function*> runQueue;
 
     public:
-        XCubeSatInterpreter(InOutInterface *);
-        XCubeSatInterpreter(Glib::ustring *portName);
+        XCubeSatInterpreter(Terminal *);
 
         InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName);
 

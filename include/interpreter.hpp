@@ -36,18 +36,17 @@ along with this program; if not, visit http://www.fsf.org/
 #include <unordered_map>
 #include <iostream>
 
-#include "in_out_interface.hpp"
+#include "terminal.hpp"
 #include "in_out_log.hpp"
 #include "log.hpp"
 
 class Interpreter
 {
     protected:
-        InOutInterface *inOutInterface;
+        Terminal *term;
 
     public:
-        Interpreter(InOutInterface *);
-        Interpreter(Glib::ustring *portName);
+        Interpreter(Terminal *);
 
         virtual InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName)
         {

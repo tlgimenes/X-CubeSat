@@ -32,17 +32,17 @@ along with this program; if not, visit http://www.fsf.org/
  */
 Function::Function()
 {
-    this->interface = NULL;
     this->variables = NULL;
+    this->term = NULL;
 }
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-Function::Function(InOutInterface *interface, std::unordered_map<std::string, Function*> *variables)
+Function::Function(Terminal *term, std::unordered_map<std::string,Function*> *variables)
 {
     this->variables = variables;
-    this->interface = interface;
+    this->term = term;
 }
 /*  --------------------------------------------------------  */

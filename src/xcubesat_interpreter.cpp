@@ -40,12 +40,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*
  *  Constructors
  */
-XCubeSatInterpreter::XCubeSatInterpreter(InOutInterface *inOutInterface) : Interpreter(inOutInterface)
-{
-    this->compiler = new XCubeSatCompiler();
-}
-
-XCubeSatInterpreter::XCubeSatInterpreter(Glib::ustring *portName) : Interpreter(portName)
+XCubeSatInterpreter::XCubeSatInterpreter(Terminal *term) : Interpreter(term)
 {
     this->compiler = new XCubeSatCompiler();
 }
@@ -60,7 +55,7 @@ InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map
     try {
         std::stringstream *sstr = new std::stringstream(text->c_str());
 
-        this->runQueue = *this->compiler->compile(alias, sstr, this->inOutInterface);
+        this->runQueue = *this->compiler->compile(alias, sstr, this->term);
 
         Function *f;
 
@@ -92,7 +87,7 @@ bool *XCubeSatInterpreter::are_there_syntax_errors(Glib::ustring *text, std::uno
     bool *res;
 
     try {
-        this->compiler->compile(alias, sstr, this->inOutInterface);
+        this->compiler->compile(alias, sstr, this->term);
 
         res = new bool(this->compiler->are_there_syntax_errors());
     }

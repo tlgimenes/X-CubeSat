@@ -47,7 +47,7 @@ along with this program; if not, visit http://www.fsf.org/
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 
@@ -74,47 +74,47 @@ FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, InOutInterface *in
         case SEND:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionSend(tokens, interface, variables);
+            f = new FunctionSend(tokens, term, variables);
             break;
         case SAVE:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionSave(tokens, interface, variables);
+            f = new FunctionSave(tokens, term, variables);
             break;
         case IF:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionIf(tokens, interface, variables);
+            f = new FunctionIf(tokens, term, variables);
             break;
         case EQ:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionEq(tokens, interface, variables);
+            f = new FunctionEq(tokens, term, variables);
             break;
         case LL:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionLl(tokens, interface, variables);
+            f = new FunctionLl(tokens, term, variables);
             break;
         case LEQ:
             if(typeid(*f) != typeid(FunctionVariableBool))
                 throw new std::bad_typeid();
-            f = new FunctionLeq(tokens, interface, variables);
+            f = new FunctionLeq(tokens, term, variables);
             break;
         case FILE2:
             if(typeid(*f) != typeid(FunctionVariableString))
                 throw new std::bad_typeid();
-            f = new FunctionFile(tokens, interface, variables);
+            f = new FunctionFile(tokens, term, variables);
             break;
         case APPENDDATE:
             if(typeid(*f) != typeid(FunctionVariableString))
                 throw new std::bad_typeid();
-            f = new FunctionAppendDate(tokens, interface, variables);
+            f = new FunctionAppendDate(tokens, term, variables);
             break;
         case FORMAT:
             if(typeid(*f) != typeid(FunctionVariableString))
                 throw new std::bad_typeid();
-            f = new FunctionFormat(tokens, interface, variables);
+            f = new FunctionFormat(tokens, term, variables);
             break;
         case STRING:
             if(typeid(*f) != typeid(FunctionVariableString))
@@ -124,7 +124,7 @@ FunctionSet::FunctionSet(std::vector<XCubeSatToken*> *tokens, InOutInterface *in
         case RECEIVE:
             if(typeid(*f) != typeid(FunctionVariableData))
                 throw new std::bad_typeid();
-            f = new FunctionReceive(tokens, interface, variables);
+            f = new FunctionReceive(tokens, term, variables);
             break;
         case VARIABLE:
             if(variables->find(*t->get_value_str()) == variables->end()) {

@@ -40,7 +40,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionSave::FunctionSave(FunctionVariableData *dat, FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionSave::FunctionSave(FunctionVariableData *dat, FunctionVariableString *str, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(dat);
     this->params.push_back(str);
@@ -51,7 +51,7 @@ FunctionSave::FunctionSave(FunctionVariableData *dat, FunctionVariableString *st
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 
@@ -63,7 +63,7 @@ FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, InOutInterface *
 
     switch(t->get_type()) {
         case RECEIVE:
-            f = new FunctionReceive(tokens, this->interface, variables);
+            f = new FunctionReceive(tokens, this->term, variables);
             break;
         case VARIABLE:
             if(variables->find(*t->get_value_str()) == variables->end()) 
@@ -83,13 +83,13 @@ FunctionSave::FunctionSave(std::vector<XCubeSatToken*> *tokens, InOutInterface *
 
     switch(t->get_type()) {
         case FILE2:
-            f = new FunctionFile(tokens, this->interface, variables);
+            f = new FunctionFile(tokens, this->term, variables);
             break;
         case APPENDDATE:
-            f = new FunctionAppendDate(tokens, this->interface, variables);
+            f = new FunctionAppendDate(tokens, this->term, variables);
             break;
         case FORMAT:
-            f = new FunctionFormat(tokens, this->interface, variables);
+            f = new FunctionFormat(tokens, this->term, variables);
             break;
         case STRING:
             f = new FunctionVariableString(t->get_value_str());

@@ -54,16 +54,16 @@ int main (int argc, char *argv[])
     Gtk::Main kit(argc, argv);
 
     Manager *man;
-    InOutInterface *inter;
+    Terminal *term;
     
     flush_fifo_file(FIFO_FILE);
 
     Log::init();
     DataBase::init();
     
-    Init::XCubeSat_Controller_start(&man, &inter);
+    Init::XCubeSat_Controller_start(&man, &term);
 
-    MainWindowCallback * mainWindow = new MainWindowCallback(man, inter);
+    MainWindowCallback * mainWindow = new MainWindowCallback(man, term);
 
     // Main loop for the program
     kit.run(*(mainWindow->get_main_window()));

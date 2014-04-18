@@ -8,5 +8,8 @@
 
 echo "Starting Ground Station of Ecole Polytechnique"
 
+echo "Starting Gpredict"
 ../gpredict/src/gpredict  &
+echo "Starting X-CubeSat Controler"
+sleep 2
 ./XCubeSat_Controler 

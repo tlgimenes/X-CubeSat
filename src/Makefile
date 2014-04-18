@@ -12,7 +12,7 @@ OBJ=$(SRC:.cpp=.o)
 
 INCLUDE_PATH=../include
 
-LIBS=`pkg-config gtkmm-3.0 sqlite3 --cflags --libs`
+LIBS=`pkg-config gtkmm-3.0 sqlite3 vte-2.90 --cflags --libs`
 
 all: $(OBJ)
 

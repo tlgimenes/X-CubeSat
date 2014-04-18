@@ -40,7 +40,7 @@ class MainWindowCallback
         /*----------------------------------------------*/
         /* General attributes */
         Manager *man;
-        InOutInterface *inter;
+        Terminal *term;
         MainWindowRenderer *main_window_renderer;
         /*----------------------------------------------*/
 
@@ -51,7 +51,7 @@ class MainWindowCallback
 
         /*----------------------------------------------*/
         /* FIFO file for communication with Gpredict */
-        std::ifstream fifo;
+        std::ifstream *fifo;
         /*----------------------------------------------*/
 
         /*----------------------------------------------*/
@@ -80,15 +80,17 @@ class MainWindowCallback
         void new_script_button_clicked_cb();
         void up_button_clicked_cb();
         void down_button_clicked_cb();
-        bool update_curr_satellite();
+        void update_curr_satellite();
         bool on_key_press_event(GdkEventKey* event);
         void quit_cb();
         bool quit_all_cb(GdkEventAny *event);
         void on_response_save_message_dialog(int response_id);
+        bool timeout_cb();
+        void on_modem_mode_change_cb();
         /*----------------------------------------------*/
 
     public:
-        MainWindowCallback(Manager *man, InOutInterface *inter);
+        MainWindowCallback(Manager *man, Terminal *term);
         Gtk::Window *get_main_window();
 };
  

@@ -37,7 +37,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionReceive::FunctionReceive(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionReceive::FunctionReceive(FunctionVariableString *str, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(str);
 }
@@ -47,7 +47,7 @@ FunctionReceive::FunctionReceive(FunctionVariableString *str, InOutInterface *in
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 
@@ -59,13 +59,13 @@ FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, InOutInter
 
     switch(t->get_type()) {
         case FILE2:
-            f = new FunctionFile(tokens, this->interface, variables);
+            f = new FunctionFile(tokens, this->term, variables);
             break;
         case APPENDDATE:
-            f = new FunctionAppendDate(tokens, this->interface, variables);
+            f = new FunctionAppendDate(tokens, this->term, variables);
             break;
         case FORMAT:
-            f = new FunctionFormat(tokens, this->interface, variables);
+            f = new FunctionFormat(tokens, this->term, variables);
             break;
         case STRING:
             f = new FunctionVariableString(t->get_value_str());
@@ -90,7 +90,7 @@ FunctionReceive::FunctionReceive(std::vector<XCubeSatToken*> *tokens, InOutInter
 Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
     FunctionVariableData *data = NULL;
-    InOutLog *log;
+    std::string str;
     time_t raw_time;
 
     time(&raw_time);
@@ -103,11 +103,8 @@ Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *
     if(format != NULL && typeid(*format) == typeid(FunctionVariableString)) {
         FunctionVariableString *format_str = static_cast<FunctionVariableString*>(format);
 
-        if(this->interface->is_oppenned() && this->interface->is_configured()) {
-            log = this->interface->read('\n');
-            if(log->is_successful()) {
-                data = new FunctionVariableData(*log->get_data(), *format_str->get_value(), (ptm->tm_hour)*10000 + ptm->tm_min*100 + ptm->tm_sec);
-            }
+        if(this->term->read_from_device(&str)) {
+            data = new FunctionVariableData(str, *format_str->get_value(), (ptm->tm_hour)*10000 + ptm->tm_min*100 + ptm->tm_sec);
         }
     }
 

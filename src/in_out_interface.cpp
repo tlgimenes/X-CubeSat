@@ -92,16 +92,19 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
  */
 InOutLog * InOutInterface::read(char delim)
 {
-    Glib::ustring *data = new Glib::ustring();
+    std::string *data = new std::string();
     InOutLog *log = NULL;
+    int n_read;
 
     if(this->port->is_oppenned()) {
-        *data = this->port->read_port(delim);
-        log = new InOutLog(RECEIVE_LOG, data, true);
+        n_read = this->port->read_port(data, delim);
+        if(n_read > 0)
+            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(*data), true);
+        else
+            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(), true);
     }
     else {
         log = new InOutLog(SEND_LOG, new Glib::ustring("port not oppenned"), false);
-        Log::LogWarn(LEVEL_LOG_WARNING, "Couldn't read because the port was not oppenned", __FILE__, __LINE__);
     }
 
     return log;
@@ -113,16 +116,19 @@ InOutLog * InOutInterface::read(char delim)
  */
 InOutLog * InOutInterface::read(size_t count)
 {
-    char *data = new char[count];
+    std::string *data = new std::string();
+    int n_read;
     InOutLog *log = NULL;
 
     if(this->port->is_oppenned()) {
-        this->port->read_port(data, count);
-        log = new InOutLog(RECEIVE_LOG, new Glib::ustring(data), true);
+        n_read = this->port->read_port(data, count);
+        if(n_read > 0)
+            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(*data), true);
+        else
+            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(), true);
     }
     else {
         log = new InOutLog(SEND_LOG, new Glib::ustring("port not oppenned"), false);
-        Log::LogWarn(LEVEL_LOG_WARNING, "Couldn't read because the port was not oppenned", __FILE__, __LINE__);
     }
 
     return log;

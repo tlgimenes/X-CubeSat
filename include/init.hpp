@@ -41,16 +41,18 @@ along with this program; if not, visit http://www.fsf.org/
 class Init
 {
     private:
-        InOutInterface *inOutInterface;
+ //       InOutInterface *inOutInterface;
+        Terminal *term;
 
     protected:
         Init();
         Manager *load_current_sats(Glib::ustring *gpredictSatsFile);
         Manager *load_previus_section(Glib::ustring *previusSection, Manager *man);
-        static void load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOutInterface *inter);
-        static void load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, InOutInterface *inter);
+        static void load_previous_session(Glib::ustring *gpredictSats, Manager *man, Terminal *term);
+        static void load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, Terminal *term);
+
     public:
-        static void XCubeSat_Controller_start(Manager **man, InOutInterface **inter);
+        static void XCubeSat_Controller_start(Manager **man, Terminal **term);
 };
 
 #endif

@@ -249,7 +249,7 @@ Glib::ustring DataBase::get_content_file(Glib::ustring fileName)
     std::fstream file(fileName.c_str(), std::fstream::in);
 
     if(file.is_open()) {
-std::cout << "Openning file" << std::endl;
+//std::cout << "Openning file" << std::endl;
         sstr << file;
         data = sstr.str();
     }

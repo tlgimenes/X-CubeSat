@@ -36,7 +36,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 #include "function.hpp"
 #include "xcubesat_token.hpp"
-#include "in_out_interface.hpp"
+#include "terminal.hpp"
 
 class XCubeSatCompiler 
 {
@@ -52,7 +52,7 @@ class XCubeSatCompiler
     public:
         XCubeSatCompiler();
         
-        std::vector<Function*> *compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, InOutInterface *interface) throw(std::bad_typeid*);
+        std::vector<Function*> *compile(std::unordered_map<std::string, std::string> *alias, std::stringstream *fileString, Terminal *term) throw(std::bad_typeid*);
 
         bool are_there_syntax_errors();
         Glib::ustring get_syntax_errors();

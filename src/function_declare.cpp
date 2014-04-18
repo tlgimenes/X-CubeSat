@@ -36,13 +36,13 @@ along with this program; if not, visit http://www.fsf.org/
 #include "function_variable_int.hpp"
 #include "function_variable_string.hpp"
 
-FunctionDeclare::FunctionDeclare(FunctionVariableString *type, FunctionVariableString *name, InOutInterface *interface, std::unordered_map<std::string, Function*> *var):Function(interface, variables)
+FunctionDeclare::FunctionDeclare(FunctionVariableString *type, FunctionVariableString *name, Terminal *term, std::unordered_map<std::string, Function*> *var):Function(term, variables)
 {
     this->params.push_back(type);
     this->params.push_back(name);
 }
 
-FunctionDeclare::FunctionDeclare(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *var) throw(std::bad_typeid*):Function(interface, variables)
+FunctionDeclare::FunctionDeclare(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *var) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 

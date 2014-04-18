@@ -37,17 +37,17 @@ along with this program; if not, visit http://www.fsf.org/
 #include "log.hpp"
 
 /*  --------------------------------------------------------  */
-MainWindowCallback::MainWindowCallback(Manager *man, InOutInterface *inter)
+MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term)
 {
     this->man = man;
-    this->inter = inter;
-    this->main_window_renderer = new MainWindowRenderer(man, inter);
+    this->term = term;
+    this->main_window_renderer = new MainWindowRenderer(man, term);
 
     this->connect_callbacks();
 
     this->isRunning = false;
 
-    this->fifo.open(FIFO_FILE);
+    this->fifo = new std::ifstream(FIFO_FILE);
 }
 /*  --------------------------------------------------------  */
 
@@ -77,7 +77,7 @@ void MainWindowCallback::connect_callbacks()
     ((Gtk::CellRendererText*)(this->main_window_renderer->commandsAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_command_edited_cb));
 
     /* Connect timeout callbacks */
-    sigc::slot<bool> my_slot = sigc::mem_fun(this,&MainWindowCallback::update_curr_satellite);
+    sigc::slot<bool> my_slot = sigc::mem_fun(this,&MainWindowCallback::timeout_cb);
     Glib::signal_timeout().connect(my_slot, UPDATE_RATE);
 
     /* Connect commands callbacks */
@@ -110,6 +110,10 @@ void MainWindowCallback::connect_callbacks()
     this->main_window_renderer->newScriptButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::new_script_button_clicked_cb));
     this->main_window_renderer->upButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::up_button_clicked_cb));
     this->main_window_renderer->downButton->signal_clicked().connect(sigc::mem_fun(*this, &MainWindowCallback::down_button_clicked_cb));
+
+    /* Connect Terminal frame */
+    this->main_window_renderer->modemConfig->signal_released().connect(sigc::mem_fun(*this, &MainWindowCallback::on_modem_mode_change_cb));
+    this->main_window_renderer->modemFree  ->signal_released().connect(sigc::mem_fun(*this, &MainWindowCallback::on_modem_mode_change_cb));
 }
 /*  --------------------------------------------------------  */
 
@@ -187,7 +191,7 @@ void MainWindowCallback::device_name_entry_activated_cb()
         Glib::ustring deviceName = this->main_window_renderer->get_device_name();
         int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
         
-        if(this->inter->open(deviceName, speed)) {
+        if(this->term->get_interface()->open(deviceName, speed)) {
             iconName = "gtk-yes";
         }
         else {
@@ -196,7 +200,7 @@ void MainWindowCallback::device_name_entry_activated_cb()
         this->main_window_renderer->deviceNameStatus->clear();
         this->main_window_renderer->deviceNameStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
 
-        if(this->inter->is_configured())
+        if(this->term->get_interface()->is_configured())
             iconName = "gtk-yes";
         else
             iconName = "gtk-no";
@@ -216,7 +220,7 @@ void MainWindowCallback::device_speed_combobox_changed_cb()
         Glib::ustring iconName;
         int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
 
-        if(this->inter->set_device_speed(speed)) {
+        if(this->term->get_interface()->set_device_speed(speed)) {
             iconName = "gtk-yes";
         }
         else {
@@ -237,7 +241,7 @@ void MainWindowCallback::new_script_button_clicked_cb()
     Glib::ustring *scriptName = new Glib::ustring(DEFAULT_SCRIPT_NAME);
     Glib::ustring *scriptData = new Glib::ustring(DEFAULT_CODE_NAME);
     Glib::ustring *alias      = new Glib::ustring(DEFAULT_ALIAS);
-    Interpreter   *interpreter= new XCubeSatInterpreter(this->inter); 
+    Interpreter   *interpreter= new XCubeSatInterpreter(this->main_window_renderer->term); 
 
     Glib::ustring satName;
 
@@ -361,22 +365,29 @@ void MainWindowCallback::cellrender_column_scripts_name_edited_cb(const Glib::us
  * Azimuth'\n'
  */
 //fifo_file_model *read_fifo_format(const char *fifoName)
-fifo_file_model *read_fifo_format(std::ifstream *fifo)
+fifo_file_model *read_fifo_format(std::ifstream **fifo)
 {
     char line[MAX_M_SIZE];
     fifo_file_model * fifofm = new fifo_file_model[1];
+    static bool lock = true;
 
     /* Opens fifo file */
     //std::ifstream fifo(fifoName);
+    if(!(*fifo)->is_open() && !lock) {
+        (*fifo)->close();
+        delete(*fifo);
+        *fifo = new std::ifstream(FIFO_FILE);
+        lock = !lock;
+    }
 
-    if(*fifo) {
-        fifo->getline(line, MAX_M_SIZE);
+    if(**fifo) {
+        (*fifo)->getline(line, MAX_M_SIZE);
         fifofm->satName = new std::string(line);
 
-        fifo->getline(line, MAX_M_SIZE);
+        (*fifo)->getline(line, MAX_M_SIZE);
         fifofm->el = new std::string(line);
 
-        fifo->getline(line, MAX_M_SIZE);
+        (*fifo)->getline(line, MAX_M_SIZE);
         fifofm->az = new std::string(line);
     }
     else {
@@ -391,7 +402,20 @@ fifo_file_model *read_fifo_format(std::ifstream *fifo)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-bool MainWindowCallback::update_curr_satellite()
+bool MainWindowCallback::timeout_cb()
+{
+    /* Update Current Satellite */
+    this->update_curr_satellite();
+
+    /* Update terminal */
+    this->main_window_renderer->term->update();
+
+    return true;
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+void MainWindowCallback::update_curr_satellite()
 {
  //   fifo_file_model *m = read_fifo_format(FIFO_FILE);
     fifo_file_model *m = read_fifo_format(&this->fifo);
@@ -421,8 +445,13 @@ bool MainWindowCallback::update_curr_satellite()
             /* ERROR in FIFO FILE ! What TODO next ? */
         }
     }
+}
+/*  --------------------------------------------------------  */
 
-    return true;
+/*  --------------------------------------------------------  */
+void MainWindowCallback::on_modem_mode_change_cb()
+{
+    this->main_window_renderer->term->change_mode();
 }
 /*  --------------------------------------------------------  */
 

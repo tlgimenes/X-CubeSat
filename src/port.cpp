@@ -163,21 +163,17 @@ void Port::write_to_port(char *data, unsigned int bytesSize)
 /* Reads from the configured and oppenned port count bytes
  * and saves it in buff
  */
-void Port::read_port(char *buff, size_t count)
+int Port::read_port(std::string *buff, size_t count)
 {
     int nread_port;
+    char *buffer = new char[count];
 
     if(this->isOppenned) {
         nread_port = read(this->fd, (void*)buff, count);
-
-        if(nread_port < 0)
-            Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
-    }
-    else {
-        Log::LogWarn(LEVEL_LOG_WARNING, "Tried to read to not oppenned port", __FILE__, __LINE__);
+        *buff = buffer;
     }
 
-    return;
+    return nread_port;
 }
 /*  --------------------------------------------------------  */
 
@@ -186,7 +182,7 @@ void Port::read_port(char *buff, size_t count)
  * delim is read. Pay attention, this function is blocking
  * TODO: Implement a non-blocking version of this function
  */
-char *Port::read_port(char delim)
+int Port::read_port(std::string *buffer, char delim)
 {
     Glib::ustring buff;
     char c;
@@ -197,16 +193,11 @@ char *Port::read_port(char delim)
         while(c != delim) {
             buff.append(&c);
             nread_port = read(this->fd, &c, 1);
-
-            if(nread_port < 0)
-            Log::LogWarn(LEVEL_LOG_WARNING, "The port couldn't be read, maybe some data was lost", NULL, -1);
         }
     }
-    else {
-        Log::LogWarn(LEVEL_LOG_WARNING, "Tried to read to not oppenned port", __FILE__, __LINE__);
-    }
     
-    return (char*)buff.c_str();
+    *buffer = buff;
+    return nread_port;
 }
 /*  --------------------------------------------------------  */
 

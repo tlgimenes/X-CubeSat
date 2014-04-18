@@ -37,11 +37,11 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionSend::FunctionSend(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionSend::FunctionSend(FunctionVariableString *str, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(str);
 
-    this->interface = interface;
+    this->term = term;
 }
 /*  --------------------------------------------------------  */
 
@@ -49,7 +49,7 @@ FunctionSend::FunctionSend(FunctionVariableString *str, InOutInterface *interfac
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
     XCubeSatToken *t = tokens->front();
@@ -60,13 +60,13 @@ FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, InOutInterface *
 
     switch(t->get_type()) {
         case FILE2:
-            f = new FunctionFile(tokens, this->interface, variables);
+            f = new FunctionFile(tokens, this->term, variables);
             break;
         case APPENDDATE:
-            f = new FunctionAppendDate(tokens, this->interface, variables);
+            f = new FunctionAppendDate(tokens, this->term, variables);
             break;
         case FORMAT:
-            f = new FunctionFormat(tokens, this->interface, variables);
+            f = new FunctionFormat(tokens, this->term, variables);
             break;
         case STRING:
             f = new FunctionVariableString(t->get_value_str());
@@ -98,13 +98,10 @@ Function *FunctionSend::run(std::vector<Function*> *runQueue, Glib::ustring *sat
 
     if(str != NULL && typeid(*str) == typeid(FunctionVariableString)) {
         FunctionVariableString *send_str = static_cast<FunctionVariableString*>(str);
-//std::cout << "{" << *send_str->get_value() << "}";
-        if(this->interface->is_configured() && this->interface->is_oppenned())
-            this->interface->write(send_str->get_value());
-        //    log = this->interface->write(send_str->get_value());
-        //if(!log->is_successful())
-        else 
+//std::cout << "{" << *send_str->get_value() << "}\n";
+        if(!this->term->write_to_device(*send_str->get_value())) {
             res = new FunctionVariableBool(false);
+        }
     }
     return res;
 }

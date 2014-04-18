@@ -32,6 +32,7 @@ along with this program; if not, visit http://www.fsf.org/
 #include "manager.hpp"
 #include "models.hpp"
 #include "defs.hpp"
+#include "terminal.hpp"
 
 class MainWindowRenderer
 {
@@ -99,6 +100,14 @@ class MainWindowRenderer
         Gtk::TreeView *scriptsExeQueueTreeview;
         /*----------------------------------------------*/
 
+        /*----------------------------------------------*/
+        /* Terminal module */
+        /*----------------------------------------------*/
+        Terminal *term;
+        Gtk::TextView *terminalView;
+        Gtk::RadioButton *modemConfig;
+        Gtk::RadioButton *modemFree;
+
     protected:
         /*----------------------------------------------*/
         /* Init functions */
@@ -107,9 +116,10 @@ class MainWindowRenderer
         void init_text_editor();
         void init_curr_sat_frame();
         void init_config_frame();
-        void init_port_config_frame(InOutInterface *inter);
+        void init_port_config_frame();
         void init_commands_frame();
         void init_scripts_frame();
+        void init_terminal_frame();
         /*----------------------------------------------*/
   
         /*----------------------------------------------*/
@@ -145,7 +155,7 @@ class MainWindowRenderer
         void render_scripts_priority_queue(Glib::RefPtr<Gtk::ListStore> *Pqueue);
         /*----------------------------------------------*/
     public:
-        MainWindowRenderer(Manager *man, InOutInterface *inter);
+        MainWindowRenderer(Manager *man, Terminal *term);
                       
         /*----------------------------------------------*/
         Glib::RefPtr<Gtk::Builder> get_main_builder();

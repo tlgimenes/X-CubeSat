@@ -5,27 +5,27 @@
  */
 /* X-CubeSat Controler: Real-time communication with satellite program
 
- Copyright (C)  2014 - Tiago Lobato Gimenes
+   Copyright (C)  2014 - Tiago Lobato Gimenes
 
- Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
+Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
 
- Comments, questions and bugreports should be submitted via
- https://github.com/tlgimenes/X-CubeSat
- More details can be found at the project home page:
+Comments, questions and bugreports should be submitted via
+https://github.com/tlgimenes/X-CubeSat
+More details can be found at the project home page:
 
- https://github.com/tlgimenes/X-CubeSat
+https://github.com/tlgimenes/X-CubeSat
 
- This program is free software; you can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU General Public License
 along with this program; if not, visit http://www.fsf.org/
 */
 
@@ -39,16 +39,16 @@ along with this program; if not, visit http://www.fsf.org/
 
 /*  --------------------------------------------------------  */
 /* Constructor
- */
+*/
 Init::Init()
 {
-    this->inOutInterface = new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT));
+    this->term = new Terminal(new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT)));
 }
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 /* Remove ths characters: space from the stringstream sstm
- */
+*/
 #define discard_spaces(sstm) \
     while(sstm->peek() == ' ') { \
         sstm->seekg((int)sstm->tellg() + 1); \
@@ -59,7 +59,7 @@ Init::Init()
 /* Loads the scripts for a given satellite from the database
  * and adds then in the satellite manager.
  */
-void Init::load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, InOutInterface *inter)
+void Init::load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustring *satName, Manager *man, Terminal *term) 
 {
     Glib::ustring *scriptStr, *aliasStr;
     Glib::ustring *scriptNameStr;
@@ -76,7 +76,7 @@ void Init::load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustrin
             aliasStr = new Glib::ustring(DataBase::get_alias(scriptNameStr->c_str())->str());
 
             // Creates a new script associated with the satellite
-            man->add_script(satName, scriptNameStr, scriptStr, aliasStr, new XCubeSatInterpreter(inter));
+            man->add_script(satName, scriptNameStr, scriptStr, aliasStr, new XCubeSatInterpreter(term));
         }
     }
 }
@@ -87,20 +87,20 @@ void Init::load_scripts(int scriptsNum, std::stringstream *scripts, Glib::ustrin
  * satellites of previous sessions acording to the 
  * satellites that are being shown by Gpredict
  */
-void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOutInterface *inter)
+void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, Terminal *term)
 {
     if(!DataBase::exists_file(*gpredictSats)) {
         Log::LogWarn(LEVEL_LOG_ERROR, "Could not open Sats file from Gpredict !", __FILE__, __LINE__);
-   }
+    }
     std::stringstream *sats = DataBase::get_sats(*gpredictSats);
     Glib::ustring *satNameStr;
     char aux[999];
-    
+
     sats->getline(aux, 999);
     while(!sats->eof()) {
         satNameStr = new Glib::ustring(aux);
         man->add_sat(satNameStr);
-        load_scripts(DataBase::get_session_script_num(*satNameStr), DataBase::get_session_script_names(*satNameStr), satNameStr, man, inter);
+        load_scripts(DataBase::get_session_script_num(*satNameStr), DataBase::get_session_script_names(*satNameStr), satNameStr, man, term);
         sats->getline(aux, 999);
     }
 
@@ -109,13 +109,11 @@ void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, InOu
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-/* Instantiates and Instantiates a new Manager and a new InOutInterface
- */
-void Init::XCubeSat_Controller_start(Manager **man, InOutInterface **inter)
+/* Instantiates and Instantiates a new Manager and a new InOuttermface */
+void Init::XCubeSat_Controller_start(Manager **man, Terminal **term) 
 {
-    *inter = new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT));
-
+    *term = new Terminal(new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT)));
     *man = new Manager();
-    Init::load_previous_session(new Glib::ustring(DEFAULT_GPREDICT_SATS_FILE), *man, *inter);
+    Init::load_previous_session(new Glib::ustring(DEFAULT_GPREDICT_SATS_FILE), *man, *term);
 }
 /*  --------------------------------------------------------  */

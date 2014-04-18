@@ -34,7 +34,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionEq::FunctionEq(FunctionVariableInt *int1, FunctionVariableInt *int2, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionEq::FunctionEq(FunctionVariableInt *int1, FunctionVariableInt *int2, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(int1);
     this->params.push_back(int2);
@@ -45,7 +45,7 @@ FunctionEq::FunctionEq(FunctionVariableInt *int1, FunctionVariableInt *int2, InO
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionEq::FunctionEq(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionEq::FunctionEq(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 

@@ -78,7 +78,7 @@ Glib::ustring *FunctionVariableString::get_value()
  */
 Function *FunctionVariableString::run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*)
 {
-    //std::cout << "VariableString";
+ //   std::cout << "VariableString";
 
     return this;
 }

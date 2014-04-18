@@ -32,13 +32,12 @@ along with this program; if not, visit http://www.fsf.org/
 #include "function.hpp"
 #include "function_variable_string.hpp"
 #include "xcubesat_token.hpp"
-#include "in_out_interface.hpp"
 
 class FunctionFile : public Function
 {
     public:
-        FunctionFile(FunctionVariableString *, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables);
-        FunctionFile(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*);
+        FunctionFile(FunctionVariableString *, Terminal *term, std::unordered_map<std::string, Function*> *variables);
+        FunctionFile(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*);
 
         Function *run(std::vector<Function*> *runQueue, Glib::ustring *satName) throw(std::bad_typeid*);
 };

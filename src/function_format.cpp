@@ -35,7 +35,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor
  */
-FunctionFormat::FunctionFormat(FunctionVariableString *str, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables):Function(interface, variables)
+FunctionFormat::FunctionFormat(FunctionVariableString *str, Terminal *term, std::unordered_map<std::string, Function*> *variables):Function(term, variables)
 {
     this->params.push_back(str);
 }
@@ -45,7 +45,7 @@ FunctionFormat::FunctionFormat(FunctionVariableString *str, InOutInterface *inte
 /* Constructor: Imitates the form of this function in the
  * definition of the language
  */
-FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, InOutInterface *interface, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(interface, variables)
+FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
     if(tokens->empty()) throw new std::exception();
 
@@ -57,13 +57,13 @@ FunctionFormat::FunctionFormat(std::vector<XCubeSatToken*> *tokens, InOutInterfa
 
     switch(t->get_type()) {
         case FILE2:
-            f = new FunctionFile(tokens, this->interface, variables);
+            f = new FunctionFile(tokens, this->term, variables);
             break;
         case APPENDDATE:
-            f = new FunctionAppendDate(tokens, this->interface, variables);
+            f = new FunctionAppendDate(tokens, this->term, variables);
             break;
         case FORMAT:
-            f = new FunctionFormat(tokens, this->interface, variables);
+            f = new FunctionFormat(tokens, this->term, variables);
             break;
         case STRING:
             f = new FunctionVariableString(t->get_value_str());

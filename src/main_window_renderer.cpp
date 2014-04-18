@@ -24,6 +24,7 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
+#include <gtkmm/builder.h>
 #include <gtkmm.h>
 #include <iostream>
 #include <sys/types.h>
@@ -36,7 +37,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 /*  --------------------------------------------------------  */
 void MainWindowRenderer::init_sats_frame(Manager *man)
-{ 
+{
     this->mainBuilder->get_widget(SATS_TREEVIEW_WIDGET, this->satsTreeview);
     Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
 
@@ -90,18 +91,18 @@ void MainWindowRenderer::init_text_editor()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void MainWindowRenderer::init_port_config_frame(InOutInterface *inter)
+void MainWindowRenderer::init_port_config_frame()
 {
     this->mainBuilder->get_widget(PORT_NAME_ENTRY_WIDGET, this->deviceName);
     this->mainBuilder->get_widget(PORT_NAME_STATUS_WIDGET, this->deviceNameStatus);
     this->mainBuilder->get_widget(PORT_SPEED_COMBOBOX_WIDGET, this->deviceSpeedComboBox);
     this->mainBuilder->get_widget(UPS_SPEED_STATUS_WIDGET, this->deviceSpeedStatus);
 
-    if(inter->is_oppenned()) {
-        this->deviceName->set_text(inter->get_device_name());
+    if(term->get_interface()->is_oppenned()) {
+        this->deviceName->set_text(term->get_interface()->get_device_name());
         this->deviceNameStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
     }
-    if(inter->is_configured()) {
+    if(term->get_interface()->is_configured()) {
         this->deviceSpeedStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
     }
 }
@@ -125,11 +126,29 @@ void MainWindowRenderer::init_scripts_frame()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-MainWindowRenderer::MainWindowRenderer(Manager *man, InOutInterface *inter)
+void MainWindowRenderer::init_terminal_frame()
+{
+    this->mainBuilder->get_widget(TERMINAL_TEXTVIEW, this->terminalView);
+
+    /*  Create a new terminal and buffer */
+    Glib::RefPtr<Gtk::TextBuffer> buff = Gtk::TextBuffer::create();
+    this->term->set_buffer(buff);
+    this->terminalView->set_buffer(buff);
+
+    /* Get the Radio Button */
+    this->mainBuilder->get_widget(MODEM_CONFIG_RADIO_BUTTON, this->modemConfig);
+    this->mainBuilder->get_widget(MODEM_FREE_RADIO_BUTTON,   this->modemFree);
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+MainWindowRenderer::MainWindowRenderer(Manager *man, Terminal *term)
 {
     try {
         this->mainBuilder = Gtk::Builder::create_from_file(MAIN_WINDOW_GLADE);
         this->mainBuilder->get_widget(MAIN_WINDOW_WIDGET, this->mainWindow);
+
+        this->term = term;       
 
         /* Config */
         init_config_frame();
@@ -147,16 +166,22 @@ MainWindowRenderer::MainWindowRenderer(Manager *man, InOutInterface *inter)
         init_curr_sat_frame();
 
         /* Port Config */
-        init_port_config_frame(inter);
+        init_port_config_frame();
 
         /* Commands */
         init_commands_frame();
 
         /* Scripts frame */
         init_scripts_frame();
+
+        /* Terminal */
+        init_terminal_frame();
     }
     catch(const Glib::FileError& ex) {
         Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
+    }
+    catch(Gtk::BuilderError &ex) {
+        Log::LogWarn(LEVEL_LOG_ERROR, ex.what().c_str(), __FILE__, __LINE__);
     }
 };
 /*  --------------------------------------------------------  */
@@ -429,7 +454,7 @@ Gtk::TreeModel::Row MainWindowRenderer::get_row_combobox_device_active()
     Gtk::TreeModel::Row row = (*this->deviceSpeedComboBox->get_active());
 
     if(!row) {
-        Log::LogWarn(LEVEL_LOG_ERROR, "Unable to load speed for the port", __FILE__, __LINE__);
+        Log::LogWarn(LEVEL_LOG_WARNING, "Unable to load speed for the port, set the speed first and than the port", __FILE__, __LINE__);
     }
 
     return row;

@@ -84,7 +84,7 @@ XCubeSatToken::XCubeSatToken(Glib::ustring *str)
         type = VARIABLE;
         this->data.sdata = new Glib::ustring(*str);
     }
-    //std::cout << "the string read was " << str->c_str() << std::endl;
+//    std::cout << "the COMMAND read was " << str->c_str() << std::endl;
 }
 /*  --------------------------------------------------------  */
 
