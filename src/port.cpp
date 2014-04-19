@@ -169,7 +169,7 @@ int Port::read_port(std::string *buff, size_t count)
     char *buffer = new char[count];
 
     if(this->isOppenned) {
-        nread_port = read(this->fd, (void*)buff, count);
+        nread_port = read(this->fd, buffer, count);
         *buff = buffer;
     }
 
