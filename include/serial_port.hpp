@@ -83,12 +83,12 @@ public:
     /**
      * \return true if serial device is open
      */
-    bool isOpen() const;
+    bool is_open() const;
 
     /**
      * \return true if error were found
      */
-    bool errorStatus() const;
+    bool error_status() const;
 
     /**
      * Close the serial device
@@ -115,7 +115,7 @@ public:
     * To send binary data, use write()
     * \param s string to send
     */
-    void writeString(const std::string& s);
+    void write(const std::string& s);
 
     virtual ~SerialPort()=0;
 
@@ -129,13 +129,13 @@ private:
      * Callback called to start an asynchronous read operation.
      * This callback is called by the io_service in the spawned thread.
      */
-    void doRead();
+    void do_read();
 
     /**
      * Callback called at the end of the asynchronous operation.
      * This callback is called by the io_service in the spawned thread.
      */
-    void readEnd(const boost::system::error_code& error,
+    void read_end(const boost::system::error_code& error,
         size_t bytes_transferred);
 
     /**
@@ -143,19 +143,19 @@ private:
      * If it is already in progress, does nothing.
      * This callback is called by the io_service in the spawned thread.
      */
-    void doWrite();
+    void do_write();
 
     /**
      * Callback called at the end of an asynchronuous write operation,
      * if there is more data to write, restarts a new write operation.
      * This callback is called by the io_service in the spawned thread.
      */
-    void writeEnd(const boost::system::error_code& error);
+    void write_end(const boost::system::error_code& error);
 
     /**
      * Callback to close serial port
      */
-    void doClose();
+    void do_close();
 
     boost::shared_ptr<SerialPortImpl> pimpl;
 
@@ -165,12 +165,12 @@ protected:
      * To allow derived classes to report errors
      * \param e error status
      */
-    void setErrorStatus(bool e);
+    void set_error_status(bool e);
 
     /**
      * To allow derived classes to set a read callback
      */
-    void setReadCallback(const
+    void set_read_callback(const
             boost::function<void (const char*, size_t)>& callback);
 
     /**
@@ -178,7 +178,7 @@ protected:
      * does not get called after the derived class destructor but before the
      * base class destructor
      */
-    void clearReadCallback();
+    void clear_read_callback();
 
 };
 
@@ -222,14 +222,14 @@ public:
      * serial port.
      * \param callback the receive callback
      */
-    void setCallback(const
+    void set_callback(const
             boost::function<void (const char*, size_t)>& callback);
 
     /**
      * Removes the callback. Any data received after this function call will
      * be lost.
      */
-    void clearCallback();
+    void clear_callback();
 
     virtual ~CallbackSerialPort();
 };

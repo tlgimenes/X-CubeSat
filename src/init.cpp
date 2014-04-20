@@ -112,8 +112,16 @@ void Init::load_previous_session(Glib::ustring *gpredictSats, Manager *man, Term
 /* Instantiates and Instantiates a new Manager and a new InOuttermface */
 void Init::XCubeSat_Controller_start(Manager **man, Terminal **term) 
 {
-    *term = new Terminal(new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT)));
-    *man = new Manager();
-    Init::load_previous_session(new Glib::ustring(DEFAULT_GPREDICT_SATS_FILE), *man, *term);
+    try {
+        //*term = new Terminal(new InOutInterface(new Glib::ustring(DEFAULT_OUTPUT)));
+        *term = new Terminal(NULL);
+
+        *man = new Manager();
+
+        Init::load_previous_session(new Glib::ustring(DEFAULT_GPREDICT_SATS_FILE), *man, *term);
+    }
+    catch(std::exception &ex) {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Unable to open the port", __FILE__, __LINE__);
+    }
 }
 /*  --------------------------------------------------------  */

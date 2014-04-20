@@ -32,13 +32,22 @@ along with this program; if not, visit http://www.fsf.org/
 #include "in_out_interface.hpp"
 #include "init.hpp"
 #include "log.hpp"
+#include "defs.hpp"
 
 /*  --------------------------------------------------------  */
 /* Constructor
  */
 InOutInterface::InOutInterface()
 {
-    this->port = new Port(NULL);
+    termios stored_settings;
+    tcgetattr(0, &stored_settings);
+    termios new_settings;
+    new_settings.c_lflag &= (~ICANON);
+    //new_settings.c_lflag &= (~ISIG);
+    new_settings.c_lflag &= ~(ECHO);
+    tcsetattr(0, TCSANOW, &new_settings);
+
+    this->port = new CallbackSerialPort(DEFAULT_OUTPUT, DEFAULT_BAUD_RATE);
     this->deviceName = DEFAULT_OUTPUT;
 }
 /*  --------------------------------------------------------  */
@@ -48,7 +57,32 @@ InOutInterface::InOutInterface()
  */
 InOutInterface::InOutInterface(Glib::ustring *deviceName)
 {
-    this->port = new Port(deviceName->c_str());
+    termios stored_settings;
+    tcgetattr(0, &stored_settings);
+    termios new_settings;
+    new_settings.c_lflag &= (~ICANON);
+    //new_settings.c_lflag &= (~ISIG);
+    new_settings.c_lflag &= ~(ECHO);
+    tcsetattr(0, TCSANOW, &new_settings);
+
+    this->port = new CallbackSerialPort(deviceName->c_str(), DEFAULT_BAUD_RATE);
+    this->deviceName = *deviceName;
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+/*  Constructor */
+InOutInterface::InOutInterface(Glib::ustring *deviceName, int speed)
+{
+    termios stored_settings;
+    tcgetattr(0, &stored_settings);
+    termios new_settings;
+    new_settings.c_lflag &= (~ICANON);
+    //new_settings.c_lflag &= (~ISIG);
+    new_settings.c_lflag &= ~(ECHO);
+    tcsetattr(0, TCSANOW, &new_settings);
+
+    this->port = new CallbackSerialPort(deviceName->c_str(), speed);
     this->deviceName = *deviceName;
 }
 /*  --------------------------------------------------------  */
@@ -59,7 +93,8 @@ InOutInterface::InOutInterface(Glib::ustring *deviceName)
 bool InOutInterface::open(Glib::ustring deviceName, int speed)
 {
     if(this->port != NULL) {
-        return this->port->open_port(deviceName.c_str(), speed);
+        this->port->open(deviceName.c_str(), speed);
+        return this->port->is_open();
     }
 
     return false;
@@ -73,8 +108,12 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 {
     InOutLog *log = NULL;
 
-    if(this->port->is_oppenned()) {
-        this->port->write_to_port((char*)data->c_str(), data->size());
+    /*  It is here that a '\r' character is added to the
+     *  string to be sended for the modem to understand it */
+    data->append(OEM_KANTRONICS);
+
+    if(this->port->is_open()) {
+        this->port->write((char*)data->c_str(), data->size());
         log = new InOutLog(SEND_LOG, NULL, true);
     }
     else {
@@ -87,51 +126,9 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-/* Read from the port until to find the delim character. 
- * TODO: Implement a non blocking call of this function
- */
-InOutLog * InOutInterface::read(char delim)
+void InOutInterface::set_read_callback(const boost::function<void (const char*,size_t)>& callback)
 {
-    std::string *data = new std::string();
-    InOutLog *log = NULL;
-    int n_read;
-
-    if(this->port->is_oppenned()) {
-        n_read = this->port->read_port(data, delim);
-        if(n_read > 0)
-            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(*data), true);
-        else
-            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(), true);
-    }
-    else {
-        log = new InOutLog(SEND_LOG, new Glib::ustring("port not oppenned"), false);
-    }
-
-    return log;
-}
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
-/* Read count bytes from the port
- */
-InOutLog * InOutInterface::read(size_t count)
-{
-    std::string *data = new std::string();
-    int n_read;
-    InOutLog *log = NULL;
-
-    if(this->port->is_oppenned()) {
-        n_read = this->port->read_port(data, count);
-        if(n_read > 0)
-            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(*data), true);
-        else
-            log = new InOutLog(RECEIVE_LOG, new Glib::ustring(), true);
-    }
-    else {
-        log = new InOutLog(SEND_LOG, new Glib::ustring("port not oppenned"), false);
-    }
-
-    return log;
+    this->port->set_callback(callback);
 }
 /*  --------------------------------------------------------  */
 
@@ -141,7 +138,9 @@ InOutLog * InOutInterface::read(size_t count)
 bool InOutInterface::set_device_speed(int speed)
 {
     if(speed >= 0) {
-        return this->port->set_speed(speed);
+        //return this->port->set_speed(speed);
+        Log::LogWarn(LEVEL_LOG_INFO, "Sorry, this feature was not implemented yet!", __FILE__, __LINE__);
+        return true;
     }
 
     return false;
@@ -158,24 +157,12 @@ Glib::ustring InOutInterface::get_device_name()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-/* Returns true if is configured, false otherwise
- */
-bool InOutInterface::is_configured()
-{
-    if(this->port != NULL)
-        return this->port->is_configured();
-
-    return false;
-}
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
 /* Returns true if it's oppenned, false otherwise
  */
-bool InOutInterface::is_oppenned()
+bool InOutInterface::is_open()
 {
     if(this->port != NULL)
-        return this->port->is_oppenned();
+        return this->port->is_open();
 
     return false;
 }

@@ -48,6 +48,8 @@ MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term)
     this->isRunning = false;
 
     this->fifo = new std::ifstream(FIFO_FILE);
+
+    this->term->set_interface(DEFAULT_OUTPUT, DEFAULT_SPEED);
 }
 /*  --------------------------------------------------------  */
 
@@ -185,53 +187,70 @@ void MainWindowCallback::command_treeview_activated_cb(const Gtk::TreeModel::Pat
 /*  --------------------------------------------------------  */
 void MainWindowCallback::device_name_entry_activated_cb()
 {
-    try {
-        Glib::ustring iconName;
+    Glib::ustring iconName = "gtk-no";
 
+    try {
         Glib::ustring deviceName = this->main_window_renderer->get_device_name();
         int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
-        
-        if(this->term->get_interface()->open(deviceName, speed)) {
-            iconName = "gtk-yes";
-        }
-        else {
-            iconName = "gtk-no";
-        }
-        this->main_window_renderer->deviceNameStatus->clear();
-        this->main_window_renderer->deviceNameStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
 
-        if(this->term->get_interface()->is_configured())
-            iconName = "gtk-yes";
-        else
-            iconName = "gtk-no";
-        this->main_window_renderer->deviceSpeedStatus->clear();
-        this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+        if(speed > 0) /* TODO: Improove this verification */
+        {
+            this->term->set_interface(deviceName, speed);
+            if(this->term->get_interface() != NULL) {
+                this->term->get_interface()->open(deviceName, speed);
+                if(this->term->get_interface() != NULL && this->term->get_interface()->is_open()) {
+                    iconName = "gtk-yes";
+                }
+            }
+        }
     }
     catch(std::invalid_argument &exp) {
         Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
     }
+    catch (std::exception &ex) {
+        Glib::ustring err = "Unable to set port because: \"";
+        err.append(ex.what()); err.append("\"");
+        Log::LogWarn(LEVEL_LOG_WARNING, err.c_str(), __FILE__,__LINE__);
+    }
+    this->main_window_renderer->deviceSpeedStatus->clear();
+    this->main_window_renderer->deviceNameStatus-> clear();
+    this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+    this->main_window_renderer->deviceNameStatus-> set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
 }
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 void MainWindowCallback::device_speed_combobox_changed_cb()
 {
+    Glib::ustring iconName = "gtk-no";
+
     try {
-        Glib::ustring iconName;
+        Glib::ustring deviceName = this->main_window_renderer->get_device_name();
         int speed = std::stoi(this->main_window_renderer->get_row_combobox_device_active().get_value(this->modelPortSpeedComboBox.speedName).c_str());
 
-        if(this->term->get_interface()->set_device_speed(speed)) {
-            iconName = "gtk-yes";
+        if(deviceName.size() > 0) /* TODO: Improove this verification */
+        {
+            this->term->set_interface(deviceName, speed);
+            if(this->term->get_interface() != NULL) {
+                this->term->get_interface()->open(deviceName, speed);
+                if(this->term->get_interface()->is_open()) {
+                    iconName = "gtk-yes";
+                }
+            }
         }
-        else {
-            iconName = "gtk-no";
-        }
-        this->main_window_renderer->deviceSpeedStatus->clear();
-        this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
     } 
     catch (std::invalid_argument& arg) {
         Log::LogWarn(LEVEL_LOG_INFO, "Choose a speed", __FILE__, __LINE__);
     }
+    catch (std::exception &ex) {
+        Glib::ustring err = "Unable to set port because: \"";
+        err.append(ex.what()); err.append("\"");
+        Log::LogWarn(LEVEL_LOG_WARNING, err.c_str(), __FILE__,__LINE__);
+    }
+    this->main_window_renderer->deviceSpeedStatus->clear();
+    this->main_window_renderer->deviceNameStatus-> clear();
+    this->main_window_renderer->deviceSpeedStatus->set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
+    this->main_window_renderer->deviceNameStatus-> set_from_icon_name(iconName, Gtk::ICON_SIZE_BUTTON);
 }
 /*  --------------------------------------------------------  */
 

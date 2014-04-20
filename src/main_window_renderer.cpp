@@ -39,7 +39,7 @@ along with this program; if not, visit http://www.fsf.org/
 void MainWindowRenderer::init_sats_frame(Manager *man)
 {
     this->mainBuilder->get_widget(SATS_TREEVIEW_WIDGET, this->satsTreeview);
-    Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
+    //Glib::RefPtr<Gtk::ListStore> model = Glib::RefPtr<Gtk::ListStore>::cast_dynamic(this->satsTreeview->get_model());
 
     // For Gtk+3.8 Only
     //this->satsTreeview->set_activate_on_single_click(true); 
@@ -98,11 +98,9 @@ void MainWindowRenderer::init_port_config_frame()
     this->mainBuilder->get_widget(PORT_SPEED_COMBOBOX_WIDGET, this->deviceSpeedComboBox);
     this->mainBuilder->get_widget(UPS_SPEED_STATUS_WIDGET, this->deviceSpeedStatus);
 
-    if(term->get_interface()->is_oppenned()) {
+    if(term->get_interface() != NULL && term->get_interface()->is_open()) {
         this->deviceName->set_text(term->get_interface()->get_device_name());
         this->deviceNameStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
-    }
-    if(term->get_interface()->is_configured()) {
         this->deviceSpeedStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
     }
 }

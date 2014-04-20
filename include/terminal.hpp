@@ -48,12 +48,12 @@ class Terminal
         std::string inputUserBuffer;
         working_mode mode;
         bool erase;
-    
+
         Glib::RefPtr<Gtk::TextBuffer> buffer;
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
 
     protected:
-        void update_read();
+        void update_read(const char *data, unsigned int len);
         void update_write();
         void update_buffer();
 
@@ -73,6 +73,7 @@ class Terminal
         void change_mode();
 
         /*  Gets and Sets */
+        bool set_interface(Glib::ustring deviceName, int speed);
         void set_buffer(Glib::RefPtr<Gtk::TextBuffer> buffer);
         InOutInterface *get_interface();
 };

@@ -47,7 +47,7 @@ FunctionLeq::FunctionLeq(FunctionVariableInt *int1, FunctionVariableInt *int2, T
  */
 FunctionLeq::FunctionLeq(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
-    if(tokens->empty()) throw new std::exception();
+    if(tokens->empty() || tokens->size() < 2) throw new std::bad_typeid();
 
     XCubeSatToken *t = tokens->front();
 
@@ -71,6 +71,7 @@ FunctionLeq::FunctionLeq(std::vector<XCubeSatToken*> *tokens, Terminal *term, st
     }
     this->params.push_back(f);
 
+    if(tokens->empty()) throw new std::bad_typeid();
     t = tokens->front();
 
     tokens->erase(tokens->begin());

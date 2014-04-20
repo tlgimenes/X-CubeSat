@@ -4,6 +4,7 @@
  *    Description:  
  *        Created:  2014-04-19 18:47
  *         Author:  Tiago Lobato Gimenes     (tlgimenes@gmail.com)
+ *                  Terraneo Federico
  * =====================================================================================
  */
  /*
@@ -79,9 +80,9 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::flow_control opt_flow,
         boost::asio::serial_port_base::stop_bits opt_stop)
 {
-    if(isOpen()) close();
+    if(is_open()) close();
 
-    setErrorStatus(true);//If an exception is thrown, error_ remains true
+    set_error_status(true);//If an exception is thrown, error_ remains true
     pimpl->port.open(devname);
     pimpl->port.set_option(boost::asio::serial_port_base::baud_rate(baud_rate));
     pimpl->port.set_option(opt_parity);
@@ -90,20 +91,20 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     pimpl->port.set_option(opt_stop);
 
     //This gives some work to the io_service before it is started
-    pimpl->io.post(boost::bind(&SerialPort::doRead, this));
+    pimpl->io.post(boost::bind(&SerialPort::do_read, this));
 
     boost::thread t(boost::bind(&boost::asio::io_service::run, &pimpl->io));
     pimpl->backgroundThread.swap(t);
-    setErrorStatus(false);//If we get here, no error
+    set_error_status(false);//If we get here, no error
     pimpl->open=true; //Port is now open
 }
 
-bool SerialPort::isOpen() const
+bool SerialPort::is_open() const
 {
     return pimpl->open;
 }
 
-bool SerialPort::errorStatus() const
+bool SerialPort::error_status() const
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     return pimpl->error;
@@ -111,13 +112,13 @@ bool SerialPort::errorStatus() const
 
 void SerialPort::close()
 {
-    if(!isOpen()) return;
+    if(!is_open()) return;
 
     pimpl->open=false;
-    pimpl->io.post(boost::bind(&SerialPort::doClose, this));
+    pimpl->io.post(boost::bind(&SerialPort::do_close, this));
     pimpl->backgroundThread.join();
     pimpl->io.reset();
-    if(errorStatus())
+    if(error_status())
     {
         throw(boost::system::system_error(boost::system::error_code(),
                 "Error while closing the device"));
@@ -130,7 +131,7 @@ void SerialPort::write(const char *data, size_t size)
         boost::lock_guard<boost::mutex> l(pimpl->writeQueueMutex);
         pimpl->writeQueue.insert(pimpl->writeQueue.end(),data,data+size);
     }
-    pimpl->io.post(boost::bind(&SerialPort::doWrite, this));
+    pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
 
 void SerialPort::write(const std::vector<char>& data)
@@ -140,21 +141,21 @@ void SerialPort::write(const std::vector<char>& data)
         pimpl->writeQueue.insert(pimpl->writeQueue.end(),data.begin(),
                 data.end());
     }
-    pimpl->io.post(boost::bind(&SerialPort::doWrite, this));
+    pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
 
-void SerialPort::writeString(const std::string& s)
+void SerialPort::write(const std::string& s)
 {
     {
         boost::lock_guard<boost::mutex> l(pimpl->writeQueueMutex);
         pimpl->writeQueue.insert(pimpl->writeQueue.end(),s.begin(),s.end());
     }
-    pimpl->io.post(boost::bind(&SerialPort::doWrite, this));
+    pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
 
 SerialPort::~SerialPort()
 {
-    if(isOpen())
+    if(is_open())
     {
         try {
             close();
@@ -165,16 +166,16 @@ SerialPort::~SerialPort()
     }
 }
 
-void SerialPort::doRead()
+void SerialPort::do_read()
 {
     pimpl->port.async_read_some(boost::asio::buffer(pimpl->readBuffer,readBufferSize),
-            boost::bind(&SerialPort::readEnd,
+            boost::bind(&SerialPort::read_end,
             this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
 }
 
-void SerialPort::readEnd(const boost::system::error_code& error,
+void SerialPort::read_end(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
@@ -184,25 +185,25 @@ void SerialPort::readEnd(const boost::system::error_code& error,
         {
             //Bug on OS X, it might be necessary to repeat the setup
             //http://osdir.com/ml/lib.boost.boost::asio.user/2008-08/msg00004.html
-            doRead();
+            do_read();
             return;
         }
         #endif //__APPLE__
         //error can be true even because the serial port was closed.
         //In this case it is not a real error, so ignore
-        if(isOpen())
+        if(is_open())
         {
-            doClose();
-            setErrorStatus(true);
+            do_close();
+            set_error_status(true);
         }
     } else {
         if(pimpl->callback) pimpl->callback(pimpl->readBuffer,
                 bytes_transferred);
-        doRead();
+        do_read();
     }
 }
 
-void SerialPort::doWrite()
+void SerialPort::do_write()
 {
     //If a write operation is already in progress, do nothing
     if(pimpl->writeBuffer==0)
@@ -215,11 +216,11 @@ void SerialPort::doWrite()
         pimpl->writeQueue.clear();
         async_write(pimpl->port,boost::asio::buffer(pimpl->writeBuffer.get(),
                 pimpl->writeBufferSize),
-                boost::bind(&SerialPort::writeEnd, this, boost::asio::placeholders::error));
+                boost::bind(&SerialPort::write_end, this, boost::asio::placeholders::error));
     }
 }
 
-void SerialPort::writeEnd(const boost::system::error_code& error)
+void SerialPort::write_end(const boost::system::error_code& error)
 {
     if(!error)
     {
@@ -238,34 +239,34 @@ void SerialPort::writeEnd(const boost::system::error_code& error)
         pimpl->writeQueue.clear();
         async_write(pimpl->port,boost::asio::buffer(pimpl->writeBuffer.get(),
                 pimpl->writeBufferSize),
-                boost::bind(&SerialPort::writeEnd, this, boost::asio::placeholders::error));
+                boost::bind(&SerialPort::write_end, this, boost::asio::placeholders::error));
     } else {
-        setErrorStatus(true);
-        doClose();
+        set_error_status(true);
+        do_close();
     }
 }
 
-void SerialPort::doClose()
+void SerialPort::do_close()
 {
     boost::system::error_code ec;
     pimpl->port.cancel(ec);
-    if(ec) setErrorStatus(true);
+    if(ec) set_error_status(true);
     pimpl->port.close(ec);
-    if(ec) setErrorStatus(true);
+    if(ec) set_error_status(true);
 }
 
-void SerialPort::setErrorStatus(bool e)
+void SerialPort::set_error_status(bool e)
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     pimpl->error=e;
 }
 
-void SerialPort::setReadCallback(const boost::function<void (const char*, size_t)>& callback)
+void SerialPort::set_read_callback(const boost::function<void (const char*, size_t)>& callback)
 {
     pimpl->callback=callback;
 }
 
-void SerialPort::clearReadCallback()
+void SerialPort::clear_read_callback()
 {
     pimpl->callback.clear();
 }
@@ -317,9 +318,9 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::flow_control opt_flow,
         boost::asio::serial_port_base::stop_bits opt_stop)
 {
-    if(isOpen()) close();
+    if(is_open()) close();
 
-    setErrorStatus(true);//If an exception is thrown, error remains true
+    set_error_status(true);//If an exception is thrown, error remains true
     
     struct termios new_attributes;
     speed_t speed;
@@ -395,19 +396,19 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     status=fcntl(pimpl->fd, F_GETFL, 0);
     if(status!=-1) fcntl(pimpl->fd, F_SETFL, status & ~O_NONBLOCK);
 
-    setErrorStatus(false);//If we get here, no error
+    set_error_status(false);//If we get here, no error
     pimpl->open=true; //Port is now open
 
-    thread t(bind(&SerialPort::doRead, this));
+    thread t(bind(&SerialPort::do_read, this));
     pimpl->backgroundThread.swap(t);
 }
 
-bool SerialPort::isOpen() const
+bool SerialPort::is_open() const
 {
     return pimpl->open;
 }
 
-bool SerialPort::errorStatus() const
+bool SerialPort::error_status() const
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     return pimpl->error;
@@ -415,14 +416,14 @@ bool SerialPort::errorStatus() const
 
 void SerialPort::close()
 {
-    if(!isOpen()) return;
+    if(!is_open()) return;
 
     pimpl->open=false;
 
     ::close(pimpl->fd); //The thread waiting on I/O should return
 
     pimpl->backgroundThread.join();
-    if(errorStatus())
+    if(error_status())
     {
         throw(boost::system::system_error(boost::system::error_code(),
                 "Error while closing the device"));
@@ -431,23 +432,23 @@ void SerialPort::close()
 
 void SerialPort::write(const char *data, size_t size)
 {
-    if(::write(pimpl->fd,data,size)!=size) setErrorStatus(true);
+    if(::write(pimpl->fd,data,size)!=size) set_error_status(true);
 }
 
 void SerialPort::write(const std::vector<char>& data)
 {
     if(::write(pimpl->fd,&data[0],data.size())!=data.size())
-        setErrorStatus(true);
+        set_error_status(true);
 }
 
 void SerialPort::writeString(const std::string& s)
 {
-    if(::write(pimpl->fd,&s[0],s.size())!=s.size()) setErrorStatus(true);
+    if(::write(pimpl->fd,&s[0],s.size())!=s.size()) set_error_status(true);
 }
 
 SerialPort::~SerialPort()
 {
-    if(isOpen())
+    if(is_open())
     {
         try {
             close();
@@ -458,7 +459,7 @@ SerialPort::~SerialPort()
     }
 }
 
-void SerialPort::doRead()
+void SerialPort::do_read()
 {
     //Read loop in spawned thread
     for(;;)
@@ -466,9 +467,9 @@ void SerialPort::doRead()
         int received=::read(pimpl->fd,pimpl->readBuffer,readBufferSize);
         if(received<0)
         {
-            if(isOpen()==false) return; //Thread interrupted because port closed
+            if(is_open()==false) return; //Thread interrupted because port closed
             else {
-                setErrorStatus(true);
+                set_error_status(true);
                 continue;
             }
         }
@@ -476,40 +477,40 @@ void SerialPort::doRead()
     }
 }
 
-void SerialPort::readEnd(const boost::system::error_code& error,
+void SerialPort::read_end(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     //Not used
 }
 
-void SerialPort::doWrite()
+void SerialPort::do_write()
 {
     //Not used
 }
 
-void SerialPort::writeEnd(const boost::system::error_code& error)
+void SerialPort::write_end(const boost::system::error_code& error)
 {
     //Not used
 }
 
-void SerialPort::doClose()
+void SerialPort::do_close()
 {
     //Not used
 }
 
-void SerialPort::setErrorStatus(bool e)
+void SerialPort::set_error_status(bool e)
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     pimpl->error=e;
 }
 
-void SerialPort::setReadCallback(const
+void SerialPort::set_read_callback(const
         function<void (const char*, size_t)>& callback)
 {
     pimpl->callback=callback;
 }
 
-void SerialPort::clearReadCallback()
+void SerialPort::clear_read_callback()
 {
     pimpl->callback.clear();
 }
@@ -536,19 +537,18 @@ CallbackSerialPort::CallbackSerialPort(const std::string& devname,
 
 }
 
-void CallbackSerialPort::setCallback(const
+void CallbackSerialPort::set_callback(const
         boost::function<void (const char*, size_t)>& callback)
 {
-    setReadCallback(callback);
+    set_read_callback(callback);
 }
 
-void CallbackSerialPort::clearCallback()
+void CallbackSerialPort::clear_callback()
 {
-    clearReadCallback();
+    clear_read_callback();
 }
 
 CallbackSerialPort::~CallbackSerialPort()
 {
-    clearReadCallback();
+    clear_read_callback();
 }
-

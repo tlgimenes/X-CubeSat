@@ -29,6 +29,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 #define DEBUG 1
 #define DEFAULT_OUTPUT              "/dev/ttyS0"
+#define DEFAULT_SPEED               9600
 #define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controler.session"
 #define DEFAULT_GPREDICT_SATS_FILE  "/tmp/GpredictSATS"
 
@@ -97,6 +98,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define PORT_SPEED_COMBOBOX_WIDGET "serialPortComboBox"
 #define PORT_NAME_STATUS_WIDGET "serialPortNameStatus"
 #define UPS_SPEED_STATUS_WIDGET "upsStatus"
+#define DEFAULT_BAUD_RATE 9600
 /* ---------------------------------------------------- */
 
 /* ---------------------------------------------------- */
@@ -158,5 +160,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define MAX_BUFFER_SIZE 20
 #define MAX_MESSAGE_SIZE 999
 /* ---------------------------------------------------- */
+
+#define OEM_KANTRONICS "\r"
 
 #endif

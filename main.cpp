@@ -30,7 +30,6 @@ along with this program; if not, visit http://www.fsf.org/
 #include <istream>
 
 #include "log.hpp"
-#include "port.hpp"
 #include "main_window_callback.hpp"
 #include "menu.hpp"
 #include "manager.hpp"

@@ -38,8 +38,10 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer)
 {
-    this->interface = interface;
     this->buffer = buffer;
+    this->interface = interface;
+    /* Sets the callback for to read from the serial port */
+    this->interface->set_read_callback(sigc::mem_fun(*this, &Terminal::update_read));
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
@@ -84,7 +86,6 @@ Terminal::Terminal(InOutInterface *interface)
 void Terminal::update()
 {
     /*  DO NOT CHANGE THER ORDER */
-    this->update_read  ();
     this->update_write ();
     this->update_buffer();
 
@@ -93,26 +94,22 @@ void Terminal::update()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-/* Read from the input interface and sets to input buffer */
-void Terminal::update_read()
+/*  Callback for receiving data from modem */
+void Terminal::update_read(const char *data, unsigned int len)
 {
-    size_t count = MAX_MESSAGE_SIZE;
+    std::vector<char> v(data, data+len);
+    std::string str;
 
-    if(this->interface->is_oppenned() && this->interface->is_configured()) {
-        InOutLog *log = this->interface->read(count);
-
-        std::stringstream sstream(log->get_data()->c_str());
-
-        std::string *str = new std::string();
-        while(std::getline(sstream, *str)) {
-            input.push(*str);
-            str = new std::string();
-        }
-        if(!sstream.eof()) {
-            *str = sstream.str();
-            input.push(*str);
+    for (unsigned int i = 0; i < v.size(); ++i) 
+    {
+        if(v[i] < 32 || v[i] >= 0x7f) str.push_back(v[i]); /* Remove non ASCII char */
+        if(v[i] == '\n')
+        {
+            input.push(str);
+            str.clear();
         }
     }
+    return;
 }
 /*  --------------------------------------------------------  */
 
@@ -120,7 +117,7 @@ void Terminal::update_read()
 /* Write to the interface and decrease the output buffer */
 void Terminal::update_write()
 {
-    if(this->interface->is_oppenned() && this->interface->is_configured()) {
+    if(this->interface != NULL && this->interface->is_open()) {
         for (unsigned int i = 0; i < this->output.size(); ++i) {
             Glib::ustring *str = new Glib::ustring(this->output.front());
             this->interface->write(str);
@@ -132,13 +129,21 @@ void Terminal::update_write()
 /*  --------------------------------------------------------  */
 
 #define WRITE_TO_TEXTVIEW(buffer) \
-        for (unsigned int i = 0; i < buffer.size(); i++) { \
-            str = buffer.front(); \
-            buffer.pop(); \
-            buff << str << "\n"; \
-            if(this->mode == MODEM_FREE) \
-                buffer.push(str); \
-        }
+    for (unsigned int i = 0; i < buffer.size(); i++) { \
+        str = buffer.front(); \
+        buffer.pop(); \
+        buff << str << "\n"; \
+        if(this->mode == MODEM_FREE) \
+        buffer.push(str); \
+    }
+
+#define SMART_ERASE_BUFFER(buffer) \
+    for (unsigned int i = 0; i < buffer.size(); i++) { \
+        str = buffer.front(); \
+        buffer.pop(); \
+        if(this->mode == MODEM_FREE) \
+        buffer.push(str); \
+    }
 
 /*  --------------------------------------------------------  */
 /* Puts the input buffer in the Gtk::TextBuffer */
@@ -166,7 +171,12 @@ void Terminal::update_buffer()
 
         /* Writes to buffer */
         WRITE_TO_TEXTVIEW(this->input);
-        WRITE_TO_TEXTVIEW(this->output);
+        if(this->mode == MODEM_CONFIG) {
+            SMART_ERASE_BUFFER(this->output);
+        }
+        else {
+            WRITE_TO_TEXTVIEW (this->output);
+        }
 
        this->buffer->set_text(buff.str());
        this->buffer->apply_tag(this->notEditableTag, buffer->begin(), buffer->end());
@@ -263,6 +273,25 @@ void Terminal::set_buffer(Glib::RefPtr<Gtk::TextBuffer> buffer)
     this->erase = true;
 }
 /*  --------------------------------------------------------  */
+
+bool Terminal::set_interface(Glib::ustring deviceName, int speed)
+{
+    try {
+        if(this->interface != NULL)
+            return false;
+        else
+            this->interface = new InOutInterface(&deviceName, speed);
+
+        return this->interface->is_open();
+    } 
+    catch(std::exception &ex) {
+        Glib::ustring err = "Unable to open device because: \"";
+        err.append(ex.what()); err.append("\"");
+        Log::LogWarn(LEVEL_LOG_WARNING, err.c_str(), __FILE__, __LINE__);
+    }
+
+    return false;
+}
 
 /*  --------------------------------------------------------  */
 InOutInterface *Terminal::get_interface()

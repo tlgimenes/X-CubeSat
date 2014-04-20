@@ -51,7 +51,7 @@ FunctionSend::FunctionSend(FunctionVariableString *str, Terminal *term, std::uno
  */
 FunctionSend::FunctionSend(std::vector<XCubeSatToken*> *tokens, Terminal *term, std::unordered_map<std::string, Function*> *variables) throw(std::bad_typeid*):Function(term, variables)
 {
-    if(tokens->empty()) throw new std::exception();
+    if(tokens->empty() || tokens->size() < 1) throw new std::bad_typeid();
     XCubeSatToken *t = tokens->front();
     
     tokens->erase(tokens->begin());
