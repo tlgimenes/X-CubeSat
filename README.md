@@ -19,61 +19,61 @@ This repository contains all the sotfware that was developed by the ground stati
 
     You can install this program in any directory that you want. For doing it 
 
-    (-) Installing dependencies:
+    - Installing dependencies:
 
-    Open a terminal and type
+        Open a terminal and type
     
-    $ sudo apt-get install -y g++
+            $ sudo apt-get install -y g++
 
-    $ sudo apt-get install -y make
+            $ sudo apt-get install -y make
 
-    $ sudo apt-get install -y git
+            $ sudo apt-get install -y git
 
-    $ sudo apt-get install -y libgtkmm-3.0-1 libgtkmm-3.0-dev
+            $ sudo apt-get install -y libgtkmm-3.0-1 libgtkmm-3.0-dev
 
-    $ sudo apt-get install -y sqlite3
+            $ sudo apt-get install -y sqlite3
 
-    $ wget http://www.alhem.net/project/sqlite/sqlitewrapped-1.3.1.tar.gz
+            $ wget http://www.alhem.net/project/sqlite/sqlitewrapped-1.3.1.tar.gz
 
-    $ tar -zxvf sqlitewrapped-1.3.1.tar.gz
+            $ tar -zxvf sqlitewrapped-1.3.1.tar.gz
 
-    $ cd sqlitewrapped-1.3.1/
+            $ cd sqlitewrapped-1.3.1/
 
-    $ make && make install
+            $ make && make install
 
-    $ cd ..
+            $ cd ..
 
-    $ git clone https://github.com/tlgimenes/gpredict.git 
+            $ git clone https://github.com/tlgimenes/gpredict.git 
 
-    $ cd gpredict
+            $ cd gpredict
 
-    $ make && make install
+            $ make && make install
 
-    $ ./src/gpredict
+            $ ./src/gpredict
 
-    Open a new terminal and type
+        Open a new terminal and type
 
-    $ git clone https://github.com/tlgimenes/X-CubeSat
+            $ git clone https://github.com/tlgimenes/X-CubeSat
 
-    $ $ cd X-CubeSat 
+            $ $ cd X-CubeSat 
 
-    $ make 
+            $ make 
 
-    $ cd dataBase 
+            $ cd dataBase 
 
-    $ sqlite3 XCubeSat_Controler.db 
+            $ sqlite3 XCubeSat_Controler.db 
 
-    .read tables.sql 
+            .read tables.sql 
 
-    .q 
+            .q 
 
-    $ cd .. 
+            $ cd .. 
 
-    $ ./XCubeSat\_ Controler
+            $ ./XCubeSat\_ Controler
 
     And voilà ! Here you are running XCubeSat_Controler \o/.
 
     For more informations read the UserGuide.pdf file provided with this software in the doc folder.
 
 TODO:
-    (-) Improove commands change with the modem
+    - Improove commands change with the modem
