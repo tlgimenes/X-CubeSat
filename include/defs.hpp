@@ -161,6 +161,4 @@ along with this program; if not, visit http://www.fsf.org/
 #define MAX_MESSAGE_SIZE 999
 /* ---------------------------------------------------- */
 
-#define OEM_KANTRONICS "\r"
-
 #endif

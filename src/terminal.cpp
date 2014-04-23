@@ -32,6 +32,7 @@ along with this program; if not, visit http://www.fsf.org/
 #include "terminal.hpp"
 #include "log.hpp"
 #include "defs.hpp"
+#include "modems.hpp"
 
 /*  --------------------------------------------------------  */
 /* Constructor */

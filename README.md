@@ -24,29 +24,51 @@ This repository contains all the sotfware that was developed by the ground stati
     Open a terminal and type
     
     $ sudo apt-get install -y g++
+
     $ sudo apt-get install -y make
+
     $ sudo apt-get install -y git
+
     $ sudo apt-get install -y libgtkmm-3.0-1 libgtkmm-3.0-dev
+
     $ sudo apt-get install -y sqlite3
+
     $ wget http://www.alhem.net/project/sqlite/sqlitewrapped-1.3.1.tar.gz
+
     $ tar -zxvf sqlitewrapped-1.3.1.tar.gz
+
     $ cd sqlitewrapped-1.3.1/
+
     $ make && make install
+
     $ cd ..
+
     $ git clone https://github.com/tlgimenes/gpredict.git 
+
     $ cd gpredict
+
     $ make && make install
+
     $ ./src/gpredict
 
     Open a new terminal and type
+
     $ git clone https://github.com/tlgimenes/X-CubeSat
+
     $ $ cd X-CubeSat 
+
     $ make 
+
     $ cd dataBase 
+
     $ sqlite3 XCubeSat_Controler.db 
+
     .read tables.sql 
+
     .q 
+
     $ cd .. 
+
     $ ./XCubeSat\_ Controler
 
     And voilà ! Here you are running XCubeSat_Controler \o/.
@@ -54,4 +76,4 @@ This repository contains all the sotfware that was developed by the ground stati
     For more informations read the UserGuide.pdf file provided with this software in the doc folder.
 
 TODO:
-    (-) Code the software that will send the commands to the modem
+    (-) Improove commands change with the modem
