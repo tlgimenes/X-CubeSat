@@ -28,6 +28,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define TERMINAL_HPP
 
 #include <gtkmm.h>
+#include <sigc++/sigc++.h>
 #include <queue>
 
 #include "in_out_interface.hpp"
