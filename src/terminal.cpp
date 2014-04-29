@@ -104,17 +104,28 @@ void Terminal::update()
 /*  Callback for receiving data from modem */
 void Terminal::update_read(Glib::ustring data)
 {
-    Glib::ustring str;
+    std::string str;
     char c;
-    
-    for (unsigned int i = 0; i < data.size(); ++i) {
-        c = data.at(i);
-        if (c < 32 || c >= 0x7f) str.push_back(c); /* Remove non ASCII char */
-        if (c == '\n') {
-            input.push(str);
-            str.clear();
-        }
+    unsigned int index = 0;
+
+    inputPortBuffer += data;
+
+    for (unsigned int i = 0; i < inputPortBuffer.size(); ++i) {
+        c = inputPortBuffer[i];
+        str.push_back(c);
+        switch(c) {
+            case '\r':
+                str.pop_back();
+                i++;
+            case ':':
+                input.push(str);
+                str.clear();
+                index = i;
+                continue;
+        }  
+        if (c < 32 || c >= 0x7f) str.pop_back(); /* Remove non ASCII char */
     }
+    inputPortBuffer.erase(0, index);
 
     return;
 }
@@ -153,7 +164,7 @@ void Terminal::update_write()
     }
 
 /*  --------------------------------------------------------  */
-/* Puts the input buffer in the Gtk::TextBuffer */
+/* Puts the input and output buffer in the Gtk::TextBuffer */
 void Terminal::update_buffer()
 {
     if(this->input.size() > 0 || this->output.size() > 0) {

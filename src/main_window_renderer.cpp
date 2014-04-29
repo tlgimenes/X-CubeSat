@@ -103,6 +103,9 @@ void MainWindowRenderer::init_port_config_frame()
         this->deviceNameStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
         this->deviceSpeedStatus->set_from_icon_name("gtk-yes", Gtk::ICON_SIZE_BUTTON);
     }
+    else {
+        this->deviceName->set_text(DEFAULT_OUTPUT);
+    }
 }
 /*  --------------------------------------------------------  */
 

@@ -46,7 +46,8 @@ class Terminal : public sigc::trackable
         InOutInterface *interface;
         std::queue<std::string> output;
         std::queue<std::string> input;
-        std::string inputUserBuffer;
+        Glib::ustring inputPortBuffer; /* Buffer containing data came from the port */
+        std::string inputUserBuffer; /* Buffer containing data came from the user */
         working_mode mode;
         bool erase;
 

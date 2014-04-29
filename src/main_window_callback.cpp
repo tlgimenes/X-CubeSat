@@ -41,6 +41,7 @@ MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term)
 {
     this->man = man;
     this->term = term;
+
     this->main_window_renderer = new MainWindowRenderer(man, term);
 
     this->connect_callbacks();
@@ -48,8 +49,6 @@ MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term)
     this->isRunning = false;
 
     this->fifo = new std::ifstream(FIFO_FILE);
-
-    this->term->set_interface(DEFAULT_OUTPUT, DEFAULT_SPEED);
 }
 /*  --------------------------------------------------------  */
 
