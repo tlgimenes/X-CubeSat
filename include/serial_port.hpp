@@ -152,7 +152,7 @@ class SerialPort: private boost::noncopyable
          * Callback called at the end of the asynchronous operation.
          * This callback is called by the io_service in the spawned thread.
          */
-        void readEnd(const boost::system::error_code& error,
+        void read_end(const boost::system::error_code& error,
                 size_t bytes_transferred);
 
         /**

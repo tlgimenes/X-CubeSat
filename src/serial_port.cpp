@@ -194,7 +194,7 @@ SerialPort::~SerialPort()
 void SerialPort::do_read()
 {
     pimpl->port.async_read_some(boost::asio::buffer(pimpl->readBuffer,readBufferSize),
-            boost::bind(&SerialPort::readEnd,
+            boost::bind(&SerialPort::read_end,
                 this,
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred));
@@ -202,7 +202,7 @@ void SerialPort::do_read()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void SerialPort::readEnd(const boost::system::error_code& error,
+void SerialPort::read_end(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
@@ -542,7 +542,7 @@ void SerialPort::do_read()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void SerialPort::readEnd(const boost::system::error_code& error,
+void SerialPort::read_end(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     //Not used

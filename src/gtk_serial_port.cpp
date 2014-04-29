@@ -32,7 +32,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 /*  --------------------------------------------------------  */
 /* Implementation details of GtkSerialPort class. 
- */
+*/
 class GtkSerialPortImpl
 {
     public:
@@ -46,8 +46,7 @@ GtkSerialPort::GtkSerialPort(): pimpl(new GtkSerialPortImpl)
 {
 }
 
-    GtkSerialPort::GtkSerialPort(Glib::ustring devname, unsigned int baudrate)
-: pimpl(new GtkSerialPortImpl)
+GtkSerialPort::GtkSerialPort(Glib::ustring devname, unsigned int baudrate) : pimpl(new GtkSerialPortImpl)
 {
     open(devname,baudrate);
 }
@@ -117,23 +116,9 @@ GtkSerialPort::~GtkSerialPort()
 /*  --------------------------------------------------------  */
 void GtkSerialPort::read_callback(const char *data, size_t size)
 {
-    pimpl->receivedData+=Glib::ustring(data);
+    Glib::ustring raw_data(data, size);
 
-    this->m_signal_data_received.emit(Glib::ustring(data));
-    //if(pimpl->receivedData.find("\n", 0))
-    //{
-      //  Glib::ustringList lineList=pimpl->receivedData.split(QRegExp("\r\n|\n"));
-        //If line ends with \n lineList will contain a trailing empty string
-        //otherwise it will contain part of a line without the terminating \n
-        //In both cases lineList.at(lineList.size()-1) should not be sent
-        //with emit.
-        //int numLines=lineList.size()-1;
-        //pimpl->receivedData=lineList.at(lineList.size()-1);
-        //for(int i=0;i<numLines;i++)
-        //{
-            //emit line_received(lineList.at(i));
-        //}
-    //}
+    this->m_signal_data_received.emit(Glib::ustring(data, size));
 }
 /*  --------------------------------------------------------  */
 

@@ -120,9 +120,9 @@ void Terminal::update_read(Glib::ustring data)
             case ':':
                 input.push(str);
                 str.clear();
-                index = i;
+                index = i+1;
                 continue;
-        }  
+        }
         if (c < 32 || c >= 0x7f) str.pop_back(); /* Remove non ASCII char */
     }
     inputPortBuffer.erase(0, index);
