@@ -157,7 +157,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define MODEM_CONFIG_RADIO_BUTTON "modemConfigModeButton"
 #define MODEM_FREE_RADIO_BUTTON "modemFreeModeButton"
 #define NON_EDITABLE_TAG_NAME "notEditableTerminalTag"
-#define MAX_BUFFER_SIZE 10
+#define MAX_BUFFER_SIZE 512
 #define MAX_MESSAGE_SIZE 999
 /* ---------------------------------------------------- */
 

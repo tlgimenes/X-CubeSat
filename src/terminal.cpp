@@ -100,34 +100,42 @@ void Terminal::update()
 }
 /*  --------------------------------------------------------  */
 
+#define REMOVE_NON_ASCII(data) \
+    for (size_t i = 0; i < data.size(); ++i) { \
+        char c = data[i]; \
+        if ((c < 32 && c != '\n' && c != '\r') || c >= 0x7f) { /* Remove non ASCII char */ \
+            data.erase(i, 1); \
+            i--; \
+        } \
+    }
 /*  --------------------------------------------------------  */
 /*  Callback for receiving data from modem */
 void Terminal::update_read(Glib::ustring data)
 {
-    std::string str;
-    char c;
-    unsigned int index = 0;
+    size_t iReplyOem;
+    size_t iddot;
+    size_t replyOemLen = strlen(REPLY_OEM);
 
+    if(!data.is_ascii())
+        REMOVE_NON_ASCII(data);
     inputPortBuffer += data;
 
-    for (unsigned int i = 0; i < inputPortBuffer.size(); ++i) {
-        c = inputPortBuffer[i];
-        str.push_back(c);
-        switch(c) {
-            case '\r':
-                str.pop_back();
-                i++;
-            case ':':
-                input.push(str);
-                str.clear();
-                index = i+1;
-                continue;
-        }
-        if (c < 32 || c >= 0x7f) str.pop_back(); /* Remove non ASCII char */
-    }
-    inputPortBuffer.erase(0, index);
+    while(!inputPortBuffer.empty()) {
+        iReplyOem = inputPortBuffer.find(REPLY_OEM);
+        iddot     = inputPortBuffer.find(":");
 
-    return;
+        if(iReplyOem == std::string::npos && iddot == std::string::npos) 
+            return;
+
+        if(iReplyOem < iddot) {
+            input.push(inputPortBuffer.substr(0, iReplyOem));
+            inputPortBuffer.erase(0, iReplyOem + replyOemLen);
+        }
+        else {
+            input.push(inputPortBuffer.substr(0, iddot+1)); /* 1 == strlen(":") */
+            inputPortBuffer.erase(0, iddot + 1);            /* 1 == strlen(":") */
+        }
+    }
 }
 /*  --------------------------------------------------------  */
 

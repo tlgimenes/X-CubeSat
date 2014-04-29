@@ -118,7 +118,7 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
     /*  It is here that the '\r' character is added to the
      *  string to be sended for the modem to understand it 
      *  as the end of the line*/
-    data->append(OEM_KANTRONICS);
+    data->append(OEM);
 
     if(this->port->is_open()) {
         this->port->write(*data);

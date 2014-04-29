@@ -27,6 +27,16 @@ along with this program; if not, visit http://www.fsf.org/
 #ifndef MODEMS_HPP
 #define MODEMS_HPP
 
-#define OEM_KANTRONICS "\r"
+#define KANTRONICS /* Will use the KANTRONICS modem */
+
+#ifdef STANDARD_MODEM
+#define OEM         "\r"
+#define REPLY_OEM   "\r\n"
+
+#elif defined KANTRONICS /* If using the KANTRONICS modem */
+#define OEM         "\r"
+#define REPLY_OEM   "\r\n"
+
+#endif /* STANDARD_MODEM */
 
 #endif /* MODEMS_HPP */

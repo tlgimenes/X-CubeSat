@@ -37,13 +37,13 @@ class GtkSerialPortImpl
 {
     public:
         CallbackSerialPort serial;
-        Glib::ustring receivedData;
 };
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
 GtkSerialPort::GtkSerialPort(): pimpl(new GtkSerialPortImpl)
 {
+    /* Nothing to do here */
 }
 
 GtkSerialPort::GtkSerialPort(Glib::ustring devname, unsigned int baudrate) : pimpl(new GtkSerialPortImpl)
@@ -75,7 +75,6 @@ void GtkSerialPort::close()
     {
         //Errors during port close
     }
-    pimpl->receivedData.clear();//Clear eventual data remaining in read buffer
 }
 /*  --------------------------------------------------------  */
 
@@ -118,7 +117,7 @@ void GtkSerialPort::read_callback(const char *data, size_t size)
 {
     Glib::ustring raw_data(data, size);
 
-    this->m_signal_data_received.emit(Glib::ustring(data, size));
+    this->m_signal_data_received.emit(raw_data);
 }
 /*  --------------------------------------------------------  */
 
