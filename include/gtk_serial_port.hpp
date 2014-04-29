@@ -86,8 +86,6 @@ class GtkSerialPort //: public QObject
          */
         ~GtkSerialPort();
 
-        //signals:
-
         /**
          * Signal called when data is received from the serial port.
          * This signal is line based, data is grouped by line and a signal

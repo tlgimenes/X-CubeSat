@@ -500,7 +500,7 @@ void SerialPort::write(const std::vector<char>& data)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void SerialPort::writeString(const std::string& s)
+void SerialPort::write(const std::string& s)
 {
     if(::write(pimpl->fd,&s[0],s.size())!=s.size()) set_error_status(true);
 }

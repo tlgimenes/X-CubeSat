@@ -53,7 +53,7 @@ class Terminal
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
 
     protected:
-        void update_read(Glib::ustring data);
+        void update_read(std::string data);
         void update_write();
         void update_buffer();
 

@@ -119,7 +119,7 @@ void GtkSerialPort::read_callback(const char *data, size_t size)
 {
     pimpl->receivedData+=Glib::ustring(data);
 
-    this->signal_data_received(Glib::ustring(data));
+    this->signal_data_received(std::string(data));
     //if(pimpl->receivedData.find("\n", 0))
     //{
       //  Glib::ustringList lineList=pimpl->receivedData.split(QRegExp("\r\n|\n"));
