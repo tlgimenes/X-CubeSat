@@ -58,7 +58,7 @@ Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buff
     this->erase = true;
 
     /* Sets the callback for to read from the serial port */
-    if(this->interface->is_open())
+    if(this->interface != NULL && this->interface->is_open())
         this->interface->set_read_callback(sigc::mem_fun(*this, &Terminal::update_read));
 }
 /*  --------------------------------------------------------  */
@@ -76,7 +76,7 @@ Terminal::Terminal(InOutInterface *interface)
     this->max_num_lines = MAX_BUFFER_SIZE;
 
     /* Sets the callback for to read from the serial port */
-    if(this->interface->is_open())
+    if(this->interface != NULL && this->interface->is_open())
         this->interface->set_read_callback(sigc::mem_fun(*this, &Terminal::update_read));
 }
 /*  --------------------------------------------------------  */
@@ -290,7 +290,7 @@ bool Terminal::set_interface(Glib::ustring deviceName, int speed)
             this->interface = new InOutInterface(&deviceName, speed);
 
         /* Sets the callback for to read from the serial port */
-        if(this->interface->is_open())
+        if(this->interface != NULL && this->interface->is_open())
             this->interface->set_read_callback(sigc::mem_fun(*this, &Terminal::update_read));
 
         return this->interface->is_open();
