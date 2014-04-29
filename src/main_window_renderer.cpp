@@ -163,6 +163,9 @@ MainWindowRenderer::MainWindowRenderer(Manager *man, Terminal *term)
         /* Current Sat */
         init_curr_sat_frame();
 
+        /* Terminal */
+        init_terminal_frame();
+
         /* Port Config */
         init_port_config_frame();
 
@@ -171,9 +174,6 @@ MainWindowRenderer::MainWindowRenderer(Manager *man, Terminal *term)
 
         /* Scripts frame */
         init_scripts_frame();
-
-        /* Terminal */
-        init_terminal_frame();
     }
     catch(const Glib::FileError& ex) {
         Log::LogWarn(LEVEL_LOG_WARNING, ex.what().c_str(), __FILE__, __LINE__);
