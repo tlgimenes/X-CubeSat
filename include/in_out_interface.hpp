@@ -52,7 +52,7 @@ class InOutInterface
 
         bool open(Glib::ustring deviceName, int speed);
         InOutLog * write(Glib::ustring *data);
-        void set_read_callback(sigc::slot<void, std::string> slot);
+        void set_read_callback(sigc::slot<void, Glib::ustring> slot);
 
         bool set_device_speed(int);
 

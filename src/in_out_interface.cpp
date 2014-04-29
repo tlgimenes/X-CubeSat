@@ -134,9 +134,9 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void InOutInterface::set_read_callback(sigc::slot<void, std::string> slot)
+void InOutInterface::set_read_callback(sigc::slot<void, Glib::ustring> slot)
 {
-    this->port->signal_data_received.connect(slot);
+    this->port->signal_data_received().connect(slot);
 }
 /*  --------------------------------------------------------  */
 

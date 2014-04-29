@@ -97,7 +97,7 @@ void Terminal::update()
 
 /*  --------------------------------------------------------  */
 /*  Callback for receiving data from modem */
-void Terminal::update_read(std::string data)
+void Terminal::update_read(Glib::ustring data)
 {
     Glib::ustring str;
     char c;

@@ -81,18 +81,12 @@ class GtkSerialPort //: public QObject
          */
         void write(Glib::ustring data);
 
+        sigc::signal<void, Glib::ustring> signal_data_received();
+
         /**
          * Destructor
          */
         ~GtkSerialPort();
-
-        /**
-         * Signal called when data is received from the serial port.
-         * This signal is line based, data is grouped by line and a signal
-         * is emitted for each line.
-         * \param data the line of text just received.
-         */
-         sigc::signal<void, Glib::ustring> signal_data_received;
 
     private:
         /**
@@ -101,6 +95,14 @@ class GtkSerialPort //: public QObject
         void read_callback(const char *data, size_t size);
 
         boost::shared_ptr<GtkSerialPortImpl> pimpl; ///< Pimpl idiom
+
+        /**
+         * Signal called when data is received from the serial port.
+         * This signal is line based, data is grouped by line and a signal
+         * is emitted for each line.
+         * \param data the line of text just received.
+         */
+         sigc::signal<void, Glib::ustring> m_signal_data_received;
 };
 
 #endif /* GTK_SERIAL_PORT_HPP */

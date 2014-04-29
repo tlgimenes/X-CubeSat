@@ -38,7 +38,7 @@ typedef enum working_mode_t
     MODEM_FREE
 } working_mode;
 
-class Terminal 
+class Terminal : public sigc::trackable
 {
     private:
         unsigned int max_num_lines;
@@ -53,7 +53,7 @@ class Terminal
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
 
     protected:
-        void update_read(std::string data);
+        void update_read(Glib::ustring data);
         void update_write();
         void update_buffer();
 
