@@ -42,7 +42,8 @@ Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buff
     this->buffer = buffer;
     this->interface = interface;
     /* Sets the callback for to read from the serial port */
-    this->interface->set_read_callback(sigc::mem_fun(*this, &Terminal::update_read));
+    /* TODO: Change this ! */
+    this->interface->set_read_callback(sigc::mem_fun(this, &Terminal::update_read));
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
@@ -96,20 +97,20 @@ void Terminal::update()
 
 /*  --------------------------------------------------------  */
 /*  Callback for receiving data from modem */
-void Terminal::update_read(const char *data, unsigned int len)
+void Terminal::update_read(Glib::ustring data)
 {
-    std::vector<char> v(data, data+len);
-    std::string str;
-
-    for (unsigned int i = 0; i < v.size(); ++i) 
-    {
-        if(v[i] < 32 || v[i] >= 0x7f) str.push_back(v[i]); /* Remove non ASCII char */
-        if(v[i] == '\n')
-        {
+    Glib::ustring str;
+    char c;
+    
+    for (unsigned int i = 0; i < data.size(); ++i) {
+        c = data.at(i);
+        if (c < 32 || c >= 0x7f) str.push_back(c); /* Remove non ASCII char */
+        if (c == '\n') {
             input.push(str);
             str.clear();
         }
     }
+
     return;
 }
 /*  --------------------------------------------------------  */

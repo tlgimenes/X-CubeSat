@@ -34,14 +34,15 @@ along with this program; if not, visit http://www.fsf.org/
 
 #include <gtkmm.h>
 
-#include "serial_port.hpp"
+#include "gtk_serial_port.hpp"
 #include "in_out_log.hpp"
 #include "models.hpp"
 
 class InOutInterface
 {
     private:
-        CallbackSerialPort *port;
+        //CallbackSerialPort *port;
+        GtkSerialPort *port;
         Glib::ustring deviceName;
         
     public:
@@ -51,7 +52,7 @@ class InOutInterface
 
         bool open(Glib::ustring deviceName, int speed);
         InOutLog * write(Glib::ustring *data);
-        void set_read_callback(const boost::function<void (const char*,size_t)>& callback);
+        void set_read_callback(sigc::slot<void, Glib::ustring> slot);
 
         bool set_device_speed(int);
 

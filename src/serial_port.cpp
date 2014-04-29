@@ -1,26 +1,28 @@
-/*
- * =====================================================================================
- *       Filename:  serial_port.cpp
- *    Description:  
- *        Created:  2014-04-19 18:47
- *         Author:  Tiago Lobato Gimenes     (tlgimenes@gmail.com)
- *                  Terraneo Federico
- * =====================================================================================
- */
- /*
- * IMPORTANT:
- * On Mac OS X boost boost::asio's serial ports have bugs, and the usual implementation
- * of this class does not work. So a workaround class was written temporarily,
- * until boost::asio (hopefully) will fix Mac compatibility for serial ports.
- * 
- * Please note that unlike said in the documentation on OS X until boost::asio will
- * be fixed serial port *writes* are *not* asynchronous, but at least
- * asynchronous *read* works.
- * In addition the serial port open ignores the following options: parity,
- * character size, flow, stop bits, and defaults to 8N1 format.
- * I know it is bad but at least it's better than nothing.
- *
- */
+/* X-CubeSat Controler: Real-time communication with satellite program
+
+   Copyright (C)  2014 - Tiago Lobato Gimenes
+
+Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
+
+Comments, questions and bugreports should be submitted via
+https://github.com/tlgimenes/X-CubeSat
+More details can be found at the project home page:
+
+https://github.com/tlgimenes/X-CubeSat
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, visit http://www.fsf.org/
+*/
 
 #include "serial_port.hpp"
 
@@ -35,45 +37,52 @@
 
 #ifndef __APPLE__
 
+/*  --------------------------------------------------------  */
 class SerialPortImpl: private boost::noncopyable
 {
-public:
-    SerialPortImpl(): io(), port(io), backgroundThread(), open(false),
-            error(false) {}
+    public:
+        SerialPortImpl(): io(), port(io), backgroundThread(), open(false),
+        error(false) {}
 
-    boost::asio::io_service io; ///< Io service object
-    boost::asio::serial_port port; ///< Serial port object
-    boost::thread backgroundThread; ///< Thread that runs read/write operations
-    bool open; ///< True if port open
-    bool error; ///< Error flag
-    mutable boost::mutex errorMutex; ///< Mutex for access to error
+        boost::asio::io_service io; ///< Io service object
+        boost::asio::serial_port port; ///< Serial port object
+        boost::thread backgroundThread; ///< Thread that runs read/write operations
+        bool open; ///< True if port open
+        bool error; ///< Error flag
+        mutable boost::mutex errorMutex; ///< Mutex for access to error
 
-    /// Data are queued here before they go in writeBuffer
-    std::vector<char> writeQueue;
-    boost::shared_array<char> writeBuffer; ///< Data being written
-    size_t writeBufferSize; ///< Size of writeBuffer
-    boost::mutex writeQueueMutex; ///< Mutex for access to writeQueue
-    char readBuffer[SerialPort::readBufferSize]; ///< data being read
+        /// Data are queued here before they go in writeBuffer
+        std::vector<char> writeQueue;
+        boost::shared_array<char> writeBuffer; ///< Data being written
+        size_t writeBufferSize; ///< Size of writeBuffer
+        boost::mutex writeQueueMutex; ///< Mutex for access to writeQueue
+        char readBuffer[SerialPort::readBufferSize]; ///< data being read
 
-    /// Read complete callback
-    boost::function<void (const char*, size_t)> callback;
+        /// Read complete callback
+        boost::function<void (const char*, size_t)> callback;
 };
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::SerialPort(): pimpl(new SerialPortImpl)
 {
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::SerialPort(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::parity opt_parity,
         boost::asio::serial_port_base::character_size opt_csize,
         boost::asio::serial_port_base::flow_control opt_flow,
         boost::asio::serial_port_base::stop_bits opt_stop)
-        : pimpl(new SerialPortImpl)
+: pimpl(new SerialPortImpl)
 {
     open(devname,baud_rate,opt_parity,opt_csize,opt_flow,opt_stop);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::open(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::parity opt_parity,
         boost::asio::serial_port_base::character_size opt_csize,
@@ -98,18 +107,24 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     set_error_status(false);//If we get here, no error
     pimpl->open=true; //Port is now open
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool SerialPort::is_open() const
 {
     return pimpl->open;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool SerialPort::error_status() const
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     return pimpl->error;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::close()
 {
     if(!is_open()) return;
@@ -121,10 +136,12 @@ void SerialPort::close()
     if(error_status())
     {
         throw(boost::system::system_error(boost::system::error_code(),
-                "Error while closing the device"));
+                    "Error while closing the device"));
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write(const char *data, size_t size)
 {
     {
@@ -133,7 +150,9 @@ void SerialPort::write(const char *data, size_t size)
     }
     pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write(const std::vector<char>& data)
 {
     {
@@ -143,7 +162,9 @@ void SerialPort::write(const std::vector<char>& data)
     }
     pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write(const std::string& s)
 {
     {
@@ -152,7 +173,9 @@ void SerialPort::write(const std::string& s)
     }
     pimpl->io.post(boost::bind(&SerialPort::do_write, this));
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::~SerialPort()
 {
     if(is_open())
@@ -165,22 +188,26 @@ SerialPort::~SerialPort()
         }
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_read()
 {
     pimpl->port.async_read_some(boost::asio::buffer(pimpl->readBuffer,readBufferSize),
-            boost::bind(&SerialPort::read_end,
-            this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+            boost::bind(&SerialPort::readEnd,
+                this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred));
 }
+/*  --------------------------------------------------------  */
 
-void SerialPort::read_end(const boost::system::error_code& error,
+/*  --------------------------------------------------------  */
+void SerialPort::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     if(error)
     {
-        #ifdef __APPLE__
+#ifdef __APPLE__
         if(error.value()==45)
         {
             //Bug on OS X, it might be necessary to repeat the setup
@@ -188,7 +215,7 @@ void SerialPort::read_end(const boost::system::error_code& error,
             do_read();
             return;
         }
-        #endif //__APPLE__
+#endif //__APPLE__
         //error can be true even because the serial port was closed.
         //In this case it is not a real error, so ignore
         if(is_open())
@@ -202,7 +229,9 @@ void SerialPort::read_end(const boost::system::error_code& error,
         do_read();
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_write()
 {
     //If a write operation is already in progress, do nothing
@@ -215,11 +244,13 @@ void SerialPort::do_write()
                 pimpl->writeBuffer.get());
         pimpl->writeQueue.clear();
         async_write(pimpl->port,boost::asio::buffer(pimpl->writeBuffer.get(),
-                pimpl->writeBufferSize),
+                    pimpl->writeBufferSize),
                 boost::bind(&SerialPort::write_end, this, boost::asio::placeholders::error));
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write_end(const boost::system::error_code& error)
 {
     if(!error)
@@ -229,7 +260,7 @@ void SerialPort::write_end(const boost::system::error_code& error)
         {
             pimpl->writeBuffer.reset();
             pimpl->writeBufferSize=0;
-            
+
             return;
         }
         pimpl->writeBufferSize=pimpl->writeQueue.size();
@@ -238,14 +269,16 @@ void SerialPort::write_end(const boost::system::error_code& error)
                 pimpl->writeBuffer.get());
         pimpl->writeQueue.clear();
         async_write(pimpl->port,boost::asio::buffer(pimpl->writeBuffer.get(),
-                pimpl->writeBufferSize),
+                    pimpl->writeBufferSize),
                 boost::bind(&SerialPort::write_end, this, boost::asio::placeholders::error));
     } else {
         set_error_status(true);
         do_close();
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_close()
 {
     boost::system::error_code ec;
@@ -254,22 +287,29 @@ void SerialPort::do_close()
     pimpl->port.close(ec);
     if(ec) set_error_status(true);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::set_error_status(bool e)
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     pimpl->error=e;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::set_read_callback(const boost::function<void (const char*, size_t)>& callback)
 {
     pimpl->callback=callback;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::clear_read_callback()
 {
     pimpl->callback.clear();
 }
+/*  --------------------------------------------------------  */
 
 #else //__APPLE__
 
@@ -279,39 +319,46 @@ void SerialPort::clear_read_callback()
 #include <termios.h>
 #include <unistd.h>
 
+/*  --------------------------------------------------------  */
 class SerialPortImpl: private boost::noncopyable
 {
-public:
-    SerialPortImpl(): backgroundThread(), open(false), error(false) {}
+    public:
+        SerialPortImpl(): backgroundThread(), open(false), error(false) {}
 
-    boost::thread backgroundThread; ///< Thread that runs read operations
-    bool open; ///< True if port open
-    bool error; ///< Error flag
-    mutable boost::mutex errorMutex; ///< Mutex for access to error
+        boost::thread backgroundThread; ///< Thread that runs read operations
+        bool open; ///< True if port open
+        bool error; ///< Error flag
+        mutable boost::mutex errorMutex; ///< Mutex for access to error
 
-    int fd; ///< File descriptor for serial port
-    
-    char readBuffer[SerialPort::readBufferSize]; ///< data being read
+        int fd; ///< File descriptor for serial port
 
-    /// Read complete callback
-    boost::function<void (const char*, size_t)> callback;
+        char readBuffer[SerialPort::readBufferSize]; ///< data being read
+
+        /// Read complete callback
+        boost::function<void (const char*, size_t)> callback;
 };
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::SerialPort(): pimpl(new SerialPortImpl)
 {
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::SerialPort(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::parity opt_parity,
         boost::asio::serial_port_base::character_size opt_csize,
         boost::asio::serial_port_base::flow_control opt_flow,
         boost::asio::serial_port_base::stop_bits opt_stop)
-        : pimpl(new SerialPortImpl)
+: pimpl(new SerialPortImpl)
 {
     open(devname,baud_rate,opt_parity,opt_csize,opt_flow,opt_stop);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::open(const std::string& devname, unsigned int baud_rate,
         boost::asio::serial_port_base::parity opt_parity,
         boost::asio::serial_port_base::character_size opt_csize,
@@ -321,16 +368,16 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     if(is_open()) close();
 
     set_error_status(true);//If an exception is thrown, error remains true
-    
+
     struct termios new_attributes;
     speed_t speed;
     int status;
-    
+
     // Open port
     pimpl->fd=::open(devname.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (pimpl->fd<0) throw(boost::system::system_error(
-            boost::system::error_code(),"Failed to open port"));
-    
+                boost::system::error_code(),"Failed to open port"));
+
     // Set Port parameters.
     status=tcgetattr(pimpl->fd,&new_attributes);
     if(status<0  || !isatty(pimpl->fd))
@@ -344,10 +391,10 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     new_attributes.c_lflag = 0;
     new_attributes.c_cflag = (CS8 | CREAD | CLOCAL);//8 data bit,Enable receiver,Ignore modem
     /* In non canonical mode (Ctrl-C and other disabled, no echo,...) VMIN and VTIME work this way:
-    if the function read() has'nt read at least VMIN chars it waits until has read at least VMIN
-    chars (even if VTIME timeout expires); once it has read at least vmin chars, if subsequent
-    chars do not arrive before VTIME expires, it returns error; if a char arrives, it resets the
-    timeout, so the internal timer will again start from zero (for the nex char,if any)*/
+       if the function read() has'nt read at least VMIN chars it waits until has read at least VMIN
+       chars (even if VTIME timeout expires); once it has read at least vmin chars, if subsequent
+       chars do not arrive before VTIME expires, it returns error; if a char arrives, it resets the
+       timeout, so the internal timer will again start from zero (for the nex char,if any)*/
     new_attributes.c_cc[VMIN]=1;// Minimum number of characters to read before returning error
     new_attributes.c_cc[VTIME]=1;// Set timeouts in tenths of second
 
@@ -373,11 +420,11 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
         case 115200:speed= B115200; break;
         case 230400:speed= B230400; break;
         default:
-        {
-            ::close(pimpl->fd);
-            throw(boost::system::system_error(
-                        boost::system::error_code(),"Unsupported baud rate"));
-        }
+                    {
+                        ::close(pimpl->fd);
+                        throw(boost::system::system_error(
+                                    boost::system::error_code(),"Unsupported baud rate"));
+                    }
     }
 
     cfsetospeed(&new_attributes,speed);
@@ -402,18 +449,24 @@ void SerialPort::open(const std::string& devname, unsigned int baud_rate,
     thread t(bind(&SerialPort::do_read, this));
     pimpl->backgroundThread.swap(t);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool SerialPort::is_open() const
 {
     return pimpl->open;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 bool SerialPort::error_status() const
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     return pimpl->error;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::close()
 {
     if(!is_open()) return;
@@ -426,26 +479,34 @@ void SerialPort::close()
     if(error_status())
     {
         throw(boost::system::system_error(boost::system::error_code(),
-                "Error while closing the device"));
+                    "Error while closing the device"));
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write(const char *data, size_t size)
 {
     if(::write(pimpl->fd,data,size)!=size) set_error_status(true);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write(const std::vector<char>& data)
 {
     if(::write(pimpl->fd,&data[0],data.size())!=data.size())
         set_error_status(true);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::writeString(const std::string& s)
 {
     if(::write(pimpl->fd,&s[0],s.size())!=s.size()) set_error_status(true);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 SerialPort::~SerialPort()
 {
     if(is_open())
@@ -458,7 +519,9 @@ SerialPort::~SerialPort()
         }
     }
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_read()
 {
     //Read loop in spawned thread
@@ -476,44 +539,59 @@ void SerialPort::do_read()
         if(pimpl->callback) pimpl->callback(pimpl->readBuffer, received);
     }
 }
+/*  --------------------------------------------------------  */
 
-void SerialPort::read_end(const boost::system::error_code& error,
+/*  --------------------------------------------------------  */
+void SerialPort::readEnd(const boost::system::error_code& error,
         size_t bytes_transferred)
 {
     //Not used
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_write()
 {
     //Not used
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::write_end(const boost::system::error_code& error)
 {
     //Not used
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::do_close()
 {
     //Not used
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::set_error_status(bool e)
 {
     boost::lock_guard<boost::mutex> l(pimpl->errorMutex);
     pimpl->error=e;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::set_read_callback(const
         function<void (const char*, size_t)>& callback)
 {
     pimpl->callback=callback;
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void SerialPort::clear_read_callback()
 {
     pimpl->callback.clear();
 }
+/*  --------------------------------------------------------  */
 
 #endif //__APPLE__
 
@@ -521,34 +599,44 @@ void SerialPort::clear_read_callback()
 //Class CallbackSerialPort
 //
 
+/*  --------------------------------------------------------  */
 CallbackSerialPort::CallbackSerialPort(): SerialPort()
 {
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 CallbackSerialPort::CallbackSerialPort(const std::string& devname,
         unsigned int baud_rate,
         boost::asio::serial_port_base::parity opt_parity,
         boost::asio::serial_port_base::character_size opt_csize,
         boost::asio::serial_port_base::flow_control opt_flow,
         boost::asio::serial_port_base::stop_bits opt_stop)
-        :SerialPort(devname,baud_rate,opt_parity,opt_csize,opt_flow,opt_stop)
+:SerialPort(devname,baud_rate,opt_parity,opt_csize,opt_flow,opt_stop)
 {
 
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void CallbackSerialPort::set_callback(const
         boost::function<void (const char*, size_t)>& callback)
 {
     set_read_callback(callback);
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void CallbackSerialPort::clear_callback()
 {
     clear_read_callback();
 }
+/*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 CallbackSerialPort::~CallbackSerialPort()
 {
     clear_read_callback();
 }
+/*  --------------------------------------------------------  */

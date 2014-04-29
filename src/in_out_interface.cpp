@@ -29,10 +29,14 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
+#include <termios.h>
+#include <unistd.h>
+
 #include "in_out_interface.hpp"
 #include "init.hpp"
 #include "log.hpp"
 #include "defs.hpp"
+#include "modems.hpp"
 
 /*  --------------------------------------------------------  */
 /* Constructor
@@ -47,7 +51,8 @@ InOutInterface::InOutInterface()
     new_settings.c_lflag &= ~(ECHO);
     tcsetattr(0, TCSANOW, &new_settings);
 
-    this->port = new CallbackSerialPort(DEFAULT_OUTPUT, DEFAULT_BAUD_RATE);
+    //this->port = new CallbackSerialPort(DEFAULT_OUTPUT, DEFAULT_BAUD_RATE);
+    this->port = new GtkSerialPort(DEFAULT_OUTPUT, DEFAULT_BAUD_RATE);
     this->deviceName = DEFAULT_OUTPUT;
 }
 /*  --------------------------------------------------------  */
@@ -65,7 +70,8 @@ InOutInterface::InOutInterface(Glib::ustring *deviceName)
     new_settings.c_lflag &= ~(ECHO);
     tcsetattr(0, TCSANOW, &new_settings);
 
-    this->port = new CallbackSerialPort(deviceName->c_str(), DEFAULT_BAUD_RATE);
+    //this->port = new CallbackSerialPort(deviceName->c_str(), DEFAULT_BAUD_RATE);
+    this->port = new GtkSerialPort(deviceName->c_str(), DEFAULT_BAUD_RATE);
     this->deviceName = *deviceName;
 }
 /*  --------------------------------------------------------  */
@@ -82,7 +88,8 @@ InOutInterface::InOutInterface(Glib::ustring *deviceName, int speed)
     new_settings.c_lflag &= ~(ECHO);
     tcsetattr(0, TCSANOW, &new_settings);
 
-    this->port = new CallbackSerialPort(deviceName->c_str(), speed);
+    //this->port = new CallbackSerialPort(deviceName->c_str(), speed);
+    this->port = new GtkSerialPort(deviceName->c_str(), speed);
     this->deviceName = *deviceName;
 }
 /*  --------------------------------------------------------  */
@@ -108,12 +115,13 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 {
     InOutLog *log = NULL;
 
-    /*  It is here that a '\r' character is added to the
-     *  string to be sended for the modem to understand it */
+    /*  It is here that the '\r' character is added to the
+     *  string to be sended for the modem to understand it 
+     *  as the end of the line*/
     data->append(OEM_KANTRONICS);
 
     if(this->port->is_open()) {
-        this->port->write((char*)data->c_str(), data->size());
+        this->port->write(*data);
         log = new InOutLog(SEND_LOG, NULL, true);
     }
     else {
@@ -126,9 +134,9 @@ InOutLog * InOutInterface::write(Glib::ustring *data)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void InOutInterface::set_read_callback(const boost::function<void (const char*,size_t)>& callback)
+void InOutInterface::set_read_callback(sigc::slot<void, Glib::ustring> slot)
 {
-    this->port->set_callback(callback);
+    this->port->signal_data_received.connect(slot);
 }
 /*  --------------------------------------------------------  */
 

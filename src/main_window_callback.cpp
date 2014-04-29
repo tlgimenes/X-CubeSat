@@ -79,8 +79,8 @@ void MainWindowCallback::connect_callbacks()
     ((Gtk::CellRendererText*)(this->main_window_renderer->commandsAliasColumnRenderer[0]))->signal_edited().connect(sigc::mem_fun(*this, &MainWindowCallback::cellrender_column_command_edited_cb));
 
     /* Connect timeout callbacks */
-    sigc::slot<bool> my_slot = sigc::mem_fun(this,&MainWindowCallback::timeout_cb);
-    Glib::signal_timeout().connect(my_slot, UPDATE_RATE);
+    sigc::slot<bool> timeout_slot = sigc::mem_fun(this,&MainWindowCallback::timeout_cb);
+    Glib::signal_timeout().connect(timeout_slot, UPDATE_RATE);
 
     /* Connect commands callbacks */
     this->main_window_renderer->commandsTreeView->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowCallback::command_treeview_activated_cb));
