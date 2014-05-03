@@ -139,7 +139,7 @@ class SerialPort: private boost::noncopyable
         /**
          * Read buffer maximum size
          */
-        static const int readBufferSize=512;
+        static const int readBufferSize=MAX_BUFFER_SIZE;
     private:
 
         /**

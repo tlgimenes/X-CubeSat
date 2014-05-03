@@ -439,7 +439,14 @@ void MainWindowCallback::update_curr_satellite()
     fifo_file_model *m = read_fifo_format(&this->fifo);
 
     /* Renders the new info in CurrSat frame */
-    if(m->satName == NULL) m->satName = new std::string("Not Found");
+    if(m->satName == NULL) {
+        m->satName = new std::string("Not Found");
+        /* If not found may be because the FIFO file 
+         * is not good anymore, than we close it 
+         * and reopen it */
+        this->fifo->close();
+        this->fifo = new std::ifstream(FIFO_FILE);
+    }
     this->main_window_renderer->render_curr_sat_name_refresh((*m->satName));
 
     if(m->el == NULL) m->el = new std::string("Not Set");
