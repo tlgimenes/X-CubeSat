@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -51,6 +51,7 @@ class Terminal : public sigc::trackable
         working_mode mode;
         bool erase;
 
+        Gtk::TextView *textView;
         Glib::RefPtr<Gtk::TextBuffer> buffer;
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
 
@@ -64,7 +65,7 @@ class Terminal : public sigc::trackable
         void on_my_insert(const Gtk::TextBuffer::iterator& pos, const Glib::ustring &text, int bytes);
 
     public:
-        Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer);
+        Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer, Gtk::TextView *textView);
         Terminal(InOutInterface *interface);
 
         void update();
@@ -77,6 +78,7 @@ class Terminal : public sigc::trackable
         /*  Gets and Sets */
         bool set_interface(Glib::ustring deviceName, int speed);
         void set_buffer(Glib::RefPtr<Gtk::TextBuffer> buffer);
+        void set_textview(Gtk::TextView *textView);
         InOutInterface *get_interface();
 };
 

@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -135,6 +135,7 @@ void MainWindowRenderer::init_terminal_frame()
     Glib::RefPtr<Gtk::TextBuffer> buff = Gtk::TextBuffer::create();
     this->term->set_buffer(buff);
     this->terminalView->set_buffer(buff);
+    this->term->set_textview(this->terminalView);
 
     /* Get the Radio Button */
     this->mainBuilder->get_widget(MODEM_CONFIG_RADIO_BUTTON, this->modemConfig);

@@ -3,7 +3,7 @@
  * errors
  *
  */
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -85,29 +85,33 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
 
     switch(level){
         case LEVEL_LOG_ERROR:
+            Log::errorDialog->set_default_response(GTK_RESPONSE_OK);
+            Log::errorDialog->set_secondary_text(errorStr);
+            if(errno != 0)
+                Log::errorDialog->set_message(strerror(errno));
+            Log::errorDialog->run();
+            Log::errorDialog->hide();
             errorStr.append(" in file ");
             errorStr.append(file); errorStr.append(" in line ");
             errorStr.append(std::to_string(line));
-            Log::errorDialog->set_default_response(GTK_RESPONSE_OK);
-            Log::errorDialog->set_secondary_text(errorStr);
-            Log::errorDialog->set_message(strerror(errno));
-            Log::errorDialog->run();
-            Log::errorDialog->hide();
             writeMessageLogFile (asctime(gmtime(&raw_time)) << ": ERROR " << strerror(errno) << "! ", logMessage, file, line);
             writeMessageTerminal(asctime(gmtime(&raw_time)) << ": ERROR " << strerror(errno) << "! ", logMessage, file, line);
+            errno = 0; /* resets errno to zero */
             exit(1);
             break;
         case LEVEL_LOG_WARNING:
+            Log::warnDialog->set_default_response(GTK_RESPONSE_OK);
+            Log::warnDialog->set_secondary_text(errorStr);
+            if(errno != 0)
+                Log::warnDialog->set_message(strerror(errno));
+            Log::warnDialog->run();
+            Log::warnDialog->hide();
             errorStr.append(" in file ");
             errorStr.append(file); errorStr.append(" in line ");
             errorStr.append(std::to_string(line)); 
-            Log::warnDialog->set_default_response(GTK_RESPONSE_OK);
-            Log::warnDialog->set_message(strerror(errno));
-            Log::warnDialog->set_secondary_text(errorStr);
-            Log::warnDialog->run();
-            Log::warnDialog->hide();
             writeMessageLogFile (asctime(gmtime(&raw_time)) << ": WARNING " << strerror(errno) << "! ", logMessage, file, line);
             writeMessageTerminal(asctime(gmtime(&raw_time)) << ": WARNING " << strerror(errno) << "! ", logMessage, file, line);
+            errno = 0; /* Resets errno to zero */
             break;
         case LEVEL_LOG_INFO:
             Log::infoDialog->set_default_response(GTK_RESPONSE_OK);
@@ -118,7 +122,7 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             writeMessageTerminal(asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
             break;
         default:
-            *(Log::logFile) << "Error message not found ! This incident will be reported" << std::endl;
+            *(Log::logFile) << "Error message not found ! Please repport this incident in the Issue Tracker at github" << std::endl;
             exit(1);
     }
 }

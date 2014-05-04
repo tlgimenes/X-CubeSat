@@ -9,7 +9,7 @@
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \author{Tiago Lobato Gimenes}
-\title{XCubeSat Controler}
+\title{XCubeSat Controller}
 
 \begin{document}
 
@@ -23,7 +23,7 @@
 % only works if a paragraph has started.
 \includegraphics[width=0.15\textwidth]{../images/CubeSat3.jpg}~\\[1cm]
 
-\textsc{\LARGE X-CubeSat Controler}\\[1.5cm]
+\textsc{\LARGE X-CubeSat Controller}\\[1.5cm]
 
 \textsc{\Large Version Pre-Beta}\\[0.5cm]
 
@@ -65,7 +65,7 @@ Tiago \textsc{L. Gimenes}
 %	Chapter - Requirements
 %------------------------------------------------------------%
 \chapter{Requirements}
-\hspace{0.4cm} The current version of X-CubeSat Controler works only in POSIX compliant operating systems, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating systems like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controler. The versions of the libraries and software below were tested, try other versions at your own risk.
+\hspace{0.4cm} The current version of X-CubeSat Controller works only in POSIX compliant operating systems, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating systems like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controller. The versions of the libraries and software below were tested, try other versions at your own risk.
 
 \section{Basic Requirements}
 \begin{itemize}
@@ -88,7 +88,7 @@ Tiago \textsc{L. Gimenes}
 \begin{itemize}
 \item It's absolutely necessary to use the modified version of Gpredict to realy be able to communicate with satellites, so do not download/install
 the default version of Gpredict in distro repositories or from any official Gpredict site. 
-\item For X-CubeSat Controler to work, the system needs to implement something called FIFO file. FIFO file is a type of file that allows the communication between Gpredict and X-CubeSat Controler, so if you are running a non POSIX compliant system, like Windows, it might not work or work as well as it does in a POSIX compliant system.
+\item For X-CubeSat Controller to work, the system needs to implement something called FIFO file. FIFO file is a type of file that allows the communication between Gpredict and X-CubeSat Controller, so if you are running a non POSIX compliant system, like Windows, it might not work or work as well as it does in a POSIX compliant system.
 \end{itemize}
 
 %------------------------------------------------------------%
@@ -153,27 +153,27 @@ If you get errors in this part, go to the url of the Gpredict modified version p
 \end{itemize}
 
 \section{Compiling}
-Usually if you got to this part, you should be ok to compile and install XCubeSat Controler. Open a terminal, go to the folder that you want to install XCubeSat Controler with the \textbf{cd} command and type:
+Usually if you got to this part, you should be ok to compile and install XCubeSat Controller. Open a terminal, go to the folder that you want to install XCubeSat Controller with the \textbf{cd} command and type:
 
 \begin{framed}
 \$ git clone \url{https://github.com/tlgimenes/X-CubeSat.git} \\
 \$ cd X-CubeSat \\
 \$ make \\
 \$ cd dataBase \\
-\$ sqlite3 XCubeSat\_Controler.db \\
+\$ sqlite3 XCubeSat\_Controller.db \\
 .read tables.sql \\
 .q
 \end{framed}
 
-Here you are ready to configure the XCubeSat\_ Controler \textbackslash o/.
+Here you are ready to configure the XCubeSat\_ Controller \textbackslash o/.
 
 %------------------------------------------------------------%
 %	Chapter - Configure and Run
 %------------------------------------------------------------%
 \chapter{Configure and Run}
-For X-CubeSat Controler to run, we need first to run Gpredict and if you want to use a rotator and/or a radio, you need to set Hamlib first.
+For X-CubeSat Controller to run, we need first to run Gpredict and if you want to use a rotator and/or a radio, you need to set Hamlib first.
 
-In this session we are going first to configure a rotator, than a radio, than we are going to run Gpredict and finally we are going to run X-CubeSat Controler
+In this session we are going first to configure a rotator, than a radio, than we are going to run Gpredict and finally we are going to run X-CubeSat Controller
 
 First of all, we need to know the models of rotators that are supported and their ID. Open a terminal and type:
 \begin{framed}
@@ -213,26 +213,26 @@ click in the \textbf{Interfaces} tab and add a new rotator and transciever with 
 
 To launch the tracking tool click in the down pointing arrow in the up right corner and select Antenna Control. It will open a new window with the satellites that you want to follow. 
 
-Now, finaly we are going to launch XCubeSat Controler. To do so, open a new terminal and look for a folder called X-CubeSat with the "cd" and "ls" commands. Once you found the folder, enter in it and type:
+Now, finaly we are going to launch XCubeSat Controller. To do so, open a new terminal and look for a folder called X-CubeSat with the "cd" and "ls" commands. Once you found the folder, enter in it and type:
 \begin{framed}
-\$ ./XCubeSat\_Controler
+\$ ./XCubeSat\_Controller
 \end{framed}
 
-Now you should be running the X-CubeSat Controler \textbackslash o/
+Now you should be running the X-CubeSat Controller \textbackslash o/
 
 %------------------------------------------------------------%
 %	Chapter - Overview
 %------------------------------------------------------------%
 \chapter{Overview}
-\hspace{0.4cm} The X-CubeSat Controler is a software for sending, receiving and stoking received data from the X-CubeSat and other satellites from a modem connected to a serial port to the computer. For each satellite we can program many scripts that are going to be put in a FIFO (first in first out) queue to be executed. The first script in the FIFO queue is executed when the satellite is above the horizon (calculated by Gpredict), than the script is reinserted in the last position of the FIFO queue and a new script is ready to be executed in the next pass of the satellite. 
+\hspace{0.4cm} The X-CubeSat Controller is a software for sending, receiving and stoking received data from the X-CubeSat and other satellites from a modem connected to a serial port to the computer. For each satellite we can program many scripts that are going to be put in a FIFO (first in first out) queue to be executed. The first script in the FIFO queue is executed when the satellite is above the horizon (calculated by Gpredict), than the script is reinserted in the last position of the FIFO queue and a new script is ready to be executed in the next pass of the satellite. 
 
 The programming language is a simple, interpreted programming language that will allow to perform the act of sending, receiving and stoking data in the SQLite database. For more details about the programming language for this software, take a look in the others documents provided with this software. 
 
-The X-CubeSat Controler is divided in many different frames that are going to be presented in the following chapters. Each frame has an specific function, from controlling the port that the modem will be connected to writing scripts and changing their priority. You can have a general view of the graphical interface in the figure \ref{GeneralView}.
+The X-CubeSat Controller is divided in many different frames that are going to be presented in the following chapters. Each frame has an specific function, from controlling the port that the modem will be connected to writing scripts and changing their priority. You can have a general view of the graphical interface in the figure \ref{GeneralView}.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.35]{../images/GeneralView.png}
-\caption{General view of the graphical interface of X-CubeSat Controler}
+\caption{General view of the graphical interface of X-CubeSat Controller}
 \label{GeneralView}
 \end{figure}
 
@@ -279,13 +279,13 @@ In a tree path, we can see the scripts related to a satellite. You can rename th
 %	Chapter - CurrSat
 %------------------------------------------------------------%
 \chapter{Frame: CurrSat}
-\hspace{0.4cm} In the CurrSat frame you can find information concerning the next satellite that X-CubeSat Controler will run the scripts. 
+\hspace{0.4cm} In the CurrSat frame you can find information concerning the next satellite that X-CubeSat Controller will run the scripts. 
 
 The satellite name will appear as it is defined in Gpredict.
 
 The fields elevation and azimuth shows the current elevation and azimuth of the satellite.
 
-The field \textbf{Communication Status} can be \textbf{Idle} or \textbf{Communicating}, and it will change from \textbf{Idle} to \textbf{Communicating} when the script that is being executed asks for X-CubeSat Controler to send/receive data to/from the satellite.
+The field \textbf{Communication Status} can be \textbf{Idle} or \textbf{Communicating}, and it will change from \textbf{Idle} to \textbf{Communicating} when the script that is being executed asks for X-CubeSat Controller to send/receive data to/from the satellite.
 
 The progress bar doesn't work yet in this version but it will show the progress while sending/receiving data to/from the satellite.
 \begin{figure}[h]
@@ -378,15 +378,15 @@ The scripts exec order shows the execution order of the scripts. The higher is t
 %------------------------------------------------------------%
 \chapter{Bug Issue}
 \begin{framed}
-Oh NO ! X-CubeSat Controler just bugged !!!
+Oh NO ! X-CubeSat Controller just bugged !!!
 \end{framed} 
 
-If you just said the phrase above, don't worry ! X-CubeSat Controler is hosted by GitHub and it has an integrated Bug Issue Tracking system. If you have a new bug or issue and wants to tell it to the develpers go to the link: \url{https://github.com/tlgimenes/X-CubeSat/issues} and add a new issu, the XCubeSat Controler team will work as fast as possible to fix your issue, but for doing so, we need a good description of the bug and the executing conditions, so fill well the fields of the Bug Issue Tracker that we are going to do what we can to improve your experience with our software.
+If you just said the phrase above, don't worry ! X-CubeSat Controller is hosted by GitHub and it has an integrated Bug Issue Tracking system. If you have a new bug or issue and wants to tell it to the develpers go to the link: \url{https://github.com/tlgimenes/X-CubeSat/issues} and add a new issu, the XCubeSat Controller team will work as fast as possible to fix your issue, but for doing so, we need a good description of the bug and the executing conditions, so fill well the fields of the Bug Issue Tracker that we are going to do what we can to improve your experience with our software.
 
 If you are an experienced C++ programmer, do not wait for us ! Make a pull request or fork the repository, it's free software ! Be Happy !
 
 %------------------------------------------------------------%
 \vspace{10cm}
 \hspace{6cm}
-\textbf{Enjoy your new XCubeSat Controler !}
+\textbf{Enjoy your new XCubeSat Controller !}
 \end{document}

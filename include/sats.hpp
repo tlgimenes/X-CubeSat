@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 

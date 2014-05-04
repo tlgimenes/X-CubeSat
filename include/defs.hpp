@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -30,7 +30,7 @@ along with this program; if not, visit http://www.fsf.org/
 #define DEBUG 1
 #define DEFAULT_OUTPUT              "/dev/ttyS0"
 #define DEFAULT_SPEED               9600
-#define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controler.session"
+#define DEFAULT_SESSION_FILE        "defaults/XCubeSat_Controller.session"
 #define DEFAULT_GPREDICT_SATS_FILE  "/tmp/GpredictSATS"
 
 /* ---------------------------------------------------- */
@@ -128,7 +128,7 @@ along with this program; if not, visit http://www.fsf.org/
 
 
 /* ---------------------------------------------------- */
-#define LOG_FILE "XCubeSat_Controler.txt"
+#define LOG_FILE "XCubeSat_Controller.txt"
 
 #define DIALOG_WINDOW_GLADE "windows/dialogWindow.glade"
 #define WARN_DIALOG_WIDGET  "warnDialog"
@@ -143,12 +143,12 @@ along with this program; if not, visit http://www.fsf.org/
 /* ---------------------------------------------------- */
 /* DATABASE DEFINITIONS */
 /* ---------------------------------------------------- */
-#define DATABASE_NAME "dataBase/XCubeSat_Controler.db"
+#define DATABASE_NAME "dataBase/XCubeSat_Controller.db"
 #define DATABASE_CONFIG "dataBase/tables.sql"
-#define SCI_DATA_TABLE "XCubeSat_Controler_sciData"
-#define WOD_DATA_TABLE "XCubeSat_Controler_wodData" 
-#define SCRIPTS_DATA_TABLE "XCubeSat_Controler_scripts"
-#define SESSION_DATA_TABLE "XCubeSat_Controler_session"
+#define SCI_DATA_TABLE "XCubeSat_Controller_sciData"
+#define WOD_DATA_TABLE "XCubeSat_Controller_wodData" 
+#define SCRIPTS_DATA_TABLE "XCubeSat_Controller_scripts"
+#define SESSION_DATA_TABLE "XCubeSat_Controller_session"
 /* ---------------------------------------------------- */
 
 /* ---------------------------------------------------- */

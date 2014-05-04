@@ -2,7 +2,7 @@ This repository contains all the sotfware that was developed by the ground stati
 
 - Requirements
 
-    The current version of X-CubeSat Controler works only in POSIX compliant operating sy(-)s, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating sy(-)s like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controler. The versions of the libraries and software below were tested, try other versions at your own risk.
+    The current version of X-CubeSat Controller works only in POSIX compliant operating sy(-)s, like GNU/Linux, FreeBSD, etc, but future versions will work also in non POSIX compliant operating sy(-)s like Windows. You can find below the libraries and software needed to compile and run this version of XCubeSat Controller. The versions of the libraries and software below were tested, try other versions at your own risk.
 
     - g++ version 4.7.2
     - GNU Make 3.81
@@ -61,7 +61,7 @@ This repository contains all the sotfware that was developed by the ground stati
 
             $ cd dataBase 
 
-            $ sqlite3 XCubeSat_Controler.db 
+            $ sqlite3 XCubeSat_Controller.db 
 
             .read tables.sql 
 
@@ -69,9 +69,9 @@ This repository contains all the sotfware that was developed by the ground stati
 
             $ cd .. 
 
-            $ ./XCubeSat\_ Controler
+            $ ./XCubeSat\_ Controller
 
-    And voilà ! Here you are running XCubeSat_Controler \o/.
+    And voilà ! Here you are running XCubeSat_Controller \o/.
 
     For more informations read the UserGuide.pdf file provided with this software in the doc folder.
 

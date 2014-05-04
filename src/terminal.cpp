@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -37,8 +37,9 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 /* Constructor */
 /*  --------------------------------------------------------  */
-Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer)
+Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer, Gtk::TextView *textView)
 {
+    this->textView = textView;
     this->buffer = buffer;
     this->interface = interface;
 
@@ -206,6 +207,8 @@ void Terminal::update_buffer()
 
        this->buffer->set_text(buff.str());
        this->buffer->apply_tag(this->notEditableTag, buffer->begin(), buffer->end());
+       Gtk::TextBuffer::iterator iter = buffer->end();
+       this->textView->scroll_to(iter, (double)0);
     }
 }
 /*  --------------------------------------------------------  */
@@ -300,6 +303,14 @@ void Terminal::set_buffer(Glib::RefPtr<Gtk::TextBuffer> buffer)
 }
 /*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
+void Terminal::set_textview(Gtk::TextView *textView)
+{
+    this->textView = textView;
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
 bool Terminal::set_interface(Glib::ustring deviceName, int speed)
 {
     try {

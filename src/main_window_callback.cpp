@@ -1,7 +1,7 @@
 /*
  * CLASS MAIN_WINDOW_CALLBACK : 
  */
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -91,7 +91,8 @@ void MainWindowCallback::connect_callbacks()
     /* Connect the main menu */
     Gtk::ImageMenuItem * imitem = 0;
     Menu * menu = new Menu(this->main_window_renderer, this->man);
-    this->main_window_renderer->mainBuilder->get_widget("saveFile", imitem);
+    /* TODO: Implement some usefull feature to do with the menus
+     * this->main_window_renderer->mainBuilder->get_widget("saveFile", imitem);
     if(imitem != 0)
         imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::save_activate_cb));
     this->main_window_renderer->mainBuilder->get_widget("saveFileAs", imitem);
@@ -99,7 +100,7 @@ void MainWindowCallback::connect_callbacks()
         imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::saveAs_activate_cb));
     this->main_window_renderer->mainBuilder->get_widget("openFile", imitem);
     if(imitem != 0)
-        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::open_activate_cb));
+        imitem->signal_activate().connect(sigc::mem_fun(menu, &Menu::open_activate_cb));*/
     this->main_window_renderer->mainBuilder->get_widget("quit", imitem);
     if(imitem != 0)
         imitem->signal_activate().connect(sigc::mem_fun(*this, &MainWindowCallback::quit_cb));
@@ -265,16 +266,23 @@ void MainWindowCallback::new_script_button_clicked_cb()
 
     Gtk::TreeStore::iterator it = this->main_window_renderer->satsTreeview->get_selection()->get_selected();
 
-    Gtk::TreeStore::iterator par = it->parent();
-    if(par)
-        it = par;
-    satName = it->get_value(this->modelSatsColumns.col_sat_name);
-    scriptName->append(satName.c_str());
+    if(it) {
+        Gtk::TreeStore::iterator par = it->parent();
+        if(par)
+            it = par;
 
-    this->man->add_script(&satName, scriptName, scriptData, alias, interpreter);
+        satName = it->get_value(this->modelSatsColumns.col_sat_name);
 
-    this->main_window_renderer->render_sats_list_refresh(this->man);
-    this->main_window_renderer->render_scripts_priority_queue(this->man->get_scripts_priority_queue(&satName));
+        scriptName->append(satName.c_str());
+
+        this->man->add_script(&satName, scriptName, scriptData, alias, interpreter);
+
+        this->main_window_renderer->render_sats_list_refresh(this->man);
+        this->main_window_renderer->render_scripts_priority_queue(this->man->get_scripts_priority_queue(&satName));
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Select a satellite first", __FILE__, __LINE__);
+    }
 
 }
 /*  --------------------------------------------------------  */
@@ -468,6 +476,8 @@ void MainWindowCallback::update_curr_satellite()
         }
         catch (std::exception &e) {
             /* ERROR in FIFO FILE ! What TODO next ? */
+            this->fifo->close();
+            this->fifo = new std::ifstream(FIFO_FILE);
         }
     }
 }

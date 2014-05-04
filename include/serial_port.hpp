@@ -1,4 +1,4 @@
-/* X-CubeSat Controler: Real-time communication with satellite program
+/* X-CubeSat Controller: Real-time communication with satellite program
 
    Copyright (C)  2014 - Tiago Lobato Gimenes
 
@@ -34,6 +34,8 @@ along with this program; if not, visit http://www.fsf.org/
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_array.hpp>
+
+#include "defs.hpp"
 
 /**
  * Used internally (pimpl)

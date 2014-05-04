@@ -1006,7 +1006,7 @@
           <UML:Parameter visibility="private" isSpecification="false" xmi.id="yXk5aBEDbT51" type="bhm3ubFv3QuL" value="" name="man"/>
          </UML:BehavioralFeature.parameter>
         </UML:Operation>
-        <UML:Operation visibility="public" isSpecification="false" isQuery="false" isAbstract="false" isLeaf="false" ownerScope="classifier" isRoot="false" xmi.id="XRO9Kf2ICmLk" name="XCubeSat_Controler_Start">
+        <UML:Operation visibility="public" isSpecification="false" isQuery="false" isAbstract="false" isLeaf="false" ownerScope="classifier" isRoot="false" xmi.id="XRO9Kf2ICmLk" name="XCubeSat_Controller_Start">
          <UML:BehavioralFeature.parameter>
           <UML:Parameter kind="return" xmi.id="xaxX31WNz1sf" type="bhm3ubFv3QuL"/>
          </UML:BehavioralFeature.parameter>
