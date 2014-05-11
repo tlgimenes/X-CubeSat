@@ -14,7 +14,7 @@ LIBS=`pkg-config gtkmm-3.0 vte-2.90 sqlite3 --cflags --libs`
 SQLITE3_LIBS=-lsqlitewrapped -lsqlite3 -L/usr/devel/lib 
 BOOST_LIBS=-lboost_system -lboost_thread -pthread
 
-OUTPUT=XCubeSat_Controler
+OUTPUT=XCubeSat_Controller
 
 all:
 	cd src; make

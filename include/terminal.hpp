@@ -32,11 +32,13 @@ along with this program; if not, visit http://www.fsf.org/
 #include <queue>
 
 #include "in_out_interface.hpp"
+#include "modems.hpp"
+#include "gtk_receive.hpp"
 
 typedef enum working_mode_t
 {
-    MODEM_CONFIG,
-    MODEM_FREE
+    MODEM_MANUAL_MODE,
+    MODEM_AUTO_MODE
 } working_mode;
 
 class Terminal : public sigc::trackable
@@ -50,10 +52,13 @@ class Terminal : public sigc::trackable
         std::string inputUserBuffer; /* Buffer containing data came from the user */
         working_mode mode;
         bool erase;
+        Modem *modem;
 
         Gtk::TextView *textView;
         Glib::RefPtr<Gtk::TextBuffer> buffer;
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
+
+        GtkReceive *rec;
 
     protected:
         void update_read(Glib::ustring data);
@@ -64,6 +69,10 @@ class Terminal : public sigc::trackable
         void on_end_user_action();
         void on_my_insert(const Gtk::TextBuffer::iterator& pos, const Glib::ustring &text, int bytes);
 
+        void modem_name_changed_combobox_cb();
+        void modem_mode_changed_combobox_cb();
+
+        bool block_read();
     public:
         Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buffer, Gtk::TextView *textView);
         Terminal(InOutInterface *interface);
@@ -73,13 +82,16 @@ class Terminal : public sigc::trackable
         bool write_to_device (std::string  str);
         bool read_from_device(std::string *str);
 
-        void change_mode();
+        void change_config_mode();
 
         /*  Gets and Sets */
         bool set_interface(Glib::ustring deviceName, int speed);
         void set_buffer(Glib::RefPtr<Gtk::TextBuffer> buffer);
         void set_textview(Gtk::TextView *textView);
+        void set_modem(Modem *modem);
+        void set_gtk_receive(GtkReceive *rec);
         InOutInterface *get_interface();
+        std::queue<std::string> *get_input_buffer();
 };
 
 #endif

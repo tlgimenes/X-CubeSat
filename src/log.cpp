@@ -121,6 +121,10 @@ void Log::LogWarn(logLevel level, const char* logMessage, const char* file, int 
             writeMessageLogFile (asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
             writeMessageTerminal(asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
             break;
+        case LEVEL_LOG_SILENT:
+            writeMessageLogFile (asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
+            writeMessageTerminal(asctime(gmtime(&raw_time)) << ": INFO ", logMessage, file, line);
+            break;
         default:
             *(Log::logFile) << "Error message not found ! Please repport this incident in the Issue Tracker at github" << std::endl;
             exit(1);

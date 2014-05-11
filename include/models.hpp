@@ -159,4 +159,26 @@ class PortSpeedComboBoxModel : public Gtk::TreeModel::ColumnRecord
         Gtk::TreeModelColumn<Glib::ustring> speedName;
 };
 /* --------------------------------------------------------------*/
+
+/* --------------------------------------------------------------*/
+/* Models for the Modem Mode ComboBox */
+class ModemModeComboBoxModel : public Gtk::TreeModel::ColumnRecord
+{
+    public:
+        ModemModeComboBoxModel()
+        { add(mode); }
+
+        Gtk::TreeModelColumn<Glib::ustring> mode;
+};
+/* --------------------------------------------------------------*/
+
+/* --------------------------------------------------------------*/
+class ModemNameComboBoxModel : public Gtk::TreeModel::ColumnRecord
+{
+    public: 
+        ModemNameComboBoxModel()
+        { add(name); }
+
+        Gtk::TreeModelColumn<Glib::ustring> name;
+};
 #endif

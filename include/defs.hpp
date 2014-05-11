@@ -65,10 +65,11 @@ along with this program; if not, visit http://www.fsf.org/
 /* ---------------------------------------------------- */
 /* Curr sat */
 /* ---------------------------------------------------- */
-#define CURR_SAT_LABEL_WIDGET "sat"
-#define STATUS_LABEL_WIDGET "stat"
+#define CURR_SAT_LABEL_WIDGET  "sat"
+#define STATUS_LABEL_WIDGET    "stat"
 #define ELEVATION_LABEL_WIDGET "elevation"
-#define AZIMUTH_LABEL_WIDGET "azimuth"
+#define AZIMUTH_LABEL_WIDGET   "azimuth"
+#define SPINNER_WIDGET         "currSatSpinner"
 /* ---------------------------------------------------- */
 
 /* ---------------------------------------------------- */
@@ -154,11 +155,17 @@ along with this program; if not, visit http://www.fsf.org/
 /* ---------------------------------------------------- */
 /* Terminal Definitions */
 #define TERMINAL_TEXTVIEW "terminalTextView"
-#define MODEM_CONFIG_RADIO_BUTTON "modemConfigModeButton"
-#define MODEM_FREE_RADIO_BUTTON "modemFreeModeButton"
+//#define MODEM_CONFIG_RADIO_BUTTON "modemConfigModeButton
+//#define MODEM_FREE_RADIO_BUTTON "modemFreeModeButton"
 #define NON_EDITABLE_TAG_NAME "notEditableTerminalTag"
 #define MAX_BUFFER_SIZE 512
 #define MAX_MESSAGE_SIZE 999
+#define MAX_AWAITING 9999
+#define DATA_NOT_RECEIVED "data not received"
+
+#define MODEM_CONFIG_TOGGLE "modemConfigModeToggle"
+#define MODEM_MODE_COMBOBOX "modemMode"
+#define MODEM_NAME_COMBOBOX "modemName"
 /* ---------------------------------------------------- */
 
 #endif

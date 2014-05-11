@@ -1,8 +1,3 @@
-/*
- * CLASS XCUBESAT_INTERPRETER : This class defines 
- * methods for interpreting a command file.
- *
- */
 /* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
@@ -29,28 +24,15 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
-#ifndef XCUBESAT_INTERPRETER_HPP
-#define XCUBESAT_INTERPRETER_HPP
+#ifndef TOOLS_HPP
+#define TOOLS_HPP
 
-#include <unordered_map>
+#include <fstream>
+#include <string>
 
-#include "in_out_log.hpp"
-#include "interpreter.hpp"
-#include "terminal.hpp"
-#include "xcubesat_compiler.hpp"
+#include "defs.hpp"
+#include "models.hpp"
 
-class XCubeSatInterpreter : virtual public Interpreter
-{
-    private:
-        XCubeSatCompiler *compiler;
-        std::vector<Function*> runQueue;
+fifo_file_model *read_fifo_format(std::ifstream **fifo);
 
-    public:
-        XCubeSatInterpreter(Terminal *);
-
-        InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName);
-
-        bool *are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias);
-};
-
-#endif
+#endif /* TOOLS_HPP */

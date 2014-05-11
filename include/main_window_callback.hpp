@@ -32,7 +32,8 @@ along with this program; if not, visit http://www.fsf.org/
 #include "manager.hpp"
 #include "menu.hpp"
 #include "xcubesat_interpreter.hpp"
-#include "interpreter.hpp"
+#include "tools.hpp"
+#include "gtk_receive.hpp"
 
 class MainWindowCallback
 {
@@ -46,7 +47,8 @@ class MainWindowCallback
 
         /*----------------------------------------------*/
         /* Timeout callback attributes */
-        bool isRunning;
+        Glib::ustring lastRunSatName; /* Name of the last satellte that run a script */
+        bool isRunning;              /* True if the script is running */
         /*----------------------------------------------*/
 
         /*----------------------------------------------*/
@@ -77,21 +79,23 @@ class MainWindowCallback
         void device_name_entry_activated_cb();
         void device_speed_combobox_changed_cb();
         void command_treeview_activated_cb(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
+        void update_curr_satellite();
         void new_script_button_clicked_cb();
         void up_button_clicked_cb();
         void down_button_clicked_cb();
-        void update_curr_satellite();
         bool on_key_press_event(GdkEventKey* event);
         void quit_cb();
         bool quit_all_cb(GdkEventAny *event);
         void on_response_save_message_dialog(int response_id);
-        bool timeout_cb();
         void on_modem_mode_change_cb();
         /*----------------------------------------------*/
 
     public:
         MainWindowCallback(Manager *man, Terminal *term);
         Gtk::Window *get_main_window();
+
+        /* timeout callback */
+        bool timeout_cb();
 };
  
 #endif

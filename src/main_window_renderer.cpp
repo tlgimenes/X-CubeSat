@@ -31,8 +31,8 @@ along with this program; if not, visit http://www.fsf.org/
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
 #include "main_window_renderer.hpp"
+#include "gtk_receive.hpp"
 #include "log.hpp"
 
 /*  --------------------------------------------------------  */
@@ -57,6 +57,9 @@ void MainWindowRenderer::init_curr_sat_frame()
     this->mainBuilder->get_widget(STATUS_LABEL_WIDGET, this->status);
     this->mainBuilder->get_widget(ELEVATION_LABEL_WIDGET, this->satEl);
     this->mainBuilder->get_widget(AZIMUTH_LABEL_WIDGET, this->satAz);
+    this->mainBuilder->get_widget(SPINNER_WIDGET, this->spinner);
+
+    this->spinner->start();
 }
 /*  --------------------------------------------------------  */
 
@@ -138,8 +141,17 @@ void MainWindowRenderer::init_terminal_frame()
     this->term->set_textview(this->terminalView);
 
     /* Get the Radio Button */
-    this->mainBuilder->get_widget(MODEM_CONFIG_RADIO_BUTTON, this->modemConfig);
-    this->mainBuilder->get_widget(MODEM_FREE_RADIO_BUTTON,   this->modemFree);
+    //this->mainBuilder->get_widget(MODEM_CONFIG_RADIO_BUTTON, this->modemConfig);
+    //this->mainBuilder->get_widget(MODEM_FREE_RADIO_BUTTON,   this->modemFree);
+    
+    /* Get ComboBox */
+    this->mainBuilder->get_widget(MODEM_MODE_COMBOBOX, this->modemMode);
+    this->mainBuilder->get_widget(MODEM_NAME_COMBOBOX, this->modemName);
+
+    /* Get Toggle Button */
+    this->mainBuilder->get_widget(MODEM_CONFIG_TOGGLE, this->modemConfigButton);
+
+    term->set_modem(new Modem(DEFAULT, this->modemName, this->modemMode));
 }
 /*  --------------------------------------------------------  */
 

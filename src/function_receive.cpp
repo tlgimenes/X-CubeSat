@@ -34,6 +34,8 @@ along with this program; if not, visit http://www.fsf.org/
 #include "function_variable_string.hpp"
 #include "function_variable_data.hpp"
 
+#include "log.hpp"
+
 /*  --------------------------------------------------------  */
 /* Constructor
  */
@@ -102,7 +104,7 @@ Function *FunctionReceive::run(std::vector<Function*> *runQueue, Glib::ustring *
 
     if(format != NULL && typeid(*format) == typeid(FunctionVariableString)) {
         FunctionVariableString *format_str = static_cast<FunctionVariableString*>(format);
-
+ 
         if(this->term->read_from_device(&str)) {
             data = new FunctionVariableData(str, *format_str->get_value(), (ptm->tm_hour)*10000 + ptm->tm_min*100 + ptm->tm_sec);
         }

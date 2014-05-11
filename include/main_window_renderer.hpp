@@ -87,6 +87,7 @@ class MainWindowRenderer
         /*----------------------------------------------*/
         /* CurrSat frame attributes */
         Gtk::Label *satName, *status, *satEl, *satAz;
+        Gtk::Spinner *spinner;
         /*----------------------------------------------*/
 
         /*----------------------------------------------*/
@@ -105,8 +106,17 @@ class MainWindowRenderer
         /*----------------------------------------------*/
         Terminal *term;
         Gtk::TextView *terminalView;
-        Gtk::RadioButton *modemConfig;
-        Gtk::RadioButton *modemFree;
+        Gtk::ToggleButton *modemConfigButton;
+        Gtk::ComboBoxText *modemName;
+        Gtk::ComboBoxText *modemMode;
+
+        //Gtk::RadioButton *modemConfig;
+        //Gtk::RadioButton *modemFree;
+
+        /*----------------------------------------------*/
+        /* Timeout Connection */
+        /*----------------------------------------------*/
+        sigc::connection conn;
 
     protected:
         /*----------------------------------------------*/

@@ -49,6 +49,8 @@ Manager::Manager()
 
     this->satsTreeStore = Gtk::TreeStore::create(*this->modelSatsColumns);
 
+    this->lock_script_execution = false;
+
 }
 /*  --------------------------------------------------------  */
 
@@ -278,8 +280,21 @@ void Manager::rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName
  */
 void Manager::run_next_script(Glib::ustring satName)
 {
-    if(exists_sat(&satName)) {
+    if(exists_sat(&satName) && !lock_script_execution) {
         this->satManagers[satName.c_str()]->run_next_script();
+        this->lock_script_execution = true;
     }
 }
 /*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+void Manager::unlock_script_exe()
+{
+    this->lock_script_execution = false;
+}
+/*  --------------------------------------------------------  */
+
+bool Manager::is_script_locked()
+{
+    return this->lock_script_execution;
+}

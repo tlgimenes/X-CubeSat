@@ -46,6 +46,7 @@ class Manager
         std::unordered_map<std::string, SatManager*> satManagers;
         Glib::ustring *tracking;
         float elevation;
+        bool lock_script_execution; /* If true no script is run, false otherwise */
         
         /* Gtk attributes */
         Glib::RefPtr<Gtk::TreeStore> satsTreeStore;
@@ -81,6 +82,9 @@ class Manager
         void rename_script(Glib::ustring *satName, Glib::ustring *oldScriptName, Glib::ustring *newScriptName);
 
         void run_next_script(Glib::ustring satName);
+
+        void unlock_script_exe();
+        bool is_script_locked();
 };
 
 #endif

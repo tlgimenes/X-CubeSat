@@ -1,8 +1,3 @@
-/*
- * CLASS XCUBESAT_INTERPRETER : This class defines 
- * methods for interpreting a command file.
- *
- */
 /* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
@@ -29,28 +24,48 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
-#ifndef XCUBESAT_INTERPRETER_HPP
-#define XCUBESAT_INTERPRETER_HPP
+#ifndef MODEM_DEFAULT_HPP
+#define MODEM_DEFAULT_HPP
 
-#include <unordered_map>
+#include <vector>
+#include <string>
+#include <gtkmm.h>
 
-#include "in_out_log.hpp"
-#include "interpreter.hpp"
-#include "terminal.hpp"
-#include "xcubesat_compiler.hpp"
+#define CTRL_C '\3'
 
-class XCubeSatInterpreter : virtual public Interpreter
+#define DEFAULT_EXIT_NONE_MODE   ""
+#define DEFAULT_EXIT_ASCII_MODE  ""
+#define DEFAULT_EXIT_CONFIG_MODE ""
+
+typedef enum modes_t
 {
-    private:
-        XCubeSatCompiler *compiler;
-        std::vector<Function*> runQueue;
+    NONE,
+    ASCII,
+    CONFIG
+} modes_t;
+
+class ModemDefault
+{
+     protected:
+        std::string m_name;
+        std::string m_OEM;
+        std::string m_REPLY_OEM;
+        mode_t m_mode;
+        std::vector<std::string> m_modes;
 
     public:
-        XCubeSatInterpreter(Terminal *);
+        ModemDefault(modes_t mode);
+        std::vector<std::string> modes();
+        std::string name();
 
-        InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName);
+        std::string REPLY_OEM();
 
-        bool *are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias);
+        virtual Glib::ustring change_modem_mode(Glib::ustring mode);
+        virtual Glib::ustring format_send(Glib::ustring str);
 };
 
-#endif
+/*  DO NOT CHANGE THE ORDER ! */
+static std::vector<modes_t>     __mmod = { NONE ,  ASCII ,  CONFIG};
+static std::vector<std::string> __mstr = {"NONE", "ASCII", "CONFIG"};
+
+#endif /* MODEM_DEFAULT_HPP */

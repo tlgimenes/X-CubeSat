@@ -1,8 +1,3 @@
-/*
- * CLASS XCUBESAT_INTERPRETER : This class defines 
- * methods for interpreting a command file.
- *
- */
 /* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
@@ -29,28 +24,24 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
-#ifndef XCUBESAT_INTERPRETER_HPP
-#define XCUBESAT_INTERPRETER_HPP
+#ifndef MODEM_KENWOOD_HPP
+#define MODEM_KENWOOD_HPP
 
-#include <unordered_map>
+#include "modem_default.hpp"
 
-#include "in_out_log.hpp"
-#include "interpreter.hpp"
-#include "terminal.hpp"
-#include "xcubesat_compiler.hpp"
+#define KENWOOD_EXIT_NONE_MODE   "" 
+#define KENWOOD_EXIT_ASCII_MODE  ""
+#define KENWOOD_EXIT_CONFIG_MODE ""
 
-class XCubeSatInterpreter : virtual public Interpreter
+class ModemKenwood : public ModemDefault
 {
-    private:
-        XCubeSatCompiler *compiler;
-        std::vector<Function*> runQueue;
-
     public:
-        XCubeSatInterpreter(Terminal *);
+        ModemKenwood(modes_t mode);
 
-        InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName);
-
-        bool *are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias);
+        Glib::ustring change_modem_mode(Glib::ustring mode);
+        
+        Glib::ustring format_send(Glib::ustring str);
+        //Glib::ustring change_modem_config_mode();
 };
 
-#endif
+#endif /* MODEM_KENWOOD_HPP */

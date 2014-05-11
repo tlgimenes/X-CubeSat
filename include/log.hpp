@@ -40,7 +40,8 @@ typedef enum logLevel_t
 {
     LEVEL_LOG_ERROR,
     LEVEL_LOG_WARNING,
-    LEVEL_LOG_INFO
+    LEVEL_LOG_INFO,
+    LEVEL_LOG_SILENT
 } logLevel;
 
 class Log

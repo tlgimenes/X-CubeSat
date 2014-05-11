@@ -27,16 +27,61 @@ along with this program; if not, visit http://www.fsf.org/
 #ifndef MODEMS_HPP
 #define MODEMS_HPP
 
-#define KANTRONICS /* Will use the KANTRONICS modem */
+#include <vector>
+#include <string>
+#include <gtkmm.h>
 
-#ifdef STANDARD_MODEM
-#define OEM         "\r"
-#define REPLY_OEM   "\r\n"
+#include "models.hpp"
+#include "modem_default.hpp"
+#include "modem_kantronics.hpp"
+#include "modem_kenwood.hpp"
 
-#elif defined KANTRONICS /* If using the KANTRONICS modem */
-#define OEM         "\r"
-#define REPLY_OEM   "\r\n"
+typedef enum modemModel_t {
+    DEFAULT,
+    KANTRONICS,
+    KENWOOD
+} modemModel_t;
 
-#endif /* STANDARD_MODEM */
+class Modem
+{
+    private:
+        std::vector<ModemDefault*> modems =
+             { new ModemDefault(CONFIG), 
+               new ModemKantronics(CONFIG), 
+               new ModemKenwood(CONFIG)};
+
+        modemModel_t currentModem;
+
+        Glib::RefPtr<Gtk::ListStore> modemModeListStore;
+        Gtk::ComboBoxText  *modemModeCombobox;
+        Gtk::ComboBoxText  *modemNameCombobox;
+
+        ModemModeComboBoxModel modemModeComboBoxModel;
+        ModemNameComboBoxModel modemNameComboBoxModel;
+
+    protected:
+        void populate_name_combobox();
+        void populate_mode_combobox();
+
+  //      void modem_name_changed_combobox_cb();
+  //      void modem_mode_changed_combobox_cb();
+
+    public:
+        Modem(modemModel_t model, Gtk::ComboBoxText *name, Gtk::ComboBoxText *mode);
+        std::string REPLY_OEM();
+        std::string OEM();
+
+        Glib::ustring format_send(Glib::ustring);
+
+        /* Returns a string containing the chars to 
+         * change the modem mode */
+        Glib::ustring update_modem_mode();      
+        void          update_modem_name();
+
+        /* Sets the chage mode callback to all of the
+         * modems implementations */
+        void set_change_modem_mode_cb(sigc::slot<void> change_mode_cb);
+        void set_change_modem_name_cb(sigc::slot<void> change_name_cb);
+};
 
 #endif /* MODEMS_HPP */

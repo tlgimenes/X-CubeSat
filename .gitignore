@@ -2,7 +2,7 @@
 src/*.o
 
 #Ignore the compiled version
-XCubeSat_Controler
+XCubeSat_Controller
 
 #Ignore latex useless files
 doc/*.aux 

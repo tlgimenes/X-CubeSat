@@ -1,8 +1,3 @@
-/*
- * CLASS XCUBESAT_INTERPRETER : This class defines 
- * methods for interpreting a command file.
- *
- */
 /* X-CubeSat Controller: Real-time communication with satellite program
 
  Copyright (C)  2014 - Tiago Lobato Gimenes
@@ -29,28 +24,31 @@ GNU General Public License for more details.
 along with this program; if not, visit http://www.fsf.org/
 */
 
-#ifndef XCUBESAT_INTERPRETER_HPP
-#define XCUBESAT_INTERPRETER_HPP
+#ifndef MODEM_KANTRONICS_HPP
+#define MODEM_KANTRONICS_HPP
 
-#include <unordered_map>
+#include <vector>
+#include <string>
+#include <gtkmm.h>
 
-#include "in_out_log.hpp"
-#include "interpreter.hpp"
-#include "terminal.hpp"
-#include "xcubesat_compiler.hpp"
+#include "modem_default.hpp"
 
-class XCubeSatInterpreter : virtual public Interpreter
+#define KANTRONICS_EXIT_ASCII_MODE               "\3X" /* CTRL_C + X */
+#define KANTRONICS_EXIT_NONE_MODE                "\3X" /* CTRL_C + X */
+#define KANTRONICS_EXIT_CONFIG_MODE              "\3X" /* CTRL_C + X */
+#define KANTRONICS_ENTER_TRANSMIT_MODE           "\3T" /* CTRL + T */
+#define KANTRONICS_RETURN_RECEIVE_IF_BUFFER_EMPY "\3E" /* CTRL + E */
+#define KANTRONICS_RETURN_RECEIVE_IMMEDIATELY    "\3R" /* CTRL_C + R */
+
+
+class ModemKantronics : public ModemDefault
 {
-    private:
-        XCubeSatCompiler *compiler;
-        std::vector<Function*> runQueue;
-
     public:
-        XCubeSatInterpreter(Terminal *);
+        ModemKantronics(modes_t mode);
 
-        InOutLog *interpret(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias, Glib::ustring *satName);
-
-        bool *are_there_syntax_errors(Glib::ustring *text, std::unordered_map<std::string, std::string> *alias);
+        Glib::ustring change_modem_mode(Glib::ustring mode);
+        
+        Glib::ustring format_send(Glib::ustring str);
 };
 
-#endif
+#endif /* MODEM_KANTRONICS_HPP */

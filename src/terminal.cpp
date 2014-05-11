@@ -1,26 +1,26 @@
 /* X-CubeSat Controller: Real-time communication with satellite program
 
- Copyright (C)  2014 - Tiago Lobato Gimenes
+   Copyright (C)  2014 - Tiago Lobato Gimenes
 
- Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
+Authors: Tiago Lobato Gimenes <tlgimenes@gmail.com>
 
- Comments, questions and bugreports should be submitted via
- https://github.com/tlgimenes/X-CubeSat
- More details can be found at the project home page:
+Comments, questions and bugreports should be submitted via
+https://github.com/tlgimenes/X-CubeSat
+More details can be found at the project home page:
 
- https://github.com/tlgimenes/X-CubeSat
+https://github.com/tlgimenes/X-CubeSat
 
- This program is free software; you can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
+This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU General Public License
 along with this program; if not, visit http://www.fsf.org/
 */
 
@@ -42,10 +42,12 @@ Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buff
     this->textView = textView;
     this->buffer = buffer;
     this->interface = interface;
+    this->modem = NULL;
+    this->rec = NULL;
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
-    this->mode = MODEM_CONFIG;
+    this->mode = MODEM_MANUAL_MODE;
     this->max_num_lines = MAX_BUFFER_SIZE;
 
     /*  Set Tags */
@@ -70,10 +72,12 @@ Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buff
 Terminal::Terminal(InOutInterface *interface)
 {
     this->interface = interface;
+    this->modem = NULL;
+    this->rec = NULL;
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
-    this->mode = MODEM_CONFIG;
+    this->mode = MODEM_MANUAL_MODE;
     this->max_num_lines = MAX_BUFFER_SIZE;
 
     /* Sets the callback for to read from the serial port */
@@ -84,7 +88,7 @@ Terminal::Terminal(InOutInterface *interface)
 
 /* Clears a buffer */
 #define CLEAR_BUFFER(buffer) \
-    if(this->mode == MODEM_CONFIG) { \
+    if(this->mode == MODEM_MANUAL_MODE) { \
         std::queue<std::string> empty; \
         std::swap(this->output, empty); \
     }
@@ -115,14 +119,14 @@ void Terminal::update_read(Glib::ustring data)
 {
     size_t iReplyOem;
     size_t iddot;
-    size_t replyOemLen = strlen(REPLY_OEM);
+    size_t replyOemLen = strlen(this->modem->REPLY_OEM().c_str());
 
     if(!data.is_ascii())
         REMOVE_NON_ASCII(data);
     inputPortBuffer += data;
 
     while(!inputPortBuffer.empty()) {
-        iReplyOem = inputPortBuffer.find(REPLY_OEM);
+        iReplyOem = inputPortBuffer.find(this->modem->REPLY_OEM());
         iddot     = inputPortBuffer.find(":");
 
         if(iReplyOem == std::string::npos && iddot == std::string::npos) 
@@ -147,6 +151,11 @@ void Terminal::update_write()
     if(this->interface != NULL && this->interface->is_open()) {
         for (unsigned int i = 0; i < this->output.size(); ++i) {
             Glib::ustring *str = new Glib::ustring(this->output.front());
+
+            /*  It is here that the message if formated according to 
+             *  the modem beeing used and it's mode */
+            *str = this->modem->format_send(*str);
+
             this->interface->write(str);
             this->output.push(this->output.front());
             this->output.pop();
@@ -160,16 +169,21 @@ void Terminal::update_write()
         str = buffer.front(); \
         buffer.pop(); \
         buff << str << "\n"; \
-        if(this->mode == MODEM_FREE) \
+        if(this->mode == MODEM_AUTO_MODE) \
         buffer.push(str); \
     }
 
-#define SMART_ERASE_BUFFER(buffer) \
+#define WRITE_OUTPUT_TO_TEXTVIEW(buffer) \
     for (unsigned int i = 0; i < buffer.size(); i++) { \
         str = buffer.front(); \
         buffer.pop(); \
-        if(this->mode == MODEM_FREE) \
-        buffer.push(str); \
+        buff << str << "\n"; \
+    }
+
+#define SMART_ERASE_OUTPUT_BUFFER(buffer) \
+    for (unsigned int i = 0; i < buffer.size(); i++) { \
+        str = buffer.front(); \
+        buffer.pop(); \
     }
 
 /*  --------------------------------------------------------  */
@@ -194,21 +208,22 @@ void Terminal::update_buffer()
 
         /*  Resets the new buffer */
         buff.str(std::string());
+
         buff << str; /*  Assignes the new string to the buffer */
 
         /* Writes to buffer */
         WRITE_TO_TEXTVIEW(this->input);
-        if(this->mode == MODEM_CONFIG) {
-            SMART_ERASE_BUFFER(this->output);
+        if(this->mode == MODEM_MANUAL_MODE) {
+            SMART_ERASE_OUTPUT_BUFFER(this->output);
         }
         else {
-            WRITE_TO_TEXTVIEW (this->output);
+            WRITE_OUTPUT_TO_TEXTVIEW (this->output);
         }
 
-       this->buffer->set_text(buff.str());
-       this->buffer->apply_tag(this->notEditableTag, buffer->begin(), buffer->end());
-       Gtk::TextBuffer::iterator iter = buffer->end();
-       this->textView->scroll_to(iter, (double)0);
+        this->buffer->set_text(buff.str());
+        this->buffer->apply_tag(this->notEditableTag, buffer->begin(), buffer->end());
+        Gtk::TextBuffer::iterator iter = buffer->end();
+        this->textView->scroll_to(iter, (double)0);
     }
 }
 /*  --------------------------------------------------------  */
@@ -216,7 +231,7 @@ void Terminal::update_buffer()
 /*  --------------------------------------------------------  */
 bool Terminal::write_to_device(std::string str)
 {
-    if(mode == MODEM_FREE) {
+    if(mode == MODEM_AUTO_MODE) {
         this->output.push(str);
         return true;
     }
@@ -226,11 +241,25 @@ bool Terminal::write_to_device(std::string str)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
+/*  Returns true if the modem status is MODEM_AUTO_MODE and 
+ *  false otherwise */
 bool Terminal::read_from_device(std::string *str) 
 {
-    if(mode == MODEM_FREE) {
-        *str = this->input.front();
-        this->input.pop();
+    if(mode == MODEM_AUTO_MODE) {
+
+        rec->start_receive_window();
+        while(rec->wait_for_input());
+        //while(block_read() && (this->input.size() == 0));
+
+        if(this->input.size() == 0) {
+            *str = DATA_NOT_RECEIVED;
+            Log::LogWarn(LEVEL_LOG_SILENT, "DATA NOT RECEIVED FROM MODEM", __FILE__, __LINE__);
+        }
+        else {
+            *str = this->input.front();
+            this->input.pop();
+        }
+
         return true;
     }
 
@@ -239,15 +268,15 @@ bool Terminal::read_from_device(std::string *str)
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void Terminal::change_mode()
+void Terminal::change_config_mode()
 {
-    if(this->mode == MODEM_CONFIG) {
-        this->mode = MODEM_FREE;
-        Log::LogWarn(LEVEL_LOG_INFO, "Terminal mode changed to MODEM FREE sucessfully", __FILE__, __LINE__);
+    if(this->mode == MODEM_MANUAL_MODE) {
+        this->mode = MODEM_AUTO_MODE;
+        Log::LogWarn(LEVEL_LOG_INFO, "Terminal mode changed to MODEM AUTO MODE sucessfully", __FILE__, __LINE__);
     }
     else {
-        this->mode = MODEM_CONFIG;
-        Log::LogWarn(LEVEL_LOG_INFO, "Terminal mode changed to MODEM CONFIG sucessfully", __FILE__, __LINE__);
+        this->mode = MODEM_MANUAL_MODE;
+        Log::LogWarn(LEVEL_LOG_INFO, "Terminal mode changed to MODEM MANUAL MODE sucessfully", __FILE__, __LINE__);
     }
 }
 /*  --------------------------------------------------------  */
@@ -340,3 +369,71 @@ InOutInterface *Terminal::get_interface()
     return this->interface;
 }
 /*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+void Terminal::set_modem(Modem *modem)
+{
+    this->modem = modem;
+    this->modem->set_change_modem_mode_cb(sigc::mem_fun(*this, &Terminal::modem_mode_changed_combobox_cb));
+    this->modem->set_change_modem_name_cb(sigc::mem_fun(*this, &Terminal::modem_name_changed_combobox_cb));
+}
+/*  --------------------------------------------------------  */
+
+void Terminal::modem_name_changed_combobox_cb()
+{
+    if(this->mode == MODEM_MANUAL_MODE) {
+        this->modem->update_modem_name();
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_INFO, "Change to manual mode first", __FILE__, __LINE__);
+    }
+}
+
+/*  --------------------------------------------------------  */
+void Terminal::modem_mode_changed_combobox_cb()
+{
+    if(this->mode == MODEM_MANUAL_MODE) {
+        Glib::ustring change_mode_str = this->modem->update_modem_mode();
+
+        this->output.push(change_mode_str);
+    }
+    else {
+        Log::LogWarn(LEVEL_LOG_INFO, "Change to manual mode first", __FILE__, __LINE__);
+    }
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+/*bool Terminal::block_read()
+{
+    if (this->satEl == NULL) {
+        Log::LogWarn(LEVEL_LOG_WARNING, "Terminal unable to get satellite elevation, receiving the data may not work", __FILE__, __LINE__);
+        return false;
+    }
+
+    Glib::ustring satEl = this->satEl->get_text();
+
+    try {
+        if (satEl.compare("Not Set") && (std::stof(satEl) >= 0.0f)) {
+            return true;
+        }
+        else 
+            return false;
+    }
+    catch (std::exception &e) {
+        return false;
+    }
+}*/
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+std::queue<std::string> *Terminal::get_input_buffer()
+{
+    return &this->input;
+}
+/*  --------------------------------------------------------  */
+
+void Terminal::set_gtk_receive(GtkReceive *rec)
+{
+    this->rec = rec;
+}

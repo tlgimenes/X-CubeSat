@@ -9,7 +9,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">SEND()</col>
+        <col id="0" translatable="yes">SEND("")</col>
       </row>
       <row>
         <col id="0" translatable="yes">SAVE(,)</col>
@@ -33,7 +33,7 @@
         <col id="0" translatable="yes">APPENDDATE()</col>
       </row>
       <row>
-        <col id="0" translatable="yes">FORMAT()</col>
+        <col id="0" translatable="yes">FORMAT("")</col>
       </row>
       <row>
         <col id="0" translatable="yes">RECEIVE()</col>
@@ -43,6 +43,34 @@
       </row>
       <row>
         <col id="0" translatable="yes">SET(,)</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="modemModes">
+    <columns>
+      <!-- column-name mode -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">ERROR</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="modemNames">
+    <columns>
+      <!-- column-name Modem -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">DEFAULT</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">KANTRONICS</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">KENWOOD</col>
       </row>
     </data>
   </object>
@@ -279,6 +307,7 @@
                               <object class="GtkLabel" id="stat">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Communication status</property>
                                 <property name="label" translatable="yes">Idle</property>
                               </object>
                               <packing>
@@ -298,18 +327,6 @@
                               <packing>
                                 <property name="left_attach">2</property>
                                 <property name="top_attach">0</property>
-                                <property name="width">1</property>
-                                <property name="height">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkProgressBar" id="satProgressbar">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">1</property>
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
@@ -346,6 +363,7 @@
                               <object class="GtkLabel" id="elevation">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Elevation of the current satellite beeing tracked</property>
                                 <property name="xpad">15</property>
                                 <property name="label" translatable="yes">Not Set</property>
                               </object>
@@ -360,11 +378,24 @@
                               <object class="GtkLabel" id="azimuth">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Azimuth of the current satellite beeing tracked</property>
                                 <property name="xpad">15</property>
                                 <property name="label" translatable="yes">Not Set</property>
                               </object>
                               <packing>
                                 <property name="left_attach">4</property>
+                                <property name="top_attach">1</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinner" id="currSatSpinner">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
                                 <property name="top_attach">1</property>
                                 <property name="width">1</property>
                                 <property name="height">1</property>
@@ -415,6 +446,7 @@
                               <object class="GtkTreeView" id="satsTreeview">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Select a satellite and a script to edit</property>
                                 <property name="model">satsList</property>
                                 <property name="tooltip_column">0</property>
                                 <child internal-child="selection">
@@ -519,6 +551,9 @@
                                   <object class="GtkEntry" id="portName">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">Choose the port that the modem is connected to the PC.
+ Usually its default serial port is /dev/ttyS0 or /dev/ttyUSB0 
+if it is an USB/Serial adapter</property>
                                     <property name="invisible_char">●</property>
                                   </object>
                                   <packing>
@@ -532,7 +567,9 @@
                                   <object class="GtkComboBox" id="serialPortComboBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Change the BAUD rate of the port</property>
                                     <property name="model">upsListStore</property>
+                                    <property name="active">0</property>
                                     <child>
                                       <object class="GtkCellRendererText" id="cellrenderertext6"/>
                                       <attributes>
@@ -679,6 +716,7 @@ green: port set and oppenned</property>
                                                   <object class="GtkTextView" id="commandsFileText">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
+                                                    <property name="tooltip_text" translatable="yes">Write a script for the selected satellite</property>
                                                     <style>
                                                       <class name="GTK_INPUT_HINT_UPPERCASE_CHARS"/>
                                                     </style>
@@ -728,6 +766,7 @@ green: port set and oppenned</property>
                                         <property name="width_request">130</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="tooltip_text" translatable="yes">Current satellite beeing edited</property>
                                         <property name="halign">start</property>
                                         <property name="label" translatable="yes">-</property>
                                       </object>
@@ -756,6 +795,7 @@ green: port set and oppenned</property>
                                         <property name="width_request">130</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="tooltip_text" translatable="yes">Current script beeing edited</property>
                                         <property name="halign">start</property>
                                         <property name="label" translatable="yes">-</property>
                                       </object>
@@ -794,6 +834,7 @@ green: port set and oppenned</property>
                                               <object class="GtkTreeView" id="commandsTreeview">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
+                                                <property name="tooltip_text" translatable="yes">choose what command to execute</property>
                                                 <property name="model">CommandsList</property>
                                                 <child internal-child="selection">
                                                   <object class="GtkTreeSelection" id="treeview-selection13"/>
@@ -847,6 +888,9 @@ green: port set and oppenned</property>
                                           <object class="GtkScrolledWindow" id="scrolledwindow2">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="tooltip_text" translatable="yes">Create alias for the script. Alias
+usually let the code to be more 
+human readable</property>
                                             <property name="shadow_type">in</property>
                                             <child>
                                               <object class="GtkTreeView" id="aliasTreeview">
@@ -950,6 +994,7 @@ green: port set and oppenned</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Increase script execution order</property>
                         <property name="use_stock">True</property>
                       </object>
                       <packing>
@@ -965,6 +1010,7 @@ green: port set and oppenned</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Decrease script execution order</property>
                         <property name="use_stock">True</property>
                         <property name="image_position">right</property>
                       </object>
@@ -1002,6 +1048,8 @@ green: port set and oppenned</property>
                                       <object class="GtkTreeView" id="scriptsExeQueueTreeview">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="tooltip_text" translatable="yes">scripts execution order. Just the next script 
+to be executed is run when the satellites passes</property>
                                         <property name="model">scriptsExeQueueListStore</property>
                                         <child internal-child="selection">
                                           <object class="GtkTreeSelection" id="treeview-selection14"/>
@@ -1074,6 +1122,7 @@ green: port set and oppenned</property>
                                   <object class="GtkTextView" id="terminalTextView">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">A terminal module to set up the modem and control it</property>
                                   </object>
                                 </child>
                               </object>
@@ -1116,14 +1165,10 @@ green: port set and oppenned</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkRadioButton" id="modemConfigModeButton">
-                                <property name="label" translatable="yes">Modem Config</property>
+                              <object class="GtkLabel" id="label7">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="xalign">0</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Modem Name</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1132,21 +1177,67 @@ green: port set and oppenned</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="modemFreeModeButton">
-                                <property name="label" translatable="yes">Modem Free</property>
+                              <object class="GtkComboBoxText" id="modemName">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0.50999999046325684</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">modemConfigModeButton</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Change the modem that the port is connected to</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label8">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Modem Mode</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="modemMode">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Change to mode of the selected modem</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label9">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Terminal Mode</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="modemConfigModeToggle">
+                                <property name="label" translatable="yes">Manual Mode</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">Release button to the core of the program 
+be able to send message by its own</property>
+                                <property name="active">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                           </object>
@@ -1177,6 +1268,131 @@ green: port set and oppenned</property>
               </packing>
             </child>
           </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkApplicationWindow" id="statusReceiving">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="icon_name">go-down</property>
+    <property name="type_hint">splashscreen</property>
+    <property name="transient_for">mainWindow</property>
+    <property name="show_menubar">False</property>
+    <child>
+      <object class="GtkGrid" id="grid6">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkSpinner" id="spinner1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">1</property>
+            <property name="width">3</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="statusLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Idle</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+            <property name="width">3</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satElLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Satellite Elevation</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satEl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">40</property>
+            <property name="margin_right">40</property>
+            <property name="label" translatable="yes">-</property>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satAzLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Satellite Azimuth</property>
+          </object>
+          <packing>
+            <property name="left_attach">4</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satAz">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">40</property>
+            <property name="margin_right">40</property>
+            <property name="label" translatable="yes">-</property>
+          </object>
+          <packing>
+            <property name="left_attach">5</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satNameLabe">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Satellite Name</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="satNam">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">40</property>
+            <property name="margin_right">40</property>
+            <property name="label" translatable="yes">-</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
         </child>
       </object>
     </child>
