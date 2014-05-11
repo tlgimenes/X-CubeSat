@@ -40,6 +40,7 @@ class MainWindowCallback
     private:
         /*----------------------------------------------*/
         /* General attributes */
+        Gtk::Main *main;
         Manager *man;
         Terminal *term;
         MainWindowRenderer *main_window_renderer;
@@ -91,7 +92,7 @@ class MainWindowCallback
         /*----------------------------------------------*/
 
     public:
-        MainWindowCallback(Manager *man, Terminal *term);
+        MainWindowCallback(Manager *man, Terminal *term, Gtk::Main *main);
         Gtk::Window *get_main_window();
 
         /* timeout callback */

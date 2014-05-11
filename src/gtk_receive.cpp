@@ -35,7 +35,7 @@ along with this program; if not, visit http://www.fsf.org/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-GtkReceive::GtkReceive(sigc::connection *mainWindowConn, std::queue<std::string> *inputBuffer, sigc::slot<bool> timeout_slot)
+GtkReceive::GtkReceive(sigc::connection *mainWindowConn, std::queue<std::string> *inputBuffer, sigc::slot<bool> timeout_slot, Gtk::Main *main)
 {
     this->builder = Gtk::Builder::create_from_file(MAIN_WINDOW_GLADE);
 
@@ -57,7 +57,11 @@ GtkReceive::GtkReceive(sigc::connection *mainWindowConn, std::queue<std::string>
     /* Callbacks Connection */
     this->receiveWindow->signal_hide().connect(sigc::mem_fun(*this, &GtkReceive::close));
 
+    this->main = main;
+
     this->fifo = new std::ifstream(FIFO_FILE);
+
+    this->spinner->start();
 }
 /*  --------------------------------------------------------  */
 
@@ -69,7 +73,6 @@ void GtkReceive::close()
     this->satEl->set_text("1.0");
     this->satAz->set_text("1.0");
     this->status->set_text("Idle");
-    this->spinner->stop();
 
     *this->mainWindowConn = Glib::signal_timeout().connect(this->timeout_slot, UPDATE_RATE);
 
@@ -78,37 +81,20 @@ void GtkReceive::close()
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
-void GtkReceive::start_receive_window()
+void GtkReceive::wait_for_input()
 {
     this->mainWindowConn->disconnect();
 
     this->update_curr_satellite();
 
-    this->lastSatName = satName->get_text();
+    this->lastSatName = this->currSatName;
 
     sigc::slot<bool> timeout_slot = sigc::mem_fun(*this, &GtkReceive::update_window);
     this->conn = Glib::signal_timeout().connect(timeout_slot, UPDATE_RATE);
 
     this->status->set_text("Receiving...");
-    this->spinner->start();
 
-    this->receiveWindow->show();
-}
-/*  --------------------------------------------------------  */
-
-/*  --------------------------------------------------------  */
-bool GtkReceive::wait_for_input()
-{
-    try {
-        if (std::stof(this->satEl->get_text()) < 0.0 || !this->is_input_buffer_empty() || lastSatName.compare(satName->get_text()) != 0) {
-            return true;
-        }
-    }
-    catch (const std::exception &ex) {
-        return false;
-    }
-
-    return false;
+    this->main->run(*this->receiveWindow);
 }
 /*  --------------------------------------------------------  */
 
@@ -133,7 +119,15 @@ bool GtkReceive::update_window()
 /*  --------------------------------------------------------  */
 void GtkReceive::update_curr_satellite()
 {
-    fifo_file_model *m = read_fifo_format(&this->fifo);
+    fifo_file_model *m;
+
+    /* Waits for a satellite to track */
+    m = read_fifo_format(&this->fifo);
+    while(m->satName == NULL || m->satName->size() == 0) {
+        this->fifo->close();
+        this->fifo = new std::ifstream(FIFO_FILE);
+        m = read_fifo_format(&this->fifo);
+    }
 
     /* Renders the new info in CurrSat frame */
     if(m->satName == NULL) {
@@ -151,6 +145,9 @@ void GtkReceive::update_curr_satellite()
 
     if(m->az == NULL) m->az = new std::string("Not Set");
     this->satAz->set_text(*m->az);
+    this->satAz->show_now();
+
+    this->currSatName = *m->satName;
 }
 /*  --------------------------------------------------------  */  
 

@@ -47,6 +47,8 @@ along with this program; if not, visit http://www.fsf.org/
 class GtkReceive 
 {
     private:
+        Gtk::Main *main;
+
         Glib::RefPtr<Gtk::Builder> builder;
         Gtk::ApplicationWindow *receiveWindow;
 
@@ -65,6 +67,7 @@ class GtkReceive
         std::ifstream *fifo;
 
         Glib::ustring lastSatName;
+        Glib::ustring currSatName;
 
     protected:
         void close();
@@ -76,15 +79,12 @@ class GtkReceive
         bool is_input_buffer_empty();
 
     public:
-        GtkReceive(sigc::connection *mainWindowConn, std::queue<std::string> *inputBuffer, sigc::slot<bool> timeout_slot);
+        GtkReceive(sigc::connection *mainWindowConn, std::queue<std::string> *inputBuffer, sigc::slot<bool> timeout_slot, Gtk::Main *main);
 
         /* This function waits for the terminal to have
          * received something (a line) or the satellite 
-         * be below the horizon. If terminal has something
-         * returns true, false otherwise*/
-        bool wait_for_input();
-
-        void start_receive_window();
+         * be below the horizon. */
+        void wait_for_input();
 };
 
 #endif /* GTK_RECEIVE_HPP */

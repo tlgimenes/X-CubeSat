@@ -62,10 +62,12 @@ int main (int argc, char *argv[])
     
     Init::XCubeSat_Controller_start(&man, &term);
 
-    MainWindowCallback * mainWindow = new MainWindowCallback(man, term);
+    MainWindowCallback * mainWindow = new MainWindowCallback(man, term, &kit);
 
     // Main loop for the program
     kit.run(*(mainWindow->get_main_window()));
+
+    kit.quit();
 
     return 0;
 }

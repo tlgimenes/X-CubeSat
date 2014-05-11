@@ -38,10 +38,11 @@ along with this program; if not, visit http://www.fsf.org/
 #include "log.hpp"
 
 /*  --------------------------------------------------------  */
-MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term)
+MainWindowCallback::MainWindowCallback(Manager *man, Terminal *term, Gtk::Main *main)
 {
     this->man = man;
     this->term = term;
+    this->main = main;
 
     this->main_window_renderer = new MainWindowRenderer(man, term);
 
@@ -81,7 +82,7 @@ void MainWindowCallback::connect_callbacks()
     /* Connect timeout callbacks */
     sigc::slot<bool> timeout_slot = sigc::mem_fun(this,&MainWindowCallback::timeout_cb);
     this->main_window_renderer->conn = Glib::signal_timeout().connect(timeout_slot, UPDATE_RATE);
-    main_window_renderer->term->set_gtk_receive(new GtkReceive(&main_window_renderer->conn, main_window_renderer->term->get_input_buffer(), timeout_slot));
+    main_window_renderer->term->set_gtk_receive(new GtkReceive(&main_window_renderer->conn, main_window_renderer->term->get_input_buffer(), timeout_slot, this->main));
 
     /* Connect commands callbacks */
     this->main_window_renderer->commandsTreeView->signal_row_activated().connect(sigc::mem_fun(*this, &MainWindowCallback::command_treeview_activated_cb));

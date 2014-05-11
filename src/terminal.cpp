@@ -247,9 +247,7 @@ bool Terminal::read_from_device(std::string *str)
 {
     if(mode == MODEM_AUTO_MODE) {
 
-        rec->start_receive_window();
-        while(rec->wait_for_input());
-        //while(block_read() && (this->input.size() == 0));
+        rec->wait_for_input();
 
         if(this->input.size() == 0) {
             *str = DATA_NOT_RECEIVED;
