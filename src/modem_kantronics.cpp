@@ -72,7 +72,7 @@ Glib::ustring ModemKantronics::change_modem_mode(Glib::ustring mode)
 /* --------------------------------------------------------------*/
 Glib::ustring ModemKantronics::format_send(Glib::ustring str)
 {
-    Glib::ustring final;
+    Glib::ustring final = "";
    
     if (this->m_mode == NONE) {
         final.append(str);

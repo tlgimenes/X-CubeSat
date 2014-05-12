@@ -91,7 +91,7 @@ std::string ModemDefault::REPLY_OEM()
 /* --------------------------------------------------------------*/
 Glib::ustring ModemDefault::format_send(Glib::ustring str)
 {
-    Glib::ustring final;
+    Glib::ustring final = "";
 
     if (this->m_mode == NONE) {
         final.append(str);
