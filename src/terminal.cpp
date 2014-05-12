@@ -390,10 +390,14 @@ void Terminal::modem_name_changed_combobox_cb()
 /*  --------------------------------------------------------  */
 void Terminal::modem_mode_changed_combobox_cb()
 {
-    if(this->mode == MODEM_MANUAL_MODE) {
-        Glib::ustring change_mode_str = this->modem->update_modem_mode();
+    if(this->mode == MODEM_MANUAL_MODE && this->interface != NULL && this->interface->is_open()) {
+        Glib::ustring *change_mode_str = new Glib::ustring(this->modem->update_modem_mode());
+    
+        if(change_mode_str->size() > 0) {
+            this->update_write();           /* Empty buffer before sending something */
+            this->interface->write(change_mode_str);    /* Write to change mode str */
+        }
 
-        this->output.push(change_mode_str);
     }
     else {
         Log::LogWarn(LEVEL_LOG_INFO, "Change to manual mode first", __FILE__, __LINE__);

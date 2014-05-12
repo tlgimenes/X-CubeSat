@@ -43,27 +43,31 @@ ModemKenwood::ModemKenwood(modes_t mode) : ModemDefault(mode)
 /* --------------------------------------------------------------*/
 Glib::ustring ModemKenwood::change_modem_mode(Glib::ustring mode)
 {
-    std::vector<std::string> str = {"NONE", "CONFIG"};
-    std::vector<Glib::ustring> m = {""    , ""};
-    size_t i;
+    /* Implemented modes: "NONE", "CONFIG" */
 
-    for(i=0; i < str.size() && mode.compare(str[i]); i++);
+    Glib::ustring str = "";
 
-    this->m_mode = i;
-
-    if(i >= str.size()) {
-        this->m_mode = NONE;
-        Log::LogWarn(LEVEL_LOG_SILENT, "unable to set correctly the mode to ModemKantronics, mode now is set to NONE", __FILE__, __LINE__);
-    }
-    else {
-        std::string aux = "mode changed to ";
-        aux.append(str[i]);
-        Log::LogWarn(LEVEL_LOG_SILENT, aux.c_str(), __FILE__, __LINE__);
-
-        return m[i];
+    /* Get Current status of the modem and generates the 
+     * string to get out of it */
+    switch(m_mode) 
+    {
+        case NONE:
+        case CONFIG:
+            break;
+        default:
+            Log::LogWarn(LEVEL_LOG_WARNING, "Error in modem mode, please report bug", __FILE__, __LINE__);
     }
 
-    return m[NONE];
+    /* Generates the string to get in the next mode of 
+     * the modem and change it's mode */
+    if (!mode.compare("NONE")) {
+        m_mode = NONE;
+    }
+    else if (!mode.compare("CONFIG")) {
+        m_mode = CONFIG;
+    }
+
+    return str;
 }
 /* --------------------------------------------------------------*/
 
