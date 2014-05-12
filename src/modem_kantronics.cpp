@@ -46,7 +46,7 @@ ModemKantronics::ModemKantronics(modes_t mode) : ModemDefault(mode)
 Glib::ustring ModemKantronics::change_modem_mode(Glib::ustring mode)
 {
     std::vector<std::string> str = {"NONE", "CONFIG", "ASCII"};
-    std::vector<Glib::ustring> m = {"\3X" , "\3X"   , "\3X\rASCII"};
+    std::vector<Glib::ustring> m = {"\3X\r" , "\3X\r"   , "\3X\rASCII\r"};
     size_t i;
 
     for(i=0; i < str.size() && mode.compare(str[i]); i++);
