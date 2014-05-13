@@ -248,7 +248,7 @@ bool Terminal::read_from_device(std::string *str)
     if(mode == MODEM_AUTO_MODE) {
 
         /* flush write buffer before waiting for input */
-        this->update_write();
+        this->update();
 
         /* Waits until an input is received or satellite goes below
          * the horizon */
