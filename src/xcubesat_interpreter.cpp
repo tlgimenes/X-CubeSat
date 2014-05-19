@@ -59,11 +59,12 @@ InOutLog *XCubeSatInterpreter::interpret(Glib::ustring *text, std::unordered_map
 
         Function *f;
 
+        this->term->unlock_read(); // Unlocks terminal for doing reads;
+
         while(!this->runQueue.empty()) {
             f = this->runQueue.front();
             this->runQueue.erase(this->runQueue.begin());
             f->run(&this->runQueue, satName);
-            //std::cout << std::endl;
         }
     }
     catch(std::bad_typeid *e) {

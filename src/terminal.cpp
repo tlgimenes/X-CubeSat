@@ -44,6 +44,7 @@ Terminal::Terminal(InOutInterface *interface, Glib::RefPtr<Gtk::TextBuffer> buff
     this->interface = interface;
     this->modem = NULL;
     this->rec = NULL;
+    this->read_locker = false;
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
@@ -74,6 +75,7 @@ Terminal::Terminal(InOutInterface *interface)
     this->interface = interface;
     this->modem = NULL;
     this->rec = NULL;
+    this->read_locker = false;
 
     /*  Set the mode of work for this terminal and 
      *  the max number of lines for this terminal */
@@ -245,7 +247,7 @@ bool Terminal::write_to_device(std::string str)
  *  false otherwise */
 bool Terminal::read_from_device(std::string *str) 
 {
-    if(mode == MODEM_AUTO_MODE) {
+    if(mode == MODEM_AUTO_MODE && !is_read_locked()) {
 
         /* flush write buffer before waiting for input */
         this->update();
@@ -256,6 +258,7 @@ bool Terminal::read_from_device(std::string *str)
 
         if(this->input.size() == 0) {
             *str = DATA_NOT_RECEIVED;
+            this->read_locker = true; // locks read for not receiving more data;
             Log::LogWarn(LEVEL_LOG_SILENT, "DATA NOT RECEIVED FROM MODEM", __FILE__, __LINE__);
         }
         else {
@@ -264,6 +267,10 @@ bool Terminal::read_from_device(std::string *str)
         }
 
         return true;
+    }
+    else {
+        *str = DATA_NOT_RECEIVED;
+        Log::LogWarn(LEVEL_LOG_SILENT, "DATA NOT RECEIVED FROM MODEM BECAUSE SAT IS UNDER THE HORIZON OR A PROBLEM OCCURED", __FILE__, __LINE__);
     }
 
     return false;
@@ -440,7 +447,24 @@ std::queue<std::string> *Terminal::get_input_buffer()
 }
 /*  --------------------------------------------------------  */
 
+/*  --------------------------------------------------------  */
 void Terminal::set_gtk_receive(GtkReceive *rec)
 {
     this->rec = rec;
 }
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+/*  Returns true if read is locked, false otherwise. */
+bool Terminal::is_read_locked()
+{
+    return this->read_locker;
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+void Terminal::unlock_read()
+{
+    this->read_locker = false;
+}
+/*  --------------------------------------------------------  */

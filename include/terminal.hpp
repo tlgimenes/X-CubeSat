@@ -54,6 +54,8 @@ class Terminal : public sigc::trackable
         bool erase;
         Modem *modem;
 
+        bool read_locker; // Locks the read_from_device function
+
         Gtk::TextView *textView;
         Glib::RefPtr<Gtk::TextBuffer> buffer;
         Glib::RefPtr<Gtk::TextTag> notEditableTag;
@@ -92,6 +94,9 @@ class Terminal : public sigc::trackable
         void set_gtk_receive(GtkReceive *rec);
         InOutInterface *get_interface();
         std::queue<std::string> *get_input_buffer();
+
+        bool is_read_locked(); // If terminal is locked for reading
+        void unlock_read();
 };
 
 #endif
