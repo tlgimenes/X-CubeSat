@@ -156,11 +156,11 @@
   <object class="GtkWindow" id="mainWindow">
     <property name="can_focus">False</property>
     <property name="events">GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-    <property name="title" translatable="yes">XCubeSat_Controller</property>
+    <property name="title" translatable="yes">XCubeSat Controller</property>
     <property name="window_position">center</property>
     <property name="default_width">698</property>
     <property name="default_height">634</property>
-    <property name="icon_name">applications-science</property>
+    <property name="icon_name">utilities-system-monitor</property>
     <child>
       <object class="GtkViewport" id="viewport1">
         <property name="visible">True</property>

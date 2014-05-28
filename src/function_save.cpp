@@ -144,7 +144,7 @@ Function *FunctionSave::run(std::vector<Function*> *runQueue, Glib::ustring *sat
         }
         else {
             res = new FunctionVariableBool(false);
-            Log::LogWarn(LEVEL_LOG_INFO, "Data not salved because of error in file format", __FILE__, __LINE__);
+            Log::LogWarn(LEVEL_LOG_INFO, "Data not salved because of error in file format, change it for (WOD or SCI)", __FILE__, __LINE__);
         }
     }
 

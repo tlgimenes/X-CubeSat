@@ -160,7 +160,7 @@
     <property name="window_position">center</property>
     <property name="default_width">698</property>
     <property name="default_height">634</property>
-    <property name="icon_name">applications-science</property>
+    <property name="icon_name">utilities-system-monitor</property>
     <child>
       <object class="GtkViewport" id="viewport1">
         <property name="visible">True</property>
@@ -1274,6 +1274,7 @@ be able to send message by its own</property>
   </object>
   <object class="GtkApplicationWindow" id="statusReceiving">
     <property name="can_focus">False</property>
+    <property name="type">popup</property>
     <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon_name">go-down</property>

@@ -97,6 +97,8 @@ class Terminal : public sigc::trackable
 
         bool is_read_locked(); // If terminal is locked for reading
         void unlock_read();
+
+        void close_gtk_receive_window();
 };
 
 #endif

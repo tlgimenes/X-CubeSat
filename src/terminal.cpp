@@ -168,23 +168,23 @@ void Terminal::update_write()
 
 #define WRITE_TO_TEXTVIEW(buffer) \
     for (unsigned int i = 0; i < buffer.size(); i++) { \
-        str = buffer.front(); \
+        aux = buffer.front(); \
         buffer.pop(); \
-        buff << str << "\n"; \
+        buff << aux << "\n"; \
         if(this->mode == MODEM_AUTO_MODE) \
-        buffer.push(str); \
+        buffer.push(aux); \
     }
 
 #define WRITE_OUTPUT_TO_TEXTVIEW(buffer) \
     for (unsigned int i = 0; i < buffer.size(); i++) { \
-        str = buffer.front(); \
+        aux = buffer.front(); \
         buffer.pop(); \
-        buff << str << "\n"; \
+        buff << aux << "\n"; \
     }
 
 #define SMART_ERASE_OUTPUT_BUFFER(buffer) \
     for (unsigned int i = 0; i < buffer.size(); i++) { \
-        str = buffer.front(); \
+        aux = buffer.front(); \
         buffer.pop(); \
     }
 
@@ -194,27 +194,70 @@ void Terminal::update_buffer()
 {
     if(this->input.size() > 0 || this->output.size() > 0) {
         unsigned int lines = this->buffer->get_line_count();
-        std::string str = this->buffer->get_text();
+        Gtk::TextIter begin, end;
         std::string aux;
         std::stringstream buff;
-        unsigned int size;
-        buff << str;
+
+        /* Initializes the stream string buff */
+        buff << this->buffer->get_text();
 
         /*  Open the necessary space for the buffer */
         int count = input.size() + this->output.size() + lines - max_num_lines;
         for (int i = 0; i < count; ++i) {
             std::getline(buff, aux);
-            size = aux.size();
-            str.erase(0, size+1);
+
+            begin = this->buffer->begin();
+            end = this->buffer->get_iter_at_offset(aux.size()+1);
+            this->buffer->erase(begin, end);
         }
 
         /*  Resets the new buffer */
         buff.str(std::string());
 
-        buff << str; /*  Assignes the new string to the buffer */
-
         /* Writes to buffer */
         WRITE_TO_TEXTVIEW(this->input);
+        if(this->mode == MODEM_MANUAL_MODE) {
+            SMART_ERASE_OUTPUT_BUFFER(this->output);
+        }
+        else {
+            WRITE_OUTPUT_TO_TEXTVIEW (this->output);
+        }
+
+        end = this->buffer->end();
+        this->buffer->insert(end, buff.str());
+        this->buffer->apply_tag(this->notEditableTag, buffer->begin(), buffer->end());
+        this->textView->scroll_to(end, (double)0);
+    }
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+/* Puts the input and output buffer in the Gtk::TextBuffer */
+/*void Terminal::update_buffer()
+{
+    if(this->input.size() > 0 || this->output.size() > 0) {
+        unsigned int lines = this->buffer->get_line_count();
+        std::string str = this->buffer->get_text();
+        std::string aux;
+        std::stringstream buff;
+        unsigned int size;
+        buff << str;
+*/
+        /*  Open the necessary space for the buffer */
+/*        int count = input.size() + this->output.size() + lines - max_num_lines;
+        for (int i = 0; i < count; ++i) {
+            std::getline(buff, aux);
+            size = aux.size();
+            str.erase(0, size+1);
+        }
+*/
+        /*  Resets the new buffer */
+//        buff.str(std::string());
+
+ //       buff << str; /*  Assignes the new string to the buffer */
+
+        /* Writes to buffer */
+  /*        WRITE_TO_TEXTVIEW(this->input);
         if(this->mode == MODEM_MANUAL_MODE) {
             SMART_ERASE_OUTPUT_BUFFER(this->output);
         }
@@ -227,7 +270,7 @@ void Terminal::update_buffer()
         Gtk::TextBuffer::iterator iter = buffer->end();
         this->textView->scroll_to(iter, (double)0);
     }
-}
+}*/
 /*  --------------------------------------------------------  */
 
 /*  --------------------------------------------------------  */
@@ -466,5 +509,12 @@ bool Terminal::is_read_locked()
 void Terminal::unlock_read()
 {
     this->read_locker = false;
+}
+/*  --------------------------------------------------------  */
+
+/*  --------------------------------------------------------  */
+void Terminal::close_gtk_receive_window()
+{
+    this->rec->close_window();
 }
 /*  --------------------------------------------------------  */

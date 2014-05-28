@@ -85,6 +85,8 @@ class GtkReceive
          * received something (a line) or the satellite 
          * be below the horizon. */
         void wait_for_input();
+
+        void close_window();
 };
 
 #endif /* GTK_RECEIVE_HPP */

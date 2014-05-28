@@ -484,6 +484,8 @@ void MainWindowCallback::quit_cb()
     this->man->save();
     Log::LogWarn(LEVEL_LOG_INFO, "Session Saved", __FILE__, __LINE__); 
 
+    this->term->close_gtk_receive_window(); // quit receive window
+
     gtk_main_quit();
 }
 /*  --------------------------------------------------------  */
@@ -501,6 +503,8 @@ bool MainWindowCallback::quit_all_cb(GdkEventAny *event)
     quitDialog->signal_response().connect(sigc::mem_fun(*this, &MainWindowCallback::on_response_save_message_dialog));
     quitDialog->run();
     quitDialog->hide();
+
+    this->term->close_gtk_receive_window(); // quit receive window
 
     gtk_main_quit();
 
